@@ -8,7 +8,16 @@ public class Board {
 	private List<Room> rooms;
 
 	public Board(){
-		addRooms();					//Adds rooms to the board.
+		//Adds rooms to the board.
+		this.rooms.add(new Room("LOUNGE"));
+		 this.rooms.add(new Room("DINING_ROOM"));
+		 this.rooms.add(new Room("KITCHEN"));
+		 this.rooms.add(new Room("BALL_ROOM"));
+		 this.rooms.add(new Room("CONSERVATORY"));
+		 this.rooms.add(new Room("BILLIARD_ROOM"));
+		 this.rooms.add(new Room("LIBRARY"));
+		 this.rooms.add(new Room("STUDY"));
+		 this.rooms.add(new Room("HALL"));			
 		parseFile("/Board.txt");	//Adds squares to the board.
 		parseFile("/Doors.txt");	//Adds doors to the board and rooms.
 	}
@@ -120,18 +129,5 @@ public class Board {
 		}
 	}
 	
-	/**
-	 * Adds rooms to the list of rooms.
-	 */
-	private void addRooms(){
-		 this.rooms.add(new Room("LOUNGE"));
-		 this.rooms.add(new Room("DINING_ROOM"));
-		 this.rooms.add(new Room("KITCHEN"));
-		 this.rooms.add(new Room("BALL_ROOM"));
-		 this.rooms.add(new Room("CONSERVATORY"));
-		 this.rooms.add(new Room("BILLIARD_ROOM"));
-		 this.rooms.add(new Room("LIBRARY"));
-		 this.rooms.add(new Room("STUDY"));
-		 this.rooms.add(new Room("HALL"));
-	}
+
 }
