@@ -1,100 +1,88 @@
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class Board {
-	private Square[][] board;
+	private int[][] board;		//filled with 1's where a traversable square is.
 	private List<Room> rooms;
+	private Door[][] doors;		// Door locations.
 
 	public Board(){
+		this.board = new int[25][25];
+		this.rooms = new ArrayList<Room>();
+		this.doors = new Door[25][25];
 		//Adds rooms to the board.
 		this.rooms.add(new Room("LOUNGE"));
-		 this.rooms.add(new Room("DINING_ROOM"));
-		 this.rooms.add(new Room("KITCHEN"));
-		 this.rooms.add(new Room("BALL_ROOM"));
-		 this.rooms.add(new Room("CONSERVATORY"));
-		 this.rooms.add(new Room("BILLIARD_ROOM"));
-		 this.rooms.add(new Room("LIBRARY"));
-		 this.rooms.add(new Room("STUDY"));
-		 this.rooms.add(new Room("HALL"));			
-		parseFile("/Board.txt");	//Adds squares to the board.
-		parseFile("/Doors.txt");	//Adds doors to the board and rooms.
+		this.rooms.add(new Room("DINING_ROOM"));
+		this.rooms.add(new Room("KITCHEN"));
+		this.rooms.add(new Room("BALL_ROOM"));
+		this.rooms.add(new Room("CONSERVATORY"));
+		this.rooms.add(new Room("BILLIARD_ROOM"));
+		this.rooms.add(new Room("LIBRARY"));
+		this.rooms.add(new Room("STUDY"));
+		this.rooms.add(new Room("HALL"));			
+		parseSquareFile();	//Adds squares to the board.
+
+
+		parseDoorFile();	//Adds doors to the board and rooms.
 	}
 
-	
+	/**
+	 * Returns the integer array representing the board.
+	 * @return The board array.
+	 */
+	public int[][] getBoard(){
+		return this.board;
+	}
+
+	/**
+	 * Reads the file ascii-map.txt to fill in the board array.
+	 */
+	private void parseSquareFile(){
+		BufferedReader reader = null;
+		String line = null;
+		try{
+			reader = new BufferedReader(new FileReader(new File("ascii-map.txt")));
+			// Reads each line while there is one
+			for(int row = 0; (line = reader.readLine()) != null; row ++){
+				// Increments over 2 chars due to spaces.
+				for(int col = 0; col < line.length(); col += 2){
+					if(line.charAt(col) == '1')
+						this.board[row][col/2] = 1;
+				}
+			}
+
+			reader.close();		//won't accept being put in finally block.
+		}catch(IOException e){throw new Error(e);}
+
+	}
+
 	/**
 	 * Fills the board array with Square object. 
 	 * Loads the square data from a file.
 	 */
-	private void parseFile(String filepath){
+	private void parseDoorFile(){
 		int x = 0, y = 0, key = 0;
+		String room = null, line = null;
 		Scanner scan = null;
-		String room = null;
+		BufferedReader reader = null;
 		try{
-			scan = new Scanner(new File(filepath));	// The file scanner.
-			while(scan.hasNextLine()){
+			reader = new BufferedReader(new FileReader(new File("doors.txt")));
+			while((line = reader.readLine()) != null){
+				scan = new Scanner(line);	// The file scanner.
 				scan.useDelimiter(",");
-				x = scan.nextInt();
-				y =  scan.nextInt();
-				key = scan.nextInt();
-				if(filepath.equals("/Board.txt"))
-					parseSquare(x, y, key);	// Each square is parsed.
-				else
-					room = scan.next();
-					parseDoor(x, y, key, room);
-				scan.nextLine();		//drops to next line.
+				parseDoor(scan);		//parses the line to create a door.
 			}
+			
 		}catch(IOException e){throw new Error(e);}
 		finally{scan.close();}
 
 	}
-	
 
-	/**
-	 * Processes a Square object from an integer triple and inserts it into the board.
-	 * @param X coordinate integer
-	 * @param Y coordinate integer
-	 * @param Key integer representing the walls around the square.
-	 * @throws IOException 
-	 */
-	private void parseSquare(int x, int y, int key) throws IOException{
-		if(key > 12)
-			throw new IOException("Square could not be parsed.");
-		
-		Square s = null;
-		
-		switch(key){
-		case 0:
-			s = new Square(true, false, false, false);	//top only
-		case 1:
-			s = new Square(false, true, false, false);	//right only
-		case 2:
-			s = new Square(false, false, true, false);	//bottom only
-		case 3:
-			s = new Square(false, false, false, true);	//left only
-		case 4:
-			s = new Square(true, false, true, false);	//top and bottom
-		case 5:
-			s = new Square(false, true, true, true);		//all but top	
-		case 6:
-			s = new Square(true, false, true, true);	//all but right	
-		case 7:
-			s = new Square(true, true, false, true);	//all but bottom
-		case 8:
-			s = new Square(true, true, true, false);	//all but left
-		case 9:
-			s = new Square(true, false, false, true);	//topleft	
-		case 10:
-			s = new Square(true, true, false, false);	//topright	
-		case 11:
-			s = new Square(false, true, true, false);	//bottomright
-		case 12:
-			s = new Square(false, false, true, true);	//bottom left	
-		}
-		this.board[x][y] = s;
-	}
-	
 	/**
 	 * Processes a Door object from an integer triple and inserts it into the board.
 	 * @param X coordinate integer
@@ -102,24 +90,35 @@ public class Board {
 	 * @param Key integer representing the walls around the square.
 	 * @throws IOException 
 	 */
-	private void parseDoor(int x, int y, int key, String roomName) throws IOException{
-		if(key > 3)
-			throw new IOException("Door could not be parsed.");
-		
+	private void parseDoor(Scanner scan) throws IOException{
+
+		int x = 0, y = 0, key = 0;
+		String roomName = null;
 		Door door = null;
-		
+
+		x = scan.nextInt();
+		y =  scan.nextInt();
+		key = scan.nextInt();
+		roomName = scan.next();
+
 		switch(key){
-		case 0:
-			door = new Door(false, false, false, false);	//No walls
-		case 1:
-			door = new Door(true, false, false, false);	//top only
+		case 8:
+			door = new Door("UP");	//room is above
+			break;
+		case 6:
+			door = new Door("RIGHT");	//room is to the right
+			break;
 		case 2:
-			door = new Door(false, true, false, false);	//right only
-		case 3:
-			door = new Door(false, true, true, false);	//right and below
-		
+			door = new Door("DOWN");	//room is below
+			break;
+		case 4:
+			door = new Door("LEFT");	//room is to the left
+			break;
+		default:
+			throw new IOException("Door could not be parsed.");
 		}
-		this.board[x][y] = door;			//adds the door to the board
+
+		this.doors[x][y] = door;			//adds the door to the board
 		// adds the door to the room
 		for(Room room : this.rooms){
 			if(room.NAME.equals(roomName)){
@@ -128,6 +127,6 @@ public class Board {
 			}
 		}
 	}
-	
+
 
 }
