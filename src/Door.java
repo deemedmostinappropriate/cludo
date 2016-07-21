@@ -1,16 +1,16 @@
 
 /**
- * Identical to superclass, aside from room field.
- * Used to identify the entry of a Room.
+ * Used to identify the square outside a Room. The door has a direction relating it to the position of the room.
  * @author Daniel Anastasi
  *
  */
-public class Door extends Square{
+public class Door{
 
-	private Room room = null;
+	private Room room;					//Room must be set after object construction: Cannot be final.
+	public final String ROOM_DIRECTION;		//The direction of Room relative to this Door.
 	
-	public Door(boolean top, boolean right, boolean bottom, boolean left){
-		super(top, right, bottom, left);
+	public Door(String direction){
+		ROOM_DIRECTION = direction;
 	}
 	
 	/**
