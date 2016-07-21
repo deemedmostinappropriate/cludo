@@ -4,9 +4,10 @@ import java.util.Scanner;
 //package assignment1.cluedo;
 
 public class Game {
+	
 	static class Card{
 		public enum WEAPON{
-			ROPE, DAGGER, CANDLESTK, REVOLVER, LEADPIPE, SPANNER;
+			ROPE, DAGGER, CANDLESTICK, REVOLVER, LEADPIPE, SPANNER;
 		}
 		public enum ROOM{
 			HALL, DINING, BILLIARD, CONSERVATORY, BALL, LIBRARY, STUDY, LOUNGE, KITCHEN;
@@ -23,20 +24,24 @@ public class Game {
 		this.numPlayers = numPlayers;
 		//Set up players
 		this.board = new Board();//Set up board
-		
-
 		run();
 	}
 
+	
 	/**
 	 * Runs the game loop.
 	 */
 	public void run(){
-
+		// Array input test
+		int[][] b = this.board.getBoard();
+		for(int i = 0; i < b.length; i++){
+			for(int j = 0; j < b[0].length; j++){
+				System.out.print(b[i][j]);
+			}
+			System.out.println();
+		}
 	}
 	
-
-
 
 	public static void main(String[] args){
 		int players = 0;
