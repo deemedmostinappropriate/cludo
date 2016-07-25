@@ -1,4 +1,6 @@
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 //package assignment1.cluedo;
@@ -19,12 +21,21 @@ public class Game {
 
 	private int numPlayers;
 	private Board board;
-
+	private Player currentPlayer = null;
+	private Character murderer = null;
+	private Room murderRoom = null;
+	private Room.WEAPON murderWeapon = null;
+	private List<Player> players;
+	
+	
 	public Game(int numPlayers){
 		this.numPlayers = numPlayers;
+		this.players = new ArrayList<Player>();
 		
 		//Set up players
 		//Teach players about what was not involved in the murder: Rooms, characters, weapons.
+		//Chooses character, weapon, and room for murderer, murder weapon and murder room.
+		//
 		//Distributes weapons around rooms.
 		
 		this.board = new Board();//Set up board
@@ -44,6 +55,17 @@ public class Game {
 			}
 			System.out.println();
 		}
+		
+		
+		while(true){
+			
+			
+			//exit loop if player has won via correct accusation.
+			//exit loop if only one player remains.
+			
+			//Changes currentPlayer for next round.
+		}
+		
 	}
 
 	
@@ -55,7 +77,7 @@ public class Game {
 	 * @param The name of the weapon provided by the player.
 	 * @return A string detailing why the method was unsuccessful. Is null if there was no issue.
 	 */
-	public String suggestion(Player p, String characterName, String roomName, String weaponName){
+	private String suggestion(Player p, String characterName, String roomName, String weaponName){
 		Character character = this.board.findCharacter(characterName);
 		Room room = this.board.findRoom(roomName);
 		Room.WEAPON weapon = Room.WEAPON.valueOf(weaponName);
@@ -91,6 +113,31 @@ public class Game {
 			character.getRoom().removeCharacter(character);		//Removes character from old room
 		character.setRoom(newRoom);								//Changes characters record of room.
 		newRoom.addCharacter(character);						//Moves character to the new room.
+	}
+	
+	/**
+	 * Called when a player chooses to make an accusation about the murder.
+	 * If they guess correctly they win the game, otherwise they lose and the game continues without them.
+	 * @param The player making the accusation
+	 * @param The character accused of the crime.
+	 * @param The room where the murder is said to have taken place.
+	 * @param The proposed murder weapon.
+	 * @return A string message telling the player the result of their accusation.
+	 */
+	private String accusation(Player p, String characterName, String roomName, String weaponName){
+		String result = null;
+		Character character = this.board.findCharacter(characterName);
+		Room room = this.board.findRoom(roomName);
+		Room.WEAPON weapon = Room.WEAPON.valueOf(weaponName);
+		if(character != this.murderer 
+				|| room != this.murderRoom
+				|| weapon != this.murderWeapon){
+			result = "Sorry, you have guessed incorrectly. You are out of the game. :(";
+			this.players.remove(this.currentPlayer);	//removes the current player from the game.
+		}
+		else
+			result = "CONGRATULATIONS :D  YOU WIN!!!!!";
+		return result;
 	}
 	
 
