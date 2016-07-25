@@ -22,7 +22,11 @@ public class Game {
 
 	public Game(int numPlayers){
 		this.numPlayers = numPlayers;
+		
 		//Set up players
+		//Teach players about what was not involved in the murder: Rooms, characters, weapons.
+		//Distributes weapons around rooms.
+		
 		this.board = new Board();//Set up board
 		run();
 	}
@@ -40,6 +44,53 @@ public class Game {
 			}
 			System.out.println();
 		}
+	}
+
+	
+	/**
+	 * A suggestion made by the player to learn more about the murder.
+	 * @param The player who made the suggestion
+	 * @param The name of the character provided by the player.
+	 * @param The name of the room provided by the player.
+	 * @param The name of the weapon provided by the player.
+	 * @return A string detailing why the method was unsuccessful. Is null if there was no issue.
+	 */
+	public String suggestion(Player p, String characterName, String roomName, String weaponName){
+		Character character = this.board.findCharacter(characterName);
+		Room room = this.board.findRoom(roomName);
+		Room.WEAPON weapon = Room.WEAPON.valueOf(weaponName);
+		
+		if(character == null)return "Character could not be found, please try again.";
+		else if(room == null)return "Room could not be found, please try again.";
+		else if(weapon == null)return "Weapon could not be found, please try again.";
+		
+		changeCharacterRoom(character, room);
+	
+		this.board.getRoomFromWeapon(weapon).removeWeapon(weapon);	//Removes the weapon from the old room
+		room.addWeapon(weapon);										//Moves the weapon to the new room.
+		this.board.setRoomFromWeapon(weapon, room);					//Changes mapping of weapon -> room in board.
+		
+		p.learn(room);				//Adds the Room to the player's set of known Rooms
+		p.learn(character);			//Adds the Character to the player's set of known Characters
+		p.learn(weapon);			//Adds the Weapon to the player's set of known Weapons
+		
+		return null;
+	}
+	
+	/**
+	 * Changes the Character.room field to the new room.
+	 * Removes the character from any room they were in.
+	 * Adds the player to the new room.
+	 * If the room is null, the player will be removed from their room, and have its field changed.
+	 * In this instance it will not be added to a new room.
+	 * @param The character.
+	 * @param The new room to move the character to.
+	 */
+	public void changeCharacterRoom(Character character, Room newRoom){
+		if(character.getRoom() != null)
+			character.getRoom().removeCharacter(character);		//Removes character from old room
+		character.setRoom(newRoom);								//Changes characters record of room.
+		newRoom.addCharacter(character);						//Moves character to the new room.
 	}
 	
 
