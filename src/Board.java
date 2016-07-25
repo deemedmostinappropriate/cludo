@@ -3,8 +3,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -13,12 +15,14 @@ public class Board {
 	private List<Room> rooms;
 	private Door[][] doors;				// Door locations.
 	private Set<Character> characters;	//A set of character pieces on the board.
+	private Map<Room.WEAPON, Room> roomsFromWeapons; //So that we can quickly find where the weapon is.
 
 	public Board(){
 		this.board = new int[25][25];
 		this.rooms = new ArrayList<Room>();
 		this.doors = new Door[25][25];
 		this.characters = new HashSet<>();
+		this.roomsFromWeapons = new HashMap<>();
 		//Adds rooms to the board.
 		this.rooms.add(new Room("LOUNGE"));
 		this.rooms.add(new Room("DINING_ROOM"));
@@ -41,6 +45,24 @@ public class Board {
 	 */
 	public int[][] getBoard(){
 		return this.board;
+	}
+	
+	/**
+	 * Returns the room which a particular weapon resides.
+	 * @param The weapon
+	 * @return The room.
+	 */
+	public Room getRoomFromWeapon(Room.WEAPON weapon){
+		return this.roomsFromWeapons.get(weapon);
+	}
+	
+	/**
+	 * Changes this.roomsFromWeapons to point from the weapon to the new room
+	 * @param The weapon
+	 * @param The room
+	 */
+	public void setRoomFromWeapon(Room.WEAPON weapon, Room room){
+		this.roomsFromWeapons.put(weapon, room);
 	}
 	
 	/**
