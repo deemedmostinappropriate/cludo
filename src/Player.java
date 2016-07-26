@@ -15,13 +15,16 @@ public class Player {
 	 * @return Whether or not the player is able to make the move.
 	 */
 	public boolean move(int diceroll, int x, int y, Board board){
-		boolean result = false;
 		 //////MAJOR BREAkTHROUGH, move the player one step at a time. bypass most checks :D
-		
-		
+		//Bad cases:
 		//decides legality of move.
-		//Bad cases
+		if(!board.isInRange(x, y)){
+			return false;
+		}
 		// x = current x and y = current y.  new position is same as old.
+		if(x == character.getX() && y == character.getY()){
+			return false;
+		}
 		////Blatant distance issue
 		// x - diceroll > current x
 		// x + diceroll < current x
@@ -34,6 +37,6 @@ public class Player {
 		//if endpoint < diceroll somehow, and it is not in a room.
 		
 		
-		return result;
+		return true;
 	}
 }
