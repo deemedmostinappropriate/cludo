@@ -10,11 +10,13 @@ public class Board {
 	private int[][] board;		//filled with 1's where a traversable square is.
 	private List<Room> rooms;
 	private Door[][] doors;		// Door locations.
+	
+	private static final int SIZE = 25;
 
 	public Board(){
-		this.board = new int[25][25];
+		this.board = new int[SIZE][SIZE];
 		this.rooms = new ArrayList<Room>();
-		this.doors = new Door[25][25];
+		this.doors = new Door[SIZE][SIZE];
 		//Adds rooms to the board.
 		this.rooms.add(new Room("LOUNGE"));
 		this.rooms.add(new Room("DINING_ROOM"));
@@ -27,7 +29,6 @@ public class Board {
 		this.rooms.add(new Room("HALL"));			
 		parseSquareFile();	//Adds squares to the board.
 
-
 		parseDoorFile();	//Adds doors to the board and rooms.
 	}
 
@@ -38,7 +39,19 @@ public class Board {
 	public int[][] getBoard(){
 		return this.board;
 	}
-
+	
+	/**
+	 * Returns a boolean indicating whether or not the given x,y coordinates
+	 * are on the board.
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public boolean isInRange(int x, int y){
+		return x >= 0 && y >= 0
+				&& x <= SIZE && y <= SIZE;
+	}
+	
 	/**
 	 * Reads the file ascii-map.txt to fill in the board array.
 	 */
