@@ -7,11 +7,21 @@ public class Character {
 
 	private int x, y;
 	public final String NAME;
+	private Room room = null;
 	
+
 	public Character(int x, int y, String name){
 		this.x = x;
 		this.y = y;
 		this.NAME = name;
+	}
+	
+	/**
+	 * Returns the room which the character is in. This can be null.
+	 * @return The room in which the player is standing. 
+	 */
+	public Room getRoom() {
+		return room;
 	}
 	
 	/**
@@ -39,6 +49,14 @@ public class Character {
 	public void setPosition(int x, int y){
 		this.x = x;
 		this.y = y;
+	}
+	
+	/**
+	 * Sets the character's room to the room provided.
+	 * @param room
+	 */
+	public void setRoom(Room room){
+		this.room = room;
 	}
 	
 }
