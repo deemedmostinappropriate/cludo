@@ -11,16 +11,18 @@ import java.util.Scanner;
 import java.util.Set;
 
 public class Board {
-	private int[][] board;		//filled with 1's where a traversable square is.
+	private int[][] board;								// filled with 1's where a traversable square is.
 	private List<Room> rooms;
-	private Door[][] doors;				// Door locations.
-	private Set<Character> characters;	//A set of character pieces on the board.
-	private Map<Room.WEAPON, Room> roomsFromWeapons; //So that we can quickly find where the weapon is.
-
+	private Door[][] doors;								// Door locations.
+	private Set<Character> characters;					// A set of character pieces on the board.
+	private Map<Room.WEAPON, Room> roomsFromWeapons; 	// So that we can quickly find where the weapon is.
+	
+	private static final int SIZE = 25;
+	
 	public Board(){
-		this.board = new int[25][25];
+		this.board = new int[SIZE][SIZE];
 		this.rooms = new ArrayList<Room>();
-		this.doors = new Door[25][25];
+		this.doors = new Door[SIZE][SIZE];
 		this.characters = new HashSet<>();
 		this.roomsFromWeapons = new HashMap<>();
 		//Adds rooms to the board.
@@ -45,6 +47,18 @@ public class Board {
 	 */
 	public int[][] getBoard(){
 		return this.board;
+	}
+	
+	/**
+	 * Returns a boolean of whether or not a given x,y is in range of
+	 * the board's x,y.
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public boolean inRange(int x, int y){
+		return x >= 0 && y >= 0
+				&& x <= SIZE && y <= SIZE;
 	}
 	
 	/**
