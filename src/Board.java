@@ -3,20 +3,36 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 
 public class Board {
 	private int[][] board;		//filled with 1's where a traversable square is.
 	private List<Room> rooms;
+<<<<<<< HEAD
 	private Door[][] doors;		// Door locations.
 	
 	private static final int SIZE = 25;
+=======
+	private Door[][] doors;				// Door locations.
+	private Set<Character> characters;	//A set of character pieces on the board.
+	private Map<Room.WEAPON, Room> roomsFromWeapons; //So that we can quickly find where the weapon is.
+>>>>>>> origin/master
 
 	public Board(){
 		this.board = new int[SIZE][SIZE];
 		this.rooms = new ArrayList<Room>();
+<<<<<<< HEAD
 		this.doors = new Door[SIZE][SIZE];
+=======
+		this.doors = new Door[25][25];
+		this.characters = new HashSet<>();
+		this.roomsFromWeapons = new HashMap<>();
+>>>>>>> origin/master
 		//Adds rooms to the board.
 		this.rooms.add(new Room("LOUNGE"));
 		this.rooms.add(new Room("DINING_ROOM"));
@@ -41,6 +57,7 @@ public class Board {
 	}
 	
 	/**
+<<<<<<< HEAD
 	 * Returns a boolean indicating whether or not the given x,y coordinates
 	 * are on the board.
 	 * @param x
@@ -52,6 +69,52 @@ public class Board {
 				&& x <= SIZE && y <= SIZE;
 	}
 	
+=======
+	 * Returns the room which a particular weapon resides.
+	 * @param The weapon
+	 * @return The room.
+	 */
+	public Room getRoomFromWeapon(Room.WEAPON weapon){
+		return this.roomsFromWeapons.get(weapon);
+	}
+	
+	/**
+	 * Changes this.roomsFromWeapons to point from the weapon to the new room
+	 * @param The weapon
+	 * @param The room
+	 */
+	public void setRoomFromWeapon(Room.WEAPON weapon, Room room){
+		this.roomsFromWeapons.put(weapon, room);
+	}
+	
+	/**
+	 * Finds the room with a name that matches the argument.
+	 * @param The name to match;
+	 * @return The room which matches the name;
+	 */
+	public Room findRoom(String name){
+		for(Room room : this.rooms){
+			if(room.NAME.equals(name))
+				return room;
+		}
+		return null;
+	}
+	
+	/**
+	 * Finds the room with a name that matches the argument.
+	 * @param The name to match;
+	 * @return The character which matches the name;
+	 */
+	public Character findCharacter(String name){
+		for(Character character : this.characters){
+			if(character.NAME.equals(name))
+				return character;
+		}
+		return null;
+	}
+
+
+>>>>>>> origin/master
 	/**
 	 * Reads the file ascii-map.txt to fill in the board array.
 	 */
