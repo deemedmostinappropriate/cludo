@@ -6,25 +6,13 @@ import java.util.Scanner;
 //package assignment1.cluedo;
 
 public class Game {
-	
-	static class Card{
-		public enum WEAPON{
-			ROPE, DAGGER, CANDLESTICK, REVOLVER, LEADPIPE, SPANNER;
-		}
-		public enum ROOM{
-			HALL, DINING, BILLIARD, CONSERVATORY, BALL, LIBRARY, STUDY, LOUNGE, KITCHEN;
-		}
-		public enum CHAR{
-			SCARLET, MUSTARD, WHITE, PLUM, GREEN, PEACOCK;
-		}
-	}
 
 	private int numPlayers;
 	private Board board;
 	private Player currentPlayer = null;
 	private Character murderer = null;
 	private Room murderRoom = null;
-	private Room.WEAPON murderWeapon = null;
+	private WEAPON murderWeapon = null;
 	private List<Player> players;
 	
 	
@@ -80,7 +68,7 @@ public class Game {
 	private String suggestion(Player p, String characterName, String roomName, String weaponName){
 		Character character = this.board.findCharacter(characterName);
 		Room room = this.board.findRoom(roomName);
-		Room.WEAPON weapon = Room.WEAPON.valueOf(weaponName);
+		WEAPON weapon = WEAPON.valueOf(weaponName);
 		
 		if(character == null)return "Character could not be found, please try again.";
 		else if(room == null)return "Room could not be found, please try again.";
@@ -128,7 +116,7 @@ public class Game {
 		String result = null;
 		Character character = this.board.findCharacter(characterName);
 		Room room = this.board.findRoom(roomName);
-		Room.WEAPON weapon = Room.WEAPON.valueOf(weaponName);
+		WEAPON weapon = WEAPON.valueOf(weaponName);
 		if(character != this.murderer 
 				|| room != this.murderRoom
 				|| weapon != this.murderWeapon){
