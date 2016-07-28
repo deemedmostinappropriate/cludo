@@ -6,7 +6,7 @@ public class Player {
 	private Character character;
 	private Set<Room> knownRooms;
 	private Set<Character> knownCharacters;
-	private Set<Room.WEAPON> knownWeapons;
+	private Set<WEAPON> knownWeapons;
 	
 	public Player(Character ch){
 		this.character = ch;
@@ -26,8 +26,8 @@ public class Player {
 		else if(o instanceof Character){
 			this.knownCharacters.add((Character)o);
 		}
-		else if(o instanceof Room.WEAPON){
-			this.knownWeapons.add((Room.WEAPON)o);
+		else if(o instanceof WEAPON){
+			this.knownWeapons.add((WEAPON)o);
 		}
 		else{
 			throw new IllegalArgumentException("Argument cannot be learnt by Player: Type incorrect");
