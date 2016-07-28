@@ -15,7 +15,8 @@ public class Board {
 	private List<Room> rooms;
 	private Door[][] doors;								// Door locations.
 	private Set<Character> characters;					// A set of character pieces on the board.
-	private Map<Room.WEAPON, Room> roomsFromWeapons; 	// So that we can quickly find where the weapon is.
+	private Map<WEAPON, Room> roomsFromWeapons; 	// So that we can quickly find where the weapon is.
+	private Map<String, Room> roomFromCharacter;		//Quickly find which room a character is in.
 	
 	private static final int SIZE = 25;
 	
@@ -25,6 +26,7 @@ public class Board {
 		this.doors = new Door[SIZE][SIZE];
 		this.characters = new HashSet<>();
 		this.roomsFromWeapons = new HashMap<>();
+		this.roomFromCharacter = new HashMap<>();
 		//Adds rooms to the board.
 		this.rooms.add(new Room("LOUNGE"));
 		this.rooms.add(new Room("DINING_ROOM"));
@@ -62,12 +64,30 @@ public class Board {
 	}
 	
 	/**
-	 * Returns the room which a particular weapon resides.
+	 * Returns the room which a particular weapon piece resides.
 	 * @param The weapon
 	 * @return The room.
 	 */
-	public Room getRoomFromWeapon(Room.WEAPON weapon){
+	public Room getRoomFromWeapon(WEAPON weapon){
 		return this.roomsFromWeapons.get(weapon);
+	}
+	
+	/**
+	 * Returns the room in which a particualr character piece resides.
+	 * @param The character's name.
+	 * @return The room.
+	 */
+	public Room getRoomFromCharacter(String characterName){
+		return this.roomFromCharacter.get(characterName);
+	}
+	
+	/**
+	 * Maps a character name to the room, in which they reside.
+	 * @param The character's name.
+	 * @param The room.
+	 */
+	public void setRoomFromCharacter(String characterName, Room room){
+		this.roomFromCharacter.put(characterName, room);
 	}
 	
 	/**
@@ -75,7 +95,7 @@ public class Board {
 	 * @param The weapon
 	 * @param The room
 	 */
-	public void setRoomFromWeapon(Room.WEAPON weapon, Room room){
+	public void setRoomFromWeapon(WEAPON weapon, Room room){
 		this.roomsFromWeapons.put(weapon, room);
 	}
 	
