@@ -10,23 +10,15 @@ import java.util.HashSet;
  */
 public class Room {
 
-	/**
-	 * Represents weapons placed in rooms, to distinguish from Game.WEAPON_CARD.
-	 * @author Daniel Anastasi
-	 */
-	public enum WEAPON{
-		CANDLESTICK, DAGGER, LEAD_PIPE, REVOLVER, ROPE, SPANNER;
-	}
-	
 	public final String NAME;
-	private Set<Room.WEAPON> weapons = null;
+	private Set<WEAPON> weapons = null;
 	private List<Door> doors = null;
 	private Set<Character> characters = null;
 	
 
 	public Room(String name){
 		this.NAME = name;
-		this.weapons = new HashSet<Room.WEAPON>();
+		this.weapons = new HashSet<WEAPON>();
 		this.doors = new ArrayList<Door>();
 		this.characters = new HashSet<Character>();
 	}
@@ -35,7 +27,7 @@ public class Room {
 	 * Returns a list of the weapons in this room.
 	 * @return A list of the weapons in this room.
 	 */
-	public Set<Room.WEAPON> getWeapons(){
+	public Set<WEAPON> getWeapons(){
 		return this.weapons;
 	}
 	
@@ -67,7 +59,7 @@ public class Room {
 	 * Adds a weapon to the room.
 	 * @param The weapon to add to the room.
 	 */
-	public void addWeapon(Room.WEAPON weapon){
+	public void addWeapon(WEAPON weapon){
 		// needs some consideration
 		
 		this.weapons.add(weapon);
@@ -89,7 +81,7 @@ public class Room {
 	 * Removes a weapon from the room.
 	 * @param The weapon to remove from the room.
 	 */
-	public void removeWeapon(Room.WEAPON weapon){
+	public void removeWeapon(WEAPON weapon){
 		// needs some consideration
 		
 		if(!this.weapons.contains(weapon)){
