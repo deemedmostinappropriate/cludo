@@ -143,7 +143,7 @@ public class Game {
 
 	public static void main(String[] args){
 		int players = 0;
-		Scanner s = new Scanner(System.in);;
+		Scanner s = new Scanner(System.in);
 		System.out.println("Welcome to Cluedo");
 		System.out.println("How many people are playing? (enter a number between 3 and 6):");
 		// Makes sure the number of players is in the range of 3-6.
