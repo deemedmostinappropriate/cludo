@@ -3,7 +3,7 @@
  * @author Daniel Anastasi
  *
  */
-public class Character {
+public class Character implements Piece{
 
 	private int x, y;
 	public final String NAME;
