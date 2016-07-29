@@ -43,7 +43,6 @@ public class Player {
 	 */
 	public boolean move(int diceroll, int x, int y, Board board){
 		 //////MAJOR BREAkTHROUGH, move the player one step at a time. bypass most checks :D
-		
 		//Bad/false cases:
 		// x,y are outside the board range
 		if(!board.inRange(x, y)){
@@ -53,12 +52,12 @@ public class Player {
 		if(x == character.getX() && y == character.getY()){
 			return false;
 		}
-		////Blatant distance issue
-		// x - diceroll > current x
-		// x + diceroll < current x
-		// y - diceroll > current y
-		// y + diceroll < current y
 		
+		// false if taking more than one step:
+		if(x != character.getX() - 1 || x != character.getX() + 1
+				|| y != character.getY() - 1 || x != character.getY() + 1){
+			return false;
+		}
 		//total distance moved is less than diceroll, and new position is not in a room
 		
 		
