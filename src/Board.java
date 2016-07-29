@@ -165,8 +165,11 @@ public class Board {
 				parseDoor(scan);		//parses the line to create a door.
 			}
 			
-		}catch(IOException e){throw new Error(e);}
-		finally{scan.close();}
+		} catch(IOException e){
+			throw new Error(e);
+		} finally{
+			if (scan != null) scan.close();
+		}
 
 	}
 
