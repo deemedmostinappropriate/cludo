@@ -1,18 +1,39 @@
 import java.util.HashSet;
+import java.util.List;
+import java.util.Scanner;
 import java.util.Set;
 
 public class Player {
 
-	private Character character;
+	private Character character = null;
 	private Set<Room> knownRooms;
 	private Set<Character> knownCharacters;
 	private Set<WEAPON> knownWeapons;
+	public final int PLAYER_NUM;
 	
-	public Player(Character ch){
-		this.character = ch;
+	public Player(int playerNumber, List<Character> freeCharacters){
+		PLAYER_NUM = playerNumber;
 		this.knownRooms = new HashSet<>();
 		this.knownCharacters = new HashSet<>();
 		this.knownWeapons = new HashSet<>();
+		
+		char c = '\0';
+		Scanner scan = new Scanner(System.in);
+		//Requests player to choose character from list of free characters.
+		while(this.character == null){
+			System.out.printf("Player %d, please choose your character:\n", PLAYER_NUM);
+			for(int i = 0; i < freeCharacters.size(); i++){
+				System.out.printf("(%c) %s\n",'a'-i, freeCharacters.get(i).NAME); 	//e.g (a)Colonel Mustard
+			}
+			c = (char) scan.nextInt();
+			if('a'-c < freeCharacters.size())
+				this.character = freeCharacters.get('a'-c);
+			else
+				System.out.println("Sorry, your choice is not valid. Please try again.");
+		}
+		if(this.character != null)
+			System.out.println(this.character.NAME);
+		
 	}
 	
 	/**
@@ -33,6 +54,7 @@ public class Player {
 			throw new IllegalArgumentException("Argument cannot be learnt by Player: Type incorrect");
 		}
 	}
+	
 	
 	/**
 	 * Moves the player's piece on the board.
