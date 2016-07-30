@@ -3,13 +3,13 @@
  * @author Daniel Anastasi
  *
  */
-public class Card{
+public interface Card{
 	/**
 	 * The six weapon cards.
 	 * @author Daniel Anastasi
 	 *
 	 */
-	public enum WEAPON{
+	public enum WEAPON implements Card{
 		ROPE, DAGGER, CANDLESTICK, REVOLVER, LEADPIPE, SPANNER;
 	}
 	
@@ -18,8 +18,8 @@ public class Card{
 	 * @author Daniel Anastasi
 	 *
 	 */
-	public enum ROOM{
-		HALL, DINING, BILLIARD, CONSERVATORY, BALL, LIBRARY, STUDY, LOUNGE, KITCHEN;
+	public enum ROOM implements Card{
+		LOUNGE, DINING, KITCHEN, BALL, CONSERVATORY, BILLIARD, LIBRARY, STUDY, HALL;		
 	}
 	
 	/**
@@ -27,7 +27,10 @@ public class Card{
 	 * @author Daniel Anastasi
 	 *
 	 */
-	public enum CHAR{
-		SCARLET, MUSTARD, WHITE, PLUM, GREEN, PEACOCK;
+	public enum CHARACTER implements Card{
+		MISS_SCARLET, COL_MUSTARD, MRS_WHITE, MR_GREEN, MRS_PEACOCK, PROF_PLUM;
 	}
+	
+	
+	
 }
