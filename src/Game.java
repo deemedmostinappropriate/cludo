@@ -1,7 +1,11 @@
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
+
+import Card.CHARACTER;
 
 //package assignment1.cluedo;
 
@@ -11,14 +15,14 @@ public class Game {
 	private int numPlayers;
 	private Board board;
 	private Player currentPlayer = null;
-	private Character murderer = null;
-	private Room murderRoom = null;
-	private WEAPON murderWeapon = null;
+	private Card.CHARACTER murderer = null;
+	private Card.ROOM murderRoom = null;
+	private Card.WEAPON murderWeapon = null;
 	private List<Player> players;
-	
-	
+
+
 	public Game(){
-		int numPlayers = 0;
+		int numPlayers = 0, rand = 0;
 		scan = new Scanner(System.in);
 		System.out.println("Welcome to Cluedo");
 		System.out.println("How many people are playing? (enter a number between 3 and 6):");
@@ -29,9 +33,6 @@ public class Game {
 				System.out.println("Please enter a number between 3 and 6:");
 			}
 		}
-
-		
-		
 		this.numPlayers = numPlayers;
 		this.board = new Board();//Set up board
 		this.players = new ArrayList<Player>();
@@ -44,13 +45,16 @@ public class Game {
 		for(int i = 0; i < numPlayers; i++){
 			players.add(new Player(i+1, freeCharacters, scan));	//The player chooses which character to use from the list.
 		}
-			
-		//Teach players about what was not involved in the murder: Rooms, characters, weapons.
-		//Chooses character, weapon, and room for murderer, murder weapon and murder room.
-		//
-		//Distributes weapons around rooms.
+		int startingPlayer = assignCards();	//Assigns all cards in the game.
 		
-		
+		List<WEAPON> weaponPieces = Arrays.asList(WEAPON.values());
+		//distribute weapons between rooms
+		for(Room r : this.board.getRooms()){
+			rand = (int)Math.random()*weaponPieces.size();	//index of the weapon
+			r.addWeapon(weaponPieces.get(rand));			//adds a weapon to the room
+			weaponPieces.remove(rand);						//removes the weapon from the list of weapon pieces.
+		}
+
 		run();
 		scan.close();				// closes the scanner after running the game.
 	}
@@ -69,50 +73,53 @@ public class Game {
 			}
 			System.out.println();
 		}
-		*/
-		
+		 */
+
 		while(true){
-			
-			
+
+
 			//exit loop if player has won via correct accusation.
 			//exit loop if only one player remains.
-			
+
 			//Changes currentPlayer for next round.
 		}
-		
+
 	}
 
-	
+
 	/**
 	 * A suggestion made by the player to learn more about the murder.
 	 * @param The player who made the suggestion
-	 * @param The name of the character provided by the player.
-	 * @param The name of the room provided by the player.
-	 * @param The name of the weapon provided by the player.
+	 * @param An integer representing the character provided by the player.
+	 * @param An integer representing the room provided by the player.
+	 * @param TAn integer representing the weapon provided by the player.
 	 * @return A string detailing why the method was unsuccessful. Is null if there was no issue.
 	 */
-	private String suggestion(Player p, String characterName, String roomName, String weaponName){
-		Character character = this.board.findCharacter(characterName);
-		Room room = this.board.findRoom(roomName);
-		WEAPON weapon = WEAPON.valueOf(weaponName);
+	private String suggestion(Player p, int characterChoice, int roomChoice, int weaponChoice){
+		if(characterChoice < 0 || characterChoice >=  Card.CHARACTER.values().length)
+			return "Character could not be found, please try again.";
+		if(roomChoice < 0 || characterChoice >=  Card.ROOM.values().length)
+			return "Room could not be found, please try again.";
+		if(weaponChoice < 0 || characterChoice >=  Card.WEAPON.values().length)
+			return "Weapon could not be found, please try again.";
 		
-		if(character == null)return "Character could not be found, please try again.";
-		else if(room == null)return "Room could not be found, please try again.";
-		else if(weapon == null)return "Weapon could not be found, please try again.";
+		Character character = this.board.getCharacters().get(characterChoice);
+		Room room = this.board.getRooms().get(roomChoice);
+		WEAPON weapon = WEAPON.values()[weaponChoice];
 		
 		changeCharacterRoom(character, room);
-	
+
 		this.board.getRoomFromWeapon(weapon).removeWeapon(weapon);	//Removes the weapon from the old room
 		room.addWeapon(weapon);										//Moves the weapon to the new room.
 		this.board.setRoomFromWeapon(weapon, room);					//Changes mapping of weapon -> room in board.
-		
-		p.learn(room);				//Adds the Room to the player's set of known Rooms
-		p.learn(character);			//Adds the Character to the player's set of known Characters
-		p.learn(weapon);			//Adds the Weapon to the player's set of known Weapons
-		
+
+		p.learn(Card.ROOM.values()[roomChoice]);				//Adds the Room to the player's set of known Rooms
+		p.learn(Card.CHARACTER.values()[characterChoice]);			//Adds the Character to the player's set of known Characters
+		p.learn(Card.WEAPON.values()[weaponChoice]);			//Adds the Weapon to the player's set of known Weapons
+
 		return null;
 	}
-	
+
 	/**
 	 * Changes the Character.room field to the new room.
 	 * Removes the character from any room they were in.
@@ -128,7 +135,7 @@ public class Game {
 		character.setRoom(newRoom);								//Changes characters record of room.
 		newRoom.addCharacter(character);						//Moves character to the new room.
 	}
-	
+
 	/**
 	 * Called when a player chooses to make an accusation about the murder.
 	 * If they guess correctly they win the game, otherwise they lose and the game continues without them.
@@ -138,11 +145,11 @@ public class Game {
 	 * @param The proposed murder weapon.
 	 * @return A string message telling the player the result of their accusation.
 	 */
-	private String accusation(Player p, String characterName, String roomName, String weaponName){
+	private String accusation(Player p, int characterChoice, int roomChoice, int weaponChoice){
 		String result = null;
-		Character character = this.board.findCharacter(characterName);
-		Room room = this.board.findRoom(roomName);
-		WEAPON weapon = WEAPON.valueOf(weaponName);
+		Card.CHARACTER character = Card.CHARACTER.values()[characterChoice];
+		Card.ROOM room = Card.ROOM.values()[roomChoice];
+		Card.WEAPON weapon = Card.WEAPON.values()[weaponChoice];
 		if(character != this.murderer 
 				|| room != this.murderRoom
 				|| weapon != this.murderWeapon){
@@ -153,7 +160,80 @@ public class Game {
 			result = "CONGRATULATIONS :D  YOU WIN!!!!!";
 		return result;
 	}
+
 	
+	
+	/**
+	 * Assigns the solution cards, and assigns all other cards to player's hands.
+	 * @return The index of the player to start the game.
+	 */
+	private int assignCards(){
+		List<Card> allCards = new ArrayList<Card>();	// a list for all cards to distribute
+		List<Card.CHARACTER> characters =  Arrays.asList((Card.CHARACTER.values())); 	// a list for all character cards to distribute.
+		List<Card> weapons =  Arrays.asList((Card.WEAPON.values()));	// a list for all weapon cards to distribute.
+		List<Card> rooms =  Arrays.asList((Card.ROOM.values()));	// a list for all room cards to distribute.
+
+		//Chooses character, weapon, and room for murderer, murder weapon and murder room.
+
+		this.murderer = (Card.CHARACTER) assignMurderCard(characters, allCards);
+		this.murderRoom = (Card.ROOM) assignMurderCard(rooms, allCards);
+		this.murderWeapon = (Card.WEAPON) assignMurderCard(weapons, allCards);
+		if(murderer == null || murderRoom == null|| murderWeapon == null)
+			throw new Error("Card could not be assigned for solution");
+		Card[][] hands = new Card[this.numPlayers][this.numPlayers / 18];	//player hands
+		int startingPlayer = fillHand(hands, allCards);
+		// Passes the hands to their respective players.
+		for(int i = 0; i < this.numPlayers; i++){
+			this.players.get(i).setHand(hands[i]);
+		}
+		
+		return startingPlayer;
+	}
+
+	/**
+	 * Distributes cards from the master list across all hands.
+	 * @param 2D array of Cards, the hands to fill.
+	 * @param The list of cards to distribute.
+	 * @return Index of the player to start the game.
+	 */
+	private int fillHand(Card[][] hands, List<Card> master){
+		int start = 0, handIndex = 0, index = 0, mIndex = 0;
+		
+		while(master.size() > 0){
+			for(index = 0; index < hands.length; index++){
+				mIndex = (int)Math.random()*master.size();
+				hands[index][handIndex] = master.get(mIndex);	//adds a random card to hand i.
+			}
+			handIndex++;
+		}
+		// Finds the starting player based on who was last dealt to.
+		if(index == hands.length - 1){
+			start = 0;
+		}
+		else{
+			start = index +1;
+		}
+		return start;
+	}
+	
+	/**
+	 * Chooses a card at random from the selection list. 
+	 * All other cards in the list are added to the master list.
+	 * @param <T>
+	 * @param A list of cards to select from
+	 * @param A master list of cards
+	 * @return The chosen card
+	 */
+	private Card assignMurderCard(List<? extends Card> selection, List<Card> master){
+		Card chosen = null;
+		int index = 0;
+		index = (int)Math.random() * selection.size();
+		chosen = selection.get(index);			// The chosen card
+		selection.remove(index);				// Removes the chosen  card from the list.
+		master.addAll(selection); 			//puts the cards in the master list
+		return chosen;
+	}
+
 
 	public static void main(String[] args){
 		new Game();
