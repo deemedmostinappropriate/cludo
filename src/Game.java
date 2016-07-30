@@ -7,6 +7,7 @@ import java.util.Scanner;
 
 public class Game {
 
+	public static Scanner scan;					//Scanner for use in any input scanning, including use by other objects.
 	private int numPlayers;
 	private Board board;
 	private Player currentPlayer = null;
@@ -16,18 +17,42 @@ public class Game {
 	private List<Player> players;
 	
 	
-	public Game(int numPlayers){
-		this.numPlayers = numPlayers;
-		this.players = new ArrayList<Player>();
+	public Game(){
+		int numPlayers = 0;
+		scan = new Scanner(System.in);
+		System.out.println("Welcome to Cluedo");
+		System.out.println("How many people are playing? (enter a number between 3 and 6):");
+		// Makes sure the number of players is in the range of 3-6.
+		while(numPlayers < 3 || numPlayers > 6){
+			numPlayers = scan.nextInt();
+			if(numPlayers < 3 || numPlayers > 6){
+				System.out.println("Please enter a number between 3 and 6:");
+			}
+		}
+
 		
+		
+		this.numPlayers = numPlayers;
+		this.board = new Board();//Set up board
+		this.players = new ArrayList<Player>();
+
+		// Compiles list of free characters
+		List<Character> freeCharacters = new ArrayList<Character>();
+		freeCharacters.addAll(this.board.getCharacters());	//adds all characters to the list.
+
 		//Set up players
+		for(int i = 0; i < numPlayers; i++){
+			players.add(new Player(i+1, freeCharacters, scan));	//The player chooses which character to use from the list.
+		}
+			
 		//Teach players about what was not involved in the murder: Rooms, characters, weapons.
 		//Chooses character, weapon, and room for murderer, murder weapon and murder room.
 		//
 		//Distributes weapons around rooms.
 		
-		this.board = new Board();//Set up board
+		
 		run();
+		scan.close();				// closes the scanner after running the game.
 	}
 
 	
@@ -35,6 +60,7 @@ public class Game {
 	 * Runs the game loop.
 	 */
 	public void run(){
+		/*
 		// Array input test
 		int[][] b = this.board.getBoard();
 		for(int i = 0; i < b.length; i++){
@@ -43,7 +69,7 @@ public class Game {
 			}
 			System.out.println();
 		}
-		
+		*/
 		
 		while(true){
 			
@@ -130,21 +156,7 @@ public class Game {
 	
 
 	public static void main(String[] args){
-		int players = 0;
-		Scanner s = new Scanner(System.in);
-		System.out.println("Welcome to Cluedo");
-		System.out.println("How many people are playing? (enter a number between 3 and 6):");
-		// Makes sure the number of players is in the range of 3-6.
-		while(players < 3 || players > 6){
-			players = s.nextInt();
-			if(players < 3 || players > 6){
-				players = 0;
-				System.out.println("Please enter a number between 3 and 6:");
-			}
-		}
-
-		s.close();				// closes the scanner.
-		new Game(players);
+		new Game();
 	}
 
 
