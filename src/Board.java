@@ -38,9 +38,15 @@ public class Board {
 		this.rooms.add(new Room("STUDY"));
 		this.rooms.add(new Room("HALL"));			
 		parseSquareFile();	//Adds squares to the board.
-
-
 		parseDoorFile();	//Adds doors to the board and rooms.
+		//Sets up characters
+		this.characters.add(new Character(6,0,"Miss Scarlett"));
+		this.characters.add(new Character(0,7,"Col Mustard"));
+		this.characters.add(new Character(9,24,"Mrs White"));
+		this.characters.add(new Character(14,24,"Mr Green"));
+		this.characters.add(new Character(23,18,"Mrs Peacock"));
+		this.characters.add(new Character(23,5,"Prof Plum"));
+		
 	}
 
 	/**
@@ -49,6 +55,14 @@ public class Board {
 	 */
 	public int[][] getBoard(){
 		return this.board;
+	}
+	
+	/**
+	 * Returns the set of all character pieces.
+	 * @return
+	 */
+	public Set<Character> getCharacters(){
+		return this.characters;
 	}
 	
 	/**
