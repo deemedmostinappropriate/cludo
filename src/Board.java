@@ -13,8 +13,8 @@ import java.util.Set;
 public class Board {
 	private int[][] board;								// filled with 1's where a traversable square is.
 	private List<Room> rooms;
-	private Door[][] doors;								// Door locations.
-	private Set<Character> characters;					// A set of character pieces on the board.
+	private Door[][] doors;								// Door locations.		
+	private List<Character> characters;					// A set of character pieces on the board.
 	private Map<WEAPON, Room> roomsFromWeapons; 	// So that we can quickly find where the weapon is.
 	private Map<String, Room> roomFromCharacter;		//Quickly find which room a character is in.
 	
@@ -24,7 +24,7 @@ public class Board {
 		this.board = new int[SIZE][SIZE];
 		this.rooms = new ArrayList<Room>();
 		this.doors = new Door[SIZE][SIZE];
-		this.characters = new HashSet<>();
+		this.characters = new ArrayList<>();
 		this.roomsFromWeapons = new HashMap<>();
 		this.roomFromCharacter = new HashMap<>();
 		//Adds rooms to the board.
@@ -61,7 +61,7 @@ public class Board {
 	 * Returns the set of all character pieces.
 	 * @return
 	 */
-	public Set<Character> getCharacters(){
+	public List<Character> getCharacters(){
 		return this.characters;
 	}
 	
@@ -77,6 +77,13 @@ public class Board {
 				&& x <= SIZE && y <= SIZE;
 	}
 	
+	/**
+	 * Return the list of rooms.
+	 * @return A list of rooms.
+	 */
+	public List<Room> getRooms(){
+		return this.rooms;
+	}
 	/**
 	 * Returns the room which a particular weapon piece resides.
 	 * @param The weapon
@@ -113,31 +120,7 @@ public class Board {
 		this.roomsFromWeapons.put(weapon, room);
 	}
 	
-	/**
-	 * Finds the room with a name that matches the argument.
-	 * @param The name to match;
-	 * @return The room which matches the name;
-	 */
-	public Room findRoom(String name){
-		for(Room room : this.rooms){
-			if(room.NAME.equals(name))
-				return room;
-		}
-		return null;
-	}
-	
-	/**
-	 * Finds the room with a name that matches the argument.
-	 * @param The name to match;
-	 * @return The character which matches the name;
-	 */
-	public Character findCharacter(String name){
-		for(Character character : this.characters){
-			if(character.NAME.equals(name))
-				return character;
-		}
-		return null;
-	}
+
 
 
 	/**
