@@ -1,8 +1,7 @@
 import java.io.IOException;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.Set;
 
 /**
  * Stores all player data, including the cards they know about, their character, and their player number.
@@ -12,16 +11,17 @@ import java.util.Set;
 public class Player {
 
 	private Character character = null;
-	private Set<Room> knownRooms;
-	private Set<Character> knownCharacters;
-	private Set<WEAPON> knownWeapons;
+	private Card[] hand = null;
+	private List<Card.ROOM> knownRooms;
+	private List<Card.CHARACTER> knownCharacters;
+	private List<Card.WEAPON> knownWeapons;
 	public final int PLAYER_NUM;
 
 	public Player(int playerNumber, List<Character> freeCharacters, Scanner scan){
 		PLAYER_NUM = playerNumber;
-		this.knownRooms = new HashSet<>();
-		this.knownCharacters = new HashSet<>();
-		this.knownWeapons = new HashSet<>();
+		this.knownRooms = new ArrayList<>();
+		this.knownCharacters = new ArrayList<>();
+		this.knownWeapons = new ArrayList<>();
 		int choice = 0;
 		String str = null;
 		char c = '\0';
@@ -32,10 +32,8 @@ public class Player {
 			for(int i = 0; i < freeCharacters.size(); i++){
 				System.out.printf("(%c) %s\n",'a'+i, freeCharacters.get(i).NAME); 	//e.g (a)Colonel Mustard
 			}
-
 			str = scan.next();
-			c = str.charAt(0);
-
+			c = str.charAt(0);	
 			choice = c - 'a';		//the index of the player's choice in the list.
 			if(choice < freeCharacters.size()){
 				this.character = freeCharacters.get(choice);	//Sets the character
@@ -49,20 +47,32 @@ public class Player {
 			System.out.printf("Player %d chose %s\n", PLAYER_NUM, this.character.NAME);
 
 	}
+	
+	/**
+	 * Gives the player their hand of cards.
+	 * @param The hand, an array of Cards
+	 */
+	public void setHand(Card[] hand){
+		if(this.hand != null)
+			return;
+		this.hand = hand;
+		for(Card card: hand)
+			learn(card);	//adds the card to the list of the player's known cards.
+	}
 
 	/**
 	 * Adds a new item to the sets of what the player knows regarding the murder.
 	 * @param An object that must be of type Room, Character, or Room.WEAPON.
 	 */
-	public void learn(Object o){
-		if(o instanceof Room){
-			this.knownRooms.add((Room)o);
+	public void learn(Card card){
+		if(card instanceof Card.ROOM){
+			this.knownRooms.add((Card.ROOM)card);
 		}
-		else if(o instanceof Character){
-			this.knownCharacters.add((Character)o);
+		else if(card instanceof Card.CHARACTER){
+			this.knownCharacters.add((Card.CHARACTER)card);
 		}
-		else if(o instanceof WEAPON){
-			this.knownWeapons.add((WEAPON)o);
+		else if(card instanceof Card.WEAPON){
+			this.knownWeapons.add((Card.WEAPON)card);
 		}
 		else{
 			throw new IllegalArgumentException("Argument cannot be learnt by Player: Type incorrect");
