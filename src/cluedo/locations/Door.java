@@ -1,3 +1,4 @@
+package cluedo.locations;
 
 /**
  * Used to identify the square outside a Room. The door has a direction relating it to the position of the room.

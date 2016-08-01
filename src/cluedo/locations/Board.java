@@ -1,21 +1,25 @@
+package cluedo.locations;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.Set;
+
+import cludo.Card;
+import cludo.Card.WEAPON;
+import cludo.pieces.Character;
+import cludo.pieces.Weapon;
 
 public class Board {
 	private int[][] board;								// filled with 1's where a traversable square is.
 	private List<Room> rooms;
 	private Door[][] doors;								// Door locations.		
 	private List<Character> characters;					// A set of character pieces on the board.
-	private Map<WEAPON, Room> roomsFromWeapons; 	// So that we can quickly find where the weapon is.
+	private Map<Weapon, Room> roomsFromWeapons; 	// So that we can quickly find where the weapon is.
 	private Map<String, Room> roomFromCharacter;		//Quickly find which room a character is in.
 	
 	private static final int SIZE = 25;
@@ -89,7 +93,7 @@ public class Board {
 	 * @param The weapon
 	 * @return The room.
 	 */
-	public Room getRoomFromWeapon(WEAPON weapon){
+	public Room getRoomFromWeapon(Weapon weapon){
 		return this.roomsFromWeapons.get(weapon);
 	}
 	
@@ -116,7 +120,7 @@ public class Board {
 	 * @param The weapon
 	 * @param The room
 	 */
-	public void setRoomFromWeapon(WEAPON weapon, Room room){
+	public void setRoomFromWeapon(Weapon weapon, Room room){
 		this.roomsFromWeapons.put(weapon, room);
 	}
 	
@@ -159,9 +163,9 @@ public class Board {
 			while((line = reader.readLine()) != null){
 				scan = new Scanner(line);	// The file scanner.
 				scan.useDelimiter(",");
-				parseDoor(scan);		//parses the line to create a door.
+				parseDoor(scan);			// Parses the line to create a door.
 			}
-			
+			reader.close();
 		} catch(IOException e){
 			throw new Error(e);
 		} finally{

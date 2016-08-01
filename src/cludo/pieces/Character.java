@@ -1,3 +1,6 @@
+package cludo.pieces;
+import cluedo.locations.Room;
+
 /**
  * A character piece on the board.
  * @author Daniel Anastasi

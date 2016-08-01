@@ -1,3 +1,4 @@
+package cludo;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -5,20 +6,37 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 
-import Card.CHARACTER;
+import cludo.Card.CHARACTER;
+import cludo.Card.ROOM;
+import cludo.Card.WEAPON;
+import cludo.pieces.Character;
+import cludo.pieces.Weapon;
+import cluedo.locations.Board;
+import cluedo.locations.Room;
 
 //package assignment1.cluedo;
 
 public class Game {
-
-	public static Scanner scan;					//Scanner for use in any input scanning, including use by other objects.
+	/** Scanner for use in any input scanning, including use by other objects. */
+	public static Scanner scan;
+	
+	/** The amount of players in the current game. */
 	private int numPlayers;
+	
+	/** The board to be interacted with. */
 	private Board board;
+	
+	/** A reference to the player whose turn it is. */
 	private Player currentPlayer = null;
+	
+	/** Holds references to all players currently in a game. */
+	private List<Player> players;
+	
+	/* The game is over when all of these are correctly guessed by the player: */
 	private Card.CHARACTER murderer = null;
 	private Card.ROOM murderRoom = null;
 	private Card.WEAPON murderWeapon = null;
-	private List<Player> players;
+	
 
 
 	public Game(){
@@ -47,7 +65,7 @@ public class Game {
 		}
 		int startingPlayer = assignCards();	//Assigns all cards in the game.
 		
-		List<WEAPON> weaponPieces = Arrays.asList(WEAPON.values());
+		List<Weapon> weaponPieces = Arrays.asList(Weapon.values());
 		//distribute weapons between rooms
 		for(Room r : this.board.getRooms()){
 			rand = (int)Math.random()*weaponPieces.size();	//index of the weapon
@@ -105,7 +123,7 @@ public class Game {
 		
 		Character character = this.board.getCharacters().get(characterChoice);
 		Room room = this.board.getRooms().get(roomChoice);
-		WEAPON weapon = WEAPON.values()[weaponChoice];
+		Weapon weapon = Weapon.values()[weaponChoice];
 		
 		changeCharacterRoom(character, room);
 
@@ -113,9 +131,9 @@ public class Game {
 		room.addWeapon(weapon);										//Moves the weapon to the new room.
 		this.board.setRoomFromWeapon(weapon, room);					//Changes mapping of weapon -> room in board.
 
-		p.learn(Card.ROOM.values()[roomChoice]);				//Adds the Room to the player's set of known Rooms
+		p.learn(Card.ROOM.values()[roomChoice]);					//Adds the Room to the player's set of known Rooms
 		p.learn(Card.CHARACTER.values()[characterChoice]);			//Adds the Character to the player's set of known Characters
-		p.learn(Card.WEAPON.values()[weaponChoice]);			//Adds the Weapon to the player's set of known Weapons
+		p.learn(Card.WEAPON.values()[weaponChoice]);				//Adds the Weapon to the player's set of known Weapons
 
 		return null;
 	}
@@ -154,7 +172,7 @@ public class Game {
 				|| room != this.murderRoom
 				|| weapon != this.murderWeapon){
 			result = "Sorry, you have guessed incorrectly. You are out of the game. :(";
-			this.players.remove(this.currentPlayer);	//removes the current player from the game.
+			this.players.remove(p);	//removes the current player from the game.
 		}
 		else
 			result = "CONGRATULATIONS :D  YOU WIN!!!!!";
@@ -230,7 +248,7 @@ public class Game {
 		index = (int)Math.random() * selection.size();
 		chosen = selection.get(index);			// The chosen card
 		selection.remove(index);				// Removes the chosen  card from the list.
-		master.addAll(selection); 			//puts the cards in the master list
+		master.addAll(selection); 				// Puts the cards in the master list
 		return chosen;
 	}
 

@@ -1,3 +1,4 @@
+package cludo;
 /**
  * Represents cards in the player's hands, and the cards in the solution.
  * @author Daniel Anastasi

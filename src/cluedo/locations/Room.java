@@ -1,5 +1,11 @@
+package cluedo.locations;
 import java.util.List;
 import java.util.Set;
+
+import cludo.Card;
+import cludo.pieces.Character;
+import cludo.pieces.Weapon;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 /**
@@ -11,14 +17,14 @@ import java.util.HashSet;
 public class Room {
 
 	public final String NAME;
-	private Set<WEAPON> weapons = null;
+	private Set<Weapon> weapons = null;
 	private List<Door> doors = null;
 	private Set<Character> characters = null;
 	
 
 	public Room(String name){
 		this.NAME = name;
-		this.weapons = new HashSet<WEAPON>();
+		this.weapons = new HashSet<Weapon>();
 		this.doors = new ArrayList<Door>();
 		this.characters = new HashSet<Character>();
 	}
@@ -27,7 +33,7 @@ public class Room {
 	 * Returns a list of the weapons in this room.
 	 * @return A list of the weapons in this room.
 	 */
-	public Set<WEAPON> getWeapons(){
+	public Set<Weapon> getWeapons(){
 		return this.weapons;
 	}
 	
@@ -59,7 +65,7 @@ public class Room {
 	 * Adds a weapon to the room.
 	 * @param The weapon to add to the room.
 	 */
-	public void addWeapon(WEAPON weapon){
+	public void addWeapon(Weapon weapon){
 		// needs some consideration
 		
 		this.weapons.add(weapon);
@@ -81,7 +87,7 @@ public class Room {
 	 * Removes a weapon from the room.
 	 * @param The weapon to remove from the room.
 	 */
-	public void removeWeapon(WEAPON weapon){
+	public void removeWeapon(Weapon weapon){
 		// needs some consideration
 		
 		if(!this.weapons.contains(weapon)){
