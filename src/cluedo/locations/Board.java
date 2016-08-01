@@ -15,13 +15,25 @@ import cluedo.pieces.Character;
 import cluedo.pieces.Weapon;
 
 public class Board {
-	private int[][] board;								// filled with 1's where a traversable square is.
-	private List<Room> rooms;
-	private Door[][] doors;								// Door locations.		
-	private List<Character> characters;					// A set of character pieces on the board.
-	private Map<Weapon, Room> roomsFromWeapons; 	// So that we can quickly find where the weapon is.
-	private Map<String, Room> roomFromCharacter;		//Quickly find which room a character is in.
+	/** This holds a value of 1 at any space where the character can move to. */
+	private int[][] board;
 	
+	/** The list of all rooms in the game. */
+	private List<Room> rooms;
+	
+	/** Holds the x,y locations of all doors. */
+	private Door[][] doors;
+	
+	/** Lists the characters on the board, used to access their locations. */
+	private List<Character> characters;
+	
+	/** A map of weapons and the room they are in. */
+	private Map<Weapon, Room> roomsFromWeapons;
+	
+	/** A map of Characters and the room they are currently in. Matches to Character.NAME. */
+	private Map<String, Room> roomFromCharacter;
+	
+	/** The size of the game board in total */
 	private static final int SIZE = 25;
 	
 	public Board(){

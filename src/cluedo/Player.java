@@ -94,29 +94,33 @@ public class Player {
 	 * @param The game board.
 	 * @return Whether or not the player is able to make the move.
 	 */
-	public boolean move(int diceroll, int x, int y, Board board){
-		//////MAJOR BREAkTHROUGH, move the player one step at a time. bypass most checks :D
-		//Bad/false cases:
-		// x,y are outside the board range
-		if(!board.inRange(x, y)){
+	public boolean move(char direction, Board board){
+		// Get current x,y of the players Character:
+		int newX = character.getX();
+		int newY = character.getY();
+		
+		switch(direction){
+		case 'N':
+		case 'n':
+			++newX;
+			break;
+		case 'E':
+		case 'e':
+			++newY;
+			break;
+		case 'S':
+		case 's':
+			--newX;
+			break;
+		case 'W':
+		case 'w':
+			--newY;
+			break;
+		}
+		// False if the square is non-traversable:
+		if(board.getBoard()[newX][newY] == 0){
 			return false;
 		}
-		// x = current x and y = current y.  new position is same as old.
-		if(x == character.getX() && y == character.getY()){
-			return false;
-		}
-
-		// false if taking more than one step:
-		if(x != character.getX() - 1 || x != character.getX() + 1
-				|| y != character.getY() - 1 || x != character.getY() + 1){
-			return false;
-		}
-		//total distance moved is less than diceroll, and new position is not in a room
-
-
-		//if endpoint < diceroll somehow, and it is not in a room.
-
-		// When all false move conditions are exhausted, return success:
 		return true;
 	}
 }

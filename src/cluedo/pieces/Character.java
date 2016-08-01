@@ -7,7 +7,7 @@ import cluedo.locations.Room;
  *
  */
 public class Character implements Piece{
-
+	
 	private int x, y;
 	public final String NAME;
 	private Room room = null;

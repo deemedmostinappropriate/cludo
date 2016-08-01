@@ -24,20 +24,18 @@ public class Game {
 	private int numPlayers;
 	
 	/** The board to be interacted with. */
-	private Board board;
+	private static Board board;
 	
 	/** A reference to the player whose turn it is. */
-	private Player currentPlayer = null;
+	private static Player currentPlayer = null;
 	
 	/** Holds references to all players currently in a game. */
-	private List<Player> players;
+	private static List<Player> players;
 	
 	/* The game is over when all of these are correctly guessed by the player: */
 	private Card.CHARACTER murderer = null;
 	private Card.ROOM murderRoom = null;
 	private Card.WEAPON murderWeapon = null;
-	
-
 
 	public Game(){
 		int numPlayers = 0, rand = 0;
@@ -59,14 +57,14 @@ public class Game {
 		List<Character> freeCharacters = new ArrayList<Character>();
 		freeCharacters.addAll(this.board.getCharacters());	//adds all characters to the list.
 
-		//Set up players
+		// Set up players
 		for(int i = 0; i < numPlayers; i++){
 			players.add(new Player(i+1, freeCharacters, scan));	//The player chooses which character to use from the list.
 		}
 		int startingPlayer = assignCards();	//Assigns all cards in the game.
 		
 		List<Weapon> weaponPieces = Arrays.asList(Weapon.values());
-		//distribute weapons between rooms
+		// Distribute weapons between rooms
 		for(Room r : this.board.getRooms()){
 			rand = (int)Math.random()*weaponPieces.size();	//index of the weapon
 			r.addWeapon(weaponPieces.get(rand));			//adds a weapon to the room
@@ -81,7 +79,7 @@ public class Game {
 	/**
 	 * Runs the game loop.
 	 */
-	public void run(){
+	public static void run(){
 		/*
 		// Array input test
 		int[][] b = this.board.getBoard();
@@ -94,16 +92,35 @@ public class Game {
 		 */
 
 		while(true){
-
+			int currentPlayerIndex = 0;
 
 			//exit loop if player has won via correct accusation.
+			// --- will be if accusation returns true;
 			//exit loop if only one player remains.
-
-			//Changes currentPlayer for next round.
+			if(players.size() == 1) break;
+			// Changes currentPlayer for next round.
+			// Check if the next player is the beginning of the list of players:
+			if(currentPlayerIndex + 1 == players.size()){
+				currentPlayerIndex = 0;
+				currentPlayer = players.get(currentPlayerIndex);
+			} else{ // Otherwise increment the index and find the next player with it
+				currentPlayer = players.get(++currentPlayerIndex);
+			}
 		}
 
 	}
 
+	/**
+	 * Processes the given players input to translate to their character moving around
+	 * the board. 
+	 * @param player
+	 * @param direction
+	 * @return boolean of whether the move was successful
+	 */
+	private boolean processMove(Player player, char direction){
+		
+		return false;
+	}
 
 	/**
 	 * A suggestion made by the player to learn more about the murder.
@@ -163,20 +180,19 @@ public class Game {
 	 * @param The proposed murder weapon.
 	 * @return A string message telling the player the result of their accusation.
 	 */
-	private String accusation(Player p, int characterChoice, int roomChoice, int weaponChoice){
-		String result = null;
+	private boolean accusation(Player p, int characterChoice, int roomChoice, int weaponChoice){
 		Card.CHARACTER character = Card.CHARACTER.values()[characterChoice];
 		Card.ROOM room = Card.ROOM.values()[roomChoice];
 		Card.WEAPON weapon = Card.WEAPON.values()[weaponChoice];
+		
 		if(character != this.murderer 
 				|| room != this.murderRoom
 				|| weapon != this.murderWeapon){
-			result = "Sorry, you have guessed incorrectly. You are out of the game. :(";
 			this.players.remove(p);	//removes the current player from the game.
+			return false;
 		}
 		else
-			result = "CONGRATULATIONS :D  YOU WIN!!!!!";
-		return result;
+			return true;
 	}
 
 	
