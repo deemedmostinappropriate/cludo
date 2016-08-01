@@ -2,9 +2,9 @@ package cluedo.locations;
 import java.util.List;
 import java.util.Set;
 
-import cludo.Card;
-import cludo.pieces.Character;
-import cludo.pieces.Weapon;
+import cluedo.Card;
+import cluedo.pieces.Character;
+import cluedo.pieces.Weapon;
 
 import java.util.ArrayList;
 import java.util.HashSet;

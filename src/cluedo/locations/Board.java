@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-import cludo.Card;
-import cludo.Card.WEAPON;
-import cludo.pieces.Character;
-import cludo.pieces.Weapon;
+import cluedo.Card;
+import cluedo.Card.WEAPON;
+import cluedo.pieces.Character;
+import cluedo.pieces.Weapon;
 
 public class Board {
 	private int[][] board;								// filled with 1's where a traversable square is.

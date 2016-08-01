@@ -1,14 +1,14 @@
-package cludo;
+package cluedo;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import cludo.Card.CHARACTER;
-import cludo.Card.ROOM;
-import cludo.Card.WEAPON;
-import cludo.pieces.Character;
+import cluedo.Card.CHARACTER;
+import cluedo.Card.ROOM;
+import cluedo.Card.WEAPON;
 import cluedo.locations.Board;
+import cluedo.pieces.Character;
 
 /**
  * Stores all player data, including the cards they know about, their character, and their player number.

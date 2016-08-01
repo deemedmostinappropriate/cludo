@@ -1,4 +1,4 @@
-package cludo.pieces;
+package cluedo.pieces;
 import cluedo.locations.Room;
 
 /**

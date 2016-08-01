@@ -1,4 +1,4 @@
-package cludo.pieces;
+package cluedo.pieces;
 /**
  * A piece on the Cludo board.
  * @author Daniel Anastasi

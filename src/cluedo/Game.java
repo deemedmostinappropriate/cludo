@@ -1,4 +1,4 @@
-package cludo;
+package cluedo;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -6,13 +6,13 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 
-import cludo.Card.CHARACTER;
-import cludo.Card.ROOM;
-import cludo.Card.WEAPON;
-import cludo.pieces.Character;
-import cludo.pieces.Weapon;
+import cluedo.Card.CHARACTER;
+import cluedo.Card.ROOM;
+import cluedo.Card.WEAPON;
 import cluedo.locations.Board;
 import cluedo.locations.Room;
+import cluedo.pieces.Character;
+import cluedo.pieces.Weapon;
 
 //package assignment1.cluedo;
 
