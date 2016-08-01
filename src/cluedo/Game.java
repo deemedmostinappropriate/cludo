@@ -36,8 +36,6 @@ public class Game {
 	private Card.CHARACTER murderer = null;
 	private Card.ROOM murderRoom = null;
 	private Card.WEAPON murderWeapon = null;
-	
-
 
 	public Game(){
 		int numPlayers = 0, rand = 0;
@@ -59,14 +57,14 @@ public class Game {
 		List<Character> freeCharacters = new ArrayList<Character>();
 		freeCharacters.addAll(this.board.getCharacters());	//adds all characters to the list.
 
-		//Set up players
+		// Set up players
 		for(int i = 0; i < numPlayers; i++){
 			players.add(new Player(i+1, freeCharacters, scan));	//The player chooses which character to use from the list.
 		}
 		int startingPlayer = assignCards();	//Assigns all cards in the game.
 		
 		List<Weapon> weaponPieces = Arrays.asList(Weapon.values());
-		//distribute weapons between rooms
+		// Distribute weapons between rooms
 		for(Room r : this.board.getRooms()){
 			rand = (int)Math.random()*weaponPieces.size();	//index of the weapon
 			r.addWeapon(weaponPieces.get(rand));			//adds a weapon to the room
