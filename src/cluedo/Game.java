@@ -91,14 +91,70 @@ public class Game {
 		}
 		 */
 
-		while(true){
-			int currentPlayerIndex = 0;
-
-			//exit loop if player has won via correct accusation.
-			// --- will be if accusation returns true;
-			//exit loop if only one player remains.
-			if(players.size() == 1) break;
-			// Changes currentPlayer for next round.
+		int diceroll = 0;
+		int currentPlayerIndex = 0;
+		
+		currentPlayer = players.get(currentPlayerIndex);
+		
+		while(players.size() > 1){
+			diceroll = diceRoll();
+			// Player x's turn, display roll
+			System.out.println("Player " +  currentPlayer.PLAYER_NUM + "'s turn: ");
+			
+			// Display option if on square: move options
+			if(currentPlayer.characterLocation() == null){
+				System.out.println("    Your Dice Roll is: " + diceroll);
+				
+				char dir;
+				Scanner s = new Scanner(System.in);
+				
+				System.out.println("Use W A S D to move, press enter to apply: ");
+				while(diceroll > 0){
+					dir = s.next().charAt(0);
+					// Move this players character based on the input char:
+					try {
+						if(currentPlayer.move(dir, board)){
+							// Take away from remaining moves:
+							--diceroll;
+							// Print success and the new location:
+							System.out.println("Character " + currentPlayer.getCharacter().NAME
+									+ " is now at (" + currentPlayer.getCharacter().getX() + ","
+									+ currentPlayer.getCharacter().getY() + ") on the board.");
+						} else{
+							// If the place player's character is moving to is not traversable:
+							System.out.println("There is no square to move to in that direction, please try again.");
+							continue;		// Start loop again to receive new input.
+						}
+					} catch (IOException e) {
+						// Catch an exception if the input char from player is not w a s d
+						System.out.println(e.getMessage() + "Please use W A S D.");
+						continue;			// Start loop again to receive new input.
+					}
+					if(diceroll != 0){ // Show moves remaining, only after a successful move:
+						System.out.println("    Moves remaining: " + diceroll);
+					} else{ // Notify the player they have completed their turn if they did not reach a room:
+						System.out.println("Move Turn Complete for Player " + currentPlayer.PLAYER_NUM);
+					}
+				}
+				
+				s.close();
+			}
+			// if in room: display doors(coordinates ?), 
+			// if there are stairs in room: stairs(room)
+			// ------------------------------
+			// if not in room: process move request
+			// if in room:
+				//     door: move to door (subtract from diceroll)
+			// 	    Game.drawBoard // map, pieces.
+			// 	      character.move
+			// 	      Game.changeCharacterRoom(null)
+			//      process moves
+			// 	  if then in room:
+					// 	    ask if they want to make a suggestion or accusation
+			// 	      process
+			//    stairs: move to room (diceroll to zero)
+			//        ask if they want to make a suggestion or accusation
+			
 			// Check if the next player is the beginning of the list of players:
 			if(currentPlayerIndex + 1 == players.size()){
 				currentPlayerIndex = 0;
@@ -268,6 +324,13 @@ public class Game {
 		return chosen;
 	}
 
+	/**
+	 * Returns a random number between 1 and 6 for use as a dice roll.
+	 * @return
+	 */
+	private static int diceRoll(){
+		return (int) (Math.random() * 6);
+	}
 
 	public static void main(String[] args){
 		new Game();

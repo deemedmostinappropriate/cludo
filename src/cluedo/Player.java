@@ -8,6 +8,8 @@ import cluedo.Card.CHARACTER;
 import cluedo.Card.ROOM;
 import cluedo.Card.WEAPON;
 import cluedo.locations.Board;
+import cluedo.locations.Door;
+import cluedo.locations.Room;
 import cluedo.pieces.Character;
 
 /**
@@ -16,12 +18,20 @@ import cluedo.pieces.Character;
  *
  */
 public class Player {
-
+	/** The character piece associated with this Player */
 	private Character character = null;
+	
+	/** Represents the cards in hand. Can be assumed to not contain double-ups
+	 * across all Player objects. */
 	private Card[] hand = null;
+	
+	/* These hold the cards known by an individual player to be in other players hands.
+	 * May have double-ups with other Player objects but not within them. */
 	private List<Card.ROOM> knownRooms;
 	private List<Card.CHARACTER> knownCharacters;
 	private List<Card.WEAPON> knownWeapons;
+	
+	/** The designated turn position  of this player. */
 	public final int PLAYER_NUM;
 
 	public Player(int playerNumber, List<Character> freeCharacters, Scanner scan){
@@ -93,34 +103,71 @@ public class Player {
 	 * @param New y coordinate
 	 * @param The game board.
 	 * @return Whether or not the player is able to make the move.
+	 * @throws IOException 
 	 */
-	public boolean move(char direction, Board board){
+	public boolean move(char direction, Board board) throws IOException{
 		// Get current x,y of the players Character:
 		int newX = character.getX();
 		int newY = character.getY();
 		
+		String dir;
+		
 		switch(direction){
-		case 'N':
-		case 'n':
+		case 'W':
+		case 'w':
 			++newX;
+			dir = "UP";
 			break;
-		case 'E':
-		case 'e':
+		case 'D':
+		case 'd':
 			++newY;
+			dir = "RIGHT";
 			break;
 		case 'S':
 		case 's':
 			--newX;
+			dir = "DOWN";
 			break;
-		case 'W':
-		case 'w':
+		case 'A':
+		case 'a':
 			--newY;
+			dir = "LEFT";
 			break;
+		default:
+			throw new IOException("Input was incorrect.");
+		}
+		
+		// If the player is trying to go into a room while at a door, set
+		// the character to be in that room and return successful move.
+		if(board.getDoor(character.getX(), character.getY()) != null){
+			Door d = board.getDoor(character.getX(), character.getY());
+			character.setRoom(d.getRoom());
+			return true;
 		}
 		// False if the square is non-traversable:
 		if(board.getBoard()[newX][newY] == 0){
 			return false;
 		}
+		
+		// Otherwise, players character is allowed to move:
+		character.setPosition(newX, newY);
 		return true;
+	}
+	
+	/**
+	 * Returns the Room location of this players character, or null if
+	 * not in a Room currently.
+	 * @return
+	 */
+	public Room characterLocation(){
+		return character.getRoom();
+	}
+	
+	/**
+	 * Returns the character object associated with this player.
+	 * @return
+	 */
+	public Character getCharacter(){
+		return this.character;
 	}
 }
