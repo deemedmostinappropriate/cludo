@@ -41,22 +41,23 @@ public class Board {
 	
 	public Board(){
 		this.board = new int[SIZE][SIZE];
-		this.visualBoard = new char [SIZE*2][SIZE];
+		this.visualBoard = new char [SIZE][SIZE*2];
 		this.rooms = new ArrayList<Room>();
 		this.doors = new Door[SIZE][SIZE];
 		this.characters = new ArrayList<>();
 		this.roomsFromWeapons = new HashMap<>();
 		this.roomFromCharacter = new HashMap<>();
 		//Adds rooms to the board.
-		this.rooms.add(new Room("LOUNGE"));
-		this.rooms.add(new Room("DINING_ROOM"));
-		this.rooms.add(new Room("KITCHEN"));
-		this.rooms.add(new Room("BALL_ROOM"));
-		this.rooms.add(new Room("CONSERVATORY"));
-		this.rooms.add(new Room("BILLIARD_ROOM"));
-		this.rooms.add(new Room("LIBRARY"));
-		this.rooms.add(new Room("STUDY"));
-		this.rooms.add(new Room("HALL"));			
+		this.rooms.add(new Room("LOUNGE", new int[]{0,1,2,3,4,5}, new int[]{0,0,0,0,0,0}, new int[]{0,1,2,3,4,5},  new int[]{4,4,4,4,4,4}));
+		this.rooms.add(new Room("DINING_ROOM", new int[]{0,1,2,3,4,5}, new int[]{9,9,9,9,9,9}, new int[]{0,1,2,3,4,0}, new int[]{15,15,15,15,15,14}));
+		this.rooms.add(new Room("KITCHEN", new int[]{1,2,3,1,2,3}, new int[]{18,18,18,19,19,19}, new int[]{0,1,2,3,4,0}, new int[]{23,23,23,23,23,22}));
+		this.rooms.add(new Room("BALL_ROOM", new int[]{13,14,15,16,13,14}, new int[]{20,20,20,20,21,21}, new int[]{13,14,15,16,13,14}, new int[]{17,17,17,17,18,18}));
+		this.rooms.add(new Room("CONSERVATORY", new int[]{18,18,18,19,19,19}, new int[]{21,22,23,21,22,23}, new int[]{21,21,21,22,22,22}, new int[]{21,22,23,21,22,23}));
+		this.rooms.add(new Room("BILLIARD_ROOM", new int[]{18,18,18,19,19,19}, new int[]{12,13,14,12,13,14}, new int[]{21,21,21,22,22,22}, new int[]{13,14,15,13,14,15}));
+		this.rooms.add(new Room("LIBRARY", new int[]{18,18,18,19,19,19}, new int[]{7,8,9,7,8,9}, new int[]{21,21,21,22,22,22}, new int[]{7,8,9,7,8,9}));
+		this.rooms.add(new Room("STUDY", new int[]{17,18,19,17,18,19}, new int[]{2,2,2,1,1,1}, new int[]{20,20,20,21,21,21}, new int[]{2,2,2,1,1,1}));
+		this.rooms.add(new Room("HALL", new int[]{10,11,12,13,10,11}, new int[]{7,7,7,7,6,6}, new int[]{10,11,12,13,10,11}, new int[]{2,2,2,2,1,1}));
+		
 		parseSquareFile();	//Adds squares to the board.
 		parseDoorFile();	//Adds doors to the board and rooms.
 		parseVisualMap();
@@ -95,6 +96,7 @@ public class Board {
 	public List<Character> getCharacters(){
 		return this.characters;
 	}
+	
 	
 	/**
 	 * Returns a boolean of whether or not a given x,y is in range of
@@ -281,7 +283,7 @@ public class Board {
 				// Increments over 2 chars due to spaces.
 				for(int col = 0; col < line.length(); col ++){
 					if(line.charAt(col) != ' ')
-						this.board[row][col] = line.charAt(col);
+						this.visualBoard[row][col] = line.charAt(col);
 				}
 			}
 
