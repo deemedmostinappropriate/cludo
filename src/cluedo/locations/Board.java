@@ -163,12 +163,12 @@ public class Board {
 		//Adds characters
 		for(Character c : this.characters){
 			map[c.getX()][c.getY()] = c.ABBREV.charAt(0);
-			map[c.getX()+1][c.getY()] = c.ABBREV.charAt(1);
+			map[c.getX()][c.getY()+1] = c.ABBREV.charAt(1);
 		}
 		//Adds weapons
 		for(Weapon w : this.roomsFromWeapons.keySet()){
 			map[w.getX()][w.getY()] = w.toString().charAt(0);
-			map[w.getX()+1][w.getY()] = w.toString().charAt(1);
+			map[w.getX()][w.getY()+1] = w.toString().charAt(1);
 		}
 
 		//Prints the array

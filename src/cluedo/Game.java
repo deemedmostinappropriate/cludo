@@ -54,24 +54,22 @@ public class Game {
 		this.board = new Board();//Set up board
 		this.players = new ArrayList<Player>();
 
-		// Compiles list of free characters
 		List<Character> freeCharacters = new ArrayList<Character>();
-		freeCharacters.addAll(this.board.getCharacters());	//adds all characters to the list.
+		freeCharacters.addAll(this.board.getCharacters());		//adds all characters to the list.
 
 		// Set up players
-		for(int i = 0; i < numPlayers; i++){
+		for(int i = 0; i < numPlayers; i++)
 			players.add(new Player(i+1, freeCharacters, scan));	//The player chooses which character to use from the list.
-		}
 		int startingPlayer = assignCards();	//Assigns all cards in the game.
 
+		
 		List<Weapon> weaponPieces =  new ArrayList<>(Arrays.asList(Weapon.values()));
 		// Distribute weapons between rooms
 		for(Room r : this.board.getRooms()){
+			if(weaponPieces.isEmpty())
+				break;
 			rand = (int)(Math.random()*weaponPieces.size());	//index of the weapon
-			r.addWeapon(weaponPieces.get(rand));			//adds a weapon to the room
-
-			//give weapon position based on room
-
+			this.changeWeaponRoom(weaponPieces.get(rand), r); //adds a weapon to the room
 			weaponPieces.remove(rand);						//removes the weapon from the list of weapon pieces.
 		}
 
@@ -315,7 +313,9 @@ public class Game {
 	 */
 	public void changeWeaponRoom(Weapon w, Room r){
 		boolean contains = false;
-		this.board.getRoomFromWeapon(w).removeWeapon(w);	//Removes the weapon from the old room
+		Room oldRoom = this.board.getRoomFromWeapon(w);
+		if(oldRoom != null)
+			oldRoom.removeWeapon(w);	//Removes the weapon from the old room
 		this.board.setRoomFromWeapon(w, r);					//Changes mapping of weapon -> room in board.
 		r.addWeapon(w);										//Moves the weapon to the new room.
 		if(r.getWeapons().isEmpty()){

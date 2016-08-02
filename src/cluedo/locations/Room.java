@@ -129,7 +129,7 @@ public class Room {
 		// needs some consideration
 		
 		if(!this.weapons.contains(weapon)){
-			throw new IllegalArgumentException("Room does not contain weapon.");
+			return;	//needs to be ok to not contain
 		}
 		this.weapons.remove(weapon);
 	}
