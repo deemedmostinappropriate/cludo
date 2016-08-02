@@ -74,6 +74,16 @@ public class Board {
 	}
 	
 	/**
+	 * Returns a door associated with the given x,y or null if it doesn't exist.
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public Door getDoor(int x, int y){
+		if(!this.inRange(x, y)) return null;
+		return doors[x][y];
+	}
+	/**
 	 * Returns the set of all character pieces.
 	 * @return
 	 */
@@ -100,6 +110,7 @@ public class Board {
 	public List<Room> getRooms(){
 		return this.rooms;
 	}
+	
 	/**
 	 * Returns the room which a particular weapon piece resides.
 	 * @param The weapon
@@ -135,8 +146,6 @@ public class Board {
 	public void setRoomFromWeapon(Weapon weapon, Room room){
 		this.roomsFromWeapons.put(weapon, room);
 	}
-	
-
 
 
 	/**
@@ -166,8 +175,7 @@ public class Board {
 	 * Loads the square data from a file.
 	 */
 	private void parseDoorFile(){
-		int x = 0, y = 0, key = 0;
-		String room = null, line = null;
+		String line = null;
 		Scanner scan = null;
 		BufferedReader reader = null;
 		try{
@@ -206,7 +214,7 @@ public class Board {
 
 		switch(key){
 		case 8:
-			door = new Door("UP");	//room is above
+			door = new Door("UP");		//room is above
 			break;
 		case 6:
 			door = new Door("RIGHT");	//room is to the right
