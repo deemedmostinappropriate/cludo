@@ -2,6 +2,7 @@ package cluedo;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -24,18 +25,18 @@ public class Tests {
 	@Test
 	public void setup(){
 		this.game = new Game();
-		this.board = game.board;
+		this.board = game.getBoard();
 		this.player = game.getPlayers().get(0);
 		this.character = player.getCharacter();
 		// Solution implemented properly
-		assertTrue(Game.murderer != null);
-		assertTrue(Game.murderRoom != null);
-		assertTrue(Game.murderWeapon != null);
-		// Hands distributed
+		assertTrue(game.getMurderer() != null);
+		assertTrue(game.getMurderRoom() != null);
+		assertTrue(game.getMurderWeapon() != null);
+		// Hands distributeds
 		int cardsInHands = 0;
 		for(Player p : game.getPlayers()){
-			assertTrue(p.getHand() != null && !p.getHand().isEmpty());		//no players have empty hands
-			cardsInHands += p.getHand();
+			assertTrue(p.getHand() != null && p.getHand().length != 0);		//no players have empty hands
+			cardsInHands += p.getHand().length;
 		}
 		assertTrue(cardsInHands == 18);//all hands total 18 (all cards - solution)
 
@@ -46,28 +47,28 @@ public class Tests {
 	//safe movement in any direction from (5,7)
 
 	@Test
-	public void legalMoves(){
+	public void legalMoves() throws IOException{
 		character.setPosition(5,7);			//sets to safe square
 		//move up ends up in correct square (x,y+1)
-		assert(player.move(1, 'w', board));
+		assert(player.move('w', board));
 		//ToDo:process move		
 		assert(character.getX() == 5 && character.getY() == 8);
 
 		//right ends up in correct square (x+1,y)
 		character.setPosition(5,7);		//resets to safe square
-		assert(player.move(1, 'd', board));
+		assert(player.move('d', board));
 		//ToDo:process move
 		assert(character.getX() == 6 && character.getY() == 7);
 
 		//down ends up in correct square (x,y-1)
 		character.setPosition(5,7);		//resets to safe square
-		assert(player.move(1, 's', board));
+		assert(player.move('s', board));
 		//ToDo:process move
 		assert(character.getX() == 5 && character.getY() == 6);
 
 		//left ends up in correct square (x-1,y)
 		character.setPosition(5,7);		//resets to safe square
-		assert(player.move(1, 'a', board));
+		assert(player.move('a', board));
 		//ToDo:process move
 		assert(character.getX() == 4 && character.getY() == 7);  
 
@@ -75,22 +76,19 @@ public class Tests {
 	}
 
 	@Test
-	public void illegalMoves(){
+	public void illegalMoves() throws IOException{
 		character.setPosition(0,7);		//resets to unsafe square(walls above, below and to left)
-		assertFalse(player.move(1, 'w', board));		//illegal move up into non-room wall
-		assertFalse(player.move(1, 's', board));		//illegal move down into non-room wall
-		assertFalse(player.move(1, 'a', board));		//illegal move into non-room wall
+		assertFalse(player.move('w', board));		//illegal move up into non-room wall
+		assertFalse(player.move('s', board));		//illegal move down into non-room wall
+		assertFalse(player.move('a', board));		//illegal move into non-room wall
 
 		character.setPosition(17, 12);		//resets to unsafe square(wall to right)
-		assertFalse(player.move(1, 'd', board));		//illegal move into room wall on right
+		assertFalse(player.move('d', board));		//illegal move into room wall on right
 
-		assertFalse(player.move(1, 'f', board)); //illegal instruction, letter not a direction.
-		assertFalse(player.move(0, 'a', board));	//illegal move with diceroll of 0.
-
-		assertFalse(player.move(99, 'd', board)); 	//dice roll too high 
+		assertFalse(player.move('f', board)); //illegal instruction, letter not a direction.
 		//board null
 		try{
-			player.move(2, 'd', null);
+			player.move('d', null);
 			fail();
 		}catch(IllegalArgumentException e){}
 	}
@@ -99,16 +97,15 @@ public class Tests {
 	//movement into room:
 	//player is on door square
 	//if player direction is door's direction
-	//then room contains player
-	// and player dice roll == 0        
+	//then room contains player 
 	// room contains player
 
 
 	@Test
-	public void legalRoomTests(){
+	public void legalRoomTests() throws IOException{
 		character.setRoom(null);
 		character.setPosition(6,6);	//door to lounge
-		player.move(5, 's', board);	//processes player request to walk down
+		player.move('s', board);	//processes player request to walk down
 		//ToDo: process movement
 		assertTrue(character.getRoom() != null);		//is in a room.
 		assertTrue(character.getRoom().equals(rooms.get(0))); // is in correct room.
@@ -123,10 +120,10 @@ public class Tests {
 	}
 
 	@Test
-	public void illegalRoomTests(){
+	public void illegalRoomTests()throws IOException {
 		character.setRoom(null);
 		character.setPosition(6,6);	//door to lounge
-		player.move(1, 'a', board);	//processes player request to walk left
+		player.move('a', board);	//processes player request to walk left
 		//ToDo: process movement
 		assertTrue(character.getRoom() == null); //cannot move into lounge by walking left
 
@@ -146,11 +143,11 @@ public class Tests {
 
 	@Test
 	public void legalSuggestionTests(){
-		assertNull(Game.suggestion(player, 0, 0, 0));		//should process properly
+		assertNull(game.suggestion(player, 0, 0, 0));		//should process properly
 		Weapon weapon = Weapon.values()[0];
 		Room room = board.getRooms().get(0);
 		Character character = board.getCharacters().get(0);
-		assertTrue(room.contains(weapon));	//rope should be held in lounge
+		assertTrue(room.getWeapons().contains(weapon));	//rope should be held in lounge
 		assertTrue(board.getRoomFromWeapon(weapon).equals(room));//lounge should be mapped to weapon
 		assertTrue(player.getKnownCharacters().contains(character));
 		assertTrue(player.getKnownRooms().contains(room));
@@ -160,20 +157,20 @@ public class Tests {
 	@Test
 	public void illegalSuggestionTests(){
 		//character selection too low
-		assertTrue(Game.suggestion(player, -1, 0,0).equals("Character could not be found, please try again."));
+		assertTrue(game.suggestion(player, -1, 0,0).equals("Character could not be found, please try again."));
 		//character selection too high
-		assertTrue(Game.suggestion(player, 10, 0,0).equals("Character could not be found, please try again."));
+		assertTrue(game.suggestion(player, 10, 0,0).equals("Character could not be found, please try again."));
 		//room selection too low
-		assertTrue(Game.suggestion(player, 0, -1,0).equals("Room could not be found, please try again."));
+		assertTrue(game.suggestion(player, 0, -1,0).equals("Room could not be found, please try again."));
 		//room selection too high
-		assertTrue(Game.suggestion(player, 0, 10,0).equals("Room could not be found, please try again."));
+		assertTrue(game.suggestion(player, 0, 10,0).equals("Room could not be found, please try again."));
 		//weapon selection too low
-		assertTrue(Game.suggestion(player, 0, 0,-1).equals("Weapon could not be found, please try again."));
+		assertTrue(game.suggestion(player, 0, 0,-1).equals("Weapon could not be found, please try again."));
 		//weapon selection too high
-		assertTrue(Game.suggestion(player, 0, 10,10).equals("Weapon could not be found, please try again."));
+		assertTrue(game.suggestion(player, 0, 10,10).equals("Weapon could not be found, please try again."));
 
 		try{
-			Game.suggestion(null, 0, 0, 0);	// null player
+			game.suggestion(null, 0, 0, 0);	// null player
 			fail();
 		}catch(RuntimeException e){}
 	}
@@ -181,20 +178,20 @@ public class Tests {
 	@Test
 	public void illegalAccusationTests(){
 		//character selection too low
-		assertTrue(Game.accusation(player, -1, 0,0).equals("Character could not be found, please try again."));
+		assertFalse(game.accusation(player, -1, 0,0));
 		//character selection too high
-		assertTrue(Game.accusation(player, 10, 0,0).equals("Character could not be found, please try again."));
+		assertFalse(game.accusation(player, 10, 0,0));
 		//room selection too low
-		assertTrue(Game.accusation(player, 0, -1,0).equals("Room could not be found, please try again."));
+		assertFalse(game.accusation(player, 0, -1,0));
 		//room selection too high
-		assertTrue(Game.accusation(player, 0, 10,0).equals("Room could not be found, please try again."));
+		assertFalse(game.accusation(player, 0, 10,0));
 		//weapon selection too low
-		assertTrue(Game.accusation(player, 0, 0,-1).equals("Weapon could not be found, please try again."));
+		assertFalse(game.accusation(player, 0, 0,-1));
 		//weapon selection too high
-		assertTrue(Game.accusation(player, 0, 10,10).equals("Weapon could not be found, please try again."));
+		assertFalse(game.accusation(player, 0, 10,10));
 
 		try{
-			Game.suggestion(null, 0, 0, 0);	// null player
+			game.suggestion(null, 0, 0, 0);	// null player
 			fail();
 		}catch(RuntimeException e){}
 	}
@@ -202,13 +199,13 @@ public class Tests {
 	@Test
 	public void gameChangeCharacterRoomTests(){
 		try{
-			Game.changeCharacterRoom(null, board.getRooms().get(0));	//should fail for null parameter 1
+			game.changeCharacterRoom(null, board.getRooms().get(0));	//should fail for null parameter 1
 			fail();
 		}catch(Exception e){}
 
 
 		try{
-			Game.changeCharacterRoom(character, null);	
+			game.changeCharacterRoom(character, null);	
 		}catch(Exception e){fail();}	//should not throw an exception.
 	}
 
@@ -232,27 +229,27 @@ public class Tests {
 	public void characterTests(){
 		//construction
 		try{
-			new Character(-1, 5, "");		// x position too low
+			new Character(-1, 5, "", "");		// x position too low
 			fail();
 		}catch(IllegalArgumentException e){}
 
 		try{
-			new Character(25, 5, "");		// x position too high
+			new Character(25, 5, "", "");		// x position too high
 			fail();
 		}catch(IllegalArgumentException e){}
 
 		try{
-			new Character(5, -1, "");		// y position too low
+			new Character(5, -1, "", "");		// y position too low
 			fail();
 		}catch(IllegalArgumentException e){}
 
 		try{
-			new Character(5, 25, "");		// y position too high
+			new Character(5, 25, "", "");		// y position too high
 			fail();
 		}catch(IllegalArgumentException e){}
 
 		try{
-			new Character(5, 25, null);		// name is null
+			new Character(5, 25, null, "");		// name is null
 			fail();
 		}catch(IllegalArgumentException e){}
 
@@ -333,11 +330,6 @@ public class Tests {
 		}catch(IllegalArgumentException e){fail();}  //should not throw exception
 
 		//setRoomFromWeapon
-		try{
-			board.setRoomFromWeapon("sdfsdf", room);		// name wrong
-			fail();
-		}catch(IllegalArgumentException e){}
-
 		try{
 			board.setRoomFromWeapon(null, room);		// name null
 			fail();
