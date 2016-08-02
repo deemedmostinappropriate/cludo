@@ -10,6 +10,7 @@ import cluedo.Card.CHARACTER;
 import cluedo.Card.ROOM;
 import cluedo.Card.WEAPON;
 import cluedo.locations.Board;
+import cluedo.locations.Door;
 import cluedo.locations.Room;
 import cluedo.pieces.Character;
 import cluedo.pieces.Weapon;
@@ -96,21 +97,28 @@ public class Game {
 		
 		currentPlayer = players.get(currentPlayerIndex);
 		
-		while(players.size() > 1){
+		// Scan for input while the game is running:
+		Scanner s = new Scanner(System.in);
+		
+		playerturn: while(players.size() > 1){
+			// Roll dice and display result
 			diceroll = diceRoll();
-			// Player x's turn, display roll
+			// Don't ask about leaving room if they have just entered:
+			boolean roomEntered = false;
+			
 			System.out.println("Player " +  currentPlayer.PLAYER_NUM + "'s turn: ");
 			
-			// Display option if on square: move options
+			// Display and process move options if on a traversable board square:
 			if(currentPlayer.characterLocation() == null){
 				System.out.println("    Your Dice Roll is: " + diceroll);
 				
-				char dir;
-				Scanner s = new Scanner(System.in);
+				char dir;			// Players direction choice goes here (w a s d).
 				
 				System.out.println("Use W A S D to move, press enter to apply: ");
-				while(diceroll > 0){
+				
+				moveturn: while(diceroll > 0){ // TODO: labeled for clarity only, can be removed.
 					dir = s.next().charAt(0);
+					
 					// Move this players character based on the input char:
 					try {
 						if(currentPlayer.move(dir, board)){
@@ -123,23 +131,59 @@ public class Game {
 						} else{
 							// If the place player's character is moving to is not traversable:
 							System.out.println("There is no square to move to in that direction, please try again.");
-							continue;		// Start loop again to receive new input.
+							continue moveturn;		// Start loop again to receive new input.
 						}
 					} catch (IOException e) {
 						// Catch an exception if the input char from player is not w a s d
 						System.out.println(e.getMessage() + "Please use W A S D.");
-						continue;			// Start loop again to receive new input.
+						continue moveturn;			// Start loop again to receive new input.
 					}
 					if(diceroll != 0){ // Show moves remaining, only after a successful move:
 						System.out.println("    Moves remaining: " + diceroll);
-					} else{ // Notify the player they have completed their turn if they did not reach a room:
+					} else if(currentPlayer.characterLocation() != null){
+						// If the move resulted in player entering a room:
+						// Break out of loop immediately, will automatically go to next conditional.
+						roomEntered = true;
+						break moveturn;
+					}
+					else{ // Notify the player they have completed their turn if they did not reach a room:
 						System.out.println("Move Turn Complete for Player " + currentPlayer.PLAYER_NUM);
+					}
+				}				
+			}
+			// Check if in a room, show leave options or 
+			if(currentPlayer.characterLocation() != null){
+				Room currentRoom = currentPlayer.characterLocation();
+				
+				boolean leavingRoom = false;
+				
+				// Only ask the player if they want to leave when they entered in the same turn:
+				if(roomEntered){
+					System.out.println("Do you want to leave the current room? (" + currentRoom.NAME + ") y/n: ");
+					
+					Door exit = null;			// Pull coordinates from the door player is leaving from.
+					char input = s.next().charAt(0);
+					
+					// Print the choices of door when there's more than one:
+					if(currentRoom.getDoors().size() > 1 && (input == 'y' || input == 'Y')){
+						System.out.println("Type the number of the door you want to leave from: ");
+						for(int i = 0; i< currentRoom.getDoors().size(); ++i){
+							System.out.print(i + ": " + reverseDir(currentRoom.getDoors().get(i).ROOM_DIRECTION + "    "));
+							if(i == currentRoom.getDoors().size() - 1) System.out.print('\n');
+						}
+						int r = s.nextInt();
+						
+						exit = currentRoom.getDoors().get(r);
+						// Move to the coordinates of that door on board
+						// Set players room to null
+						
+						// continue with turn from the beginning
+						--diceroll;
+						continue playerturn;
 					}
 				}
 				
-				s.close();
 			}
-			// if in room: display doors(coordinates ?), 
 			// if there are stairs in room: stairs(room)
 			// ------------------------------
 			// if not in room: process move request
@@ -163,7 +207,7 @@ public class Game {
 				currentPlayer = players.get(++currentPlayerIndex);
 			}
 		}
-
+		s.close();
 	}
 
 	/**
@@ -332,6 +376,24 @@ public class Game {
 		return (int) (Math.random() * 6);
 	}
 
+	/**
+	 * Returns a String of the direction corresponding to the reverse of the given 
+	 * direction string. Used with the direction held in Door objects.
+	 * @param dir
+	 * @return
+	 */
+	private static String reverseDir(String dir){
+		switch(dir){
+		case "UP":
+			return "South";
+		case "RIGHT":
+			return "West";
+		case "DOWN":
+			return "North";
+		default:
+			return "East";
+		}
+	}
 	public static void main(String[] args){
 		new Game();
 	}

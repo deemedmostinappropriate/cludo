@@ -7,8 +7,8 @@ package cluedo.locations;
  */
 public class Door{
 
-	private Room room;					//Room must be set after object construction: Cannot be final.
-	public final String ROOM_DIRECTION;		//The direction of Room relative to this Door.
+	private Room room;						// Room must be set after object construction: Cannot be final.
+	public final String ROOM_DIRECTION;		// The direction of Room relative to this Door.
 	
 	public Door(String direction){
 		ROOM_DIRECTION = direction;
