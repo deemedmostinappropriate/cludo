@@ -1,6 +1,6 @@
 package cluedo.locations;
 import java.util.List;
-import java.util.Set;
+
 
 import cluedo.Card;
 import cluedo.pieces.Character;
@@ -17,23 +17,29 @@ import java.util.HashSet;
 public class Room {
 
 	public final String NAME;
-	private Set<Weapon> weapons = null;
+	private List<Weapon> weapons = null;
 	private List<Door> doors = null;
-	private Set<Character> characters = null;
+	private List<Character> characters = null;
+	private int[] weaponPositionsX,  weaponPositionsY; //for mapping placement of weapons in rooms.
+	private int[] charPositionsX, charPositionsY; //for mapping placement of characters in rooms.
 	
 
-	public Room(String name){
+	public Room(String name, int[] weaponX, int[] weaponY, int[] charX, int[] charY){
 		this.NAME = name;
-		this.weapons = new HashSet<Weapon>();
+		this.weaponPositionsX = weaponX;
+		this.weaponPositionsY = weaponY;
+		this.charPositionsX = charX;
+		this.charPositionsY = charY;
+		this.weapons = new ArrayList<>();
 		this.doors = new ArrayList<Door>();
-		this.characters = new HashSet<Character>();
+		this.characters = new ArrayList<>();
 	}
 	
 	/**
 	 * Returns a list of the weapons in this room.
 	 * @return A list of the weapons in this room.
 	 */
-	public Set<Weapon> getWeapons(){
+	public List<Weapon> getWeapons(){
 		return this.weapons;
 	}
 	
@@ -44,13 +50,45 @@ public class Room {
 	public List<Door> getDoors(){
 		return this.doors;
 	}
-	
+
 	/**
-	 * Returns the set of this room's characters.
+	 * Returns the list of this room's characters.
 	 * @return A list of this room's characters.
 	 */
-	public Set<Character> getCharacters(){
+	public List<Character> getCharacters(){
 		return this.characters;
+	}
+
+	/**
+	 * Returns the list of x coordinates for weapon placements.
+	 * @return list of x coordinates for weapon placements.
+	 */
+	public int[] getWeaponPositionsX() {
+		return weaponPositionsX;
+	}
+
+	/**
+	 * Returns the list of y coordinates for weapon placements.
+	 * @return list of y coordinates for weapon placements.
+	 */
+	public int[] getWeaponPositionsY() {
+		return weaponPositionsY;
+	}
+
+	/**
+	 * Returns the list of x coordinates for character placements.
+	 * @return list of x coordinates for character placements.
+	 */
+	public int[] getCharPositionsX() {
+		return charPositionsX;
+	}
+
+	/**
+	 * Returns the list of y coordinates for character placements.
+	 * @return list of y coordinates for character placements.
+	 */
+	public int[] getCharPositionsY() {
+		return charPositionsY;
 	}
 
 	/**
