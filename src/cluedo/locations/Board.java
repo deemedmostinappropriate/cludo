@@ -62,7 +62,7 @@ public class Board {
 		parseDoorFile();	//Adds doors to the board and rooms.
 		parseVisualMap();
 		//Sets up characters
-		this.characters.add(new Character(6,0,"Miss Scarlett", "MS"));
+		this.characters.add(new Character(7,0,"Miss Scarlett", "MS"));
 		this.characters.add(new Character(0,7,"Col Mustard", "CM"));
 		this.characters.add(new Character(9,24,"Mrs White", "MW"));
 		this.characters.add(new Character(14,24,"Mr Green", "MG"));
@@ -162,18 +162,19 @@ public class Board {
 		char[][] map = this.visualBoard.clone();		//Copies board to new array
 		//Adds characters
 		for(Character c : this.characters){
-			map[c.getX()][c.getY()] = c.ABBREV.charAt(0);
-			map[c.getX()][c.getY()+1] = c.ABBREV.charAt(1);
+			map[c.getY()][c.getX()*2] = c.ABBREV.charAt(0);
+			map[c.getY()][c.getX()*2+1] = c.ABBREV.charAt(1);
+			System.out.println(c.getX() + " " + c.getY() + c.NAME);
 		}
 		//Adds weapons
 		for(Weapon w : this.roomsFromWeapons.keySet()){
-			map[w.getX()][w.getY()] = w.toString().charAt(0);
-			map[w.getX()][w.getY()+1] = w.toString().charAt(1);
+			map[w.getY()][w.getX()*2] = w.toString().charAt(0);
+			map[w.getY()][w.getX()*2+1] = w.toString().charAt(1);
 		}
 
 		//Prints the array
-		for(int i = 0; i < map.length; i++){
-			for(int j = 0; j < map[0].length; j++){
+		for(int i = map.length-1; i >= 0; --i){
+			for(int j = 0; j < map[i].length; ++j){
 				System.out.print(map[i][j]);
 			}
 			System.out.println();
@@ -260,10 +261,10 @@ public class Board {
 		default:
 			throw new IOException("Door could not be parsed.");
 		}
-
-		this.doors[x][y] = door;			//adds the door to the board
 		door.setX(x);
-		door.setY(key);
+		door.setY(y);
+		this.doors[x][y] = door;			//adds the door to the board
+
 		// adds the door to the room
 		for(Room room : this.rooms){
 			if(room.NAME.equals(roomName)){

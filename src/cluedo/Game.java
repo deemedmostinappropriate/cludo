@@ -166,7 +166,7 @@ public class Game {
 
 				System.out.println("Use W A S D to move, press enter to apply: ");
 
-				moveturn: while(diceroll > 0){ // TODO: labeled for clarity only, can be removed.
+				moveturn: while(diceroll > 0){
 					dir = s.next().charAt(0);
 
 					// Move this players character based on the input char:
@@ -204,13 +204,11 @@ public class Game {
 				}				
 			}
 			// Check if in a room, show leave options or 
-			if(currentPlayer.characterLocation() != null){
+			roomturn: if(currentPlayer.characterLocation() != null){
 				Room currentRoom = currentPlayer.characterLocation();
 
-				boolean leavingRoom = false;
-
-				// Only ask the player if they want to leave when they entered in the same turn:
-				if(roomEntered){
+				// Only ask the player if they want to leave when they haven't entered in the same turn:
+				if(!roomEntered){
 					System.out.println("Do you want to leave the current room? (" + currentRoom.NAME + ") y/n: ");
 
 					Door exit = null;			// Pull coordinates from the door player is leaving from.
@@ -219,23 +217,52 @@ public class Game {
 					// Print the choices of door when there's more than one:
 					if(currentRoom.getDoors().size() > 1 && (input == 'y' || input == 'Y')){
 						System.out.println("Type the number of the door you want to leave from: ");
-						for(int i = 0; i< currentRoom.getDoors().size(); ++i){
-							System.out.print(i + ": " + reverseDir(currentRoom.getDoors().get(i).ROOM_DIRECTION + "    "));
-							if(i == currentRoom.getDoors().size() - 1) System.out.print('\n');
+						while(exit == null){
+							for(int i = 0; i< currentRoom.getDoors().size(); ++i){
+								System.out.print(i + ": " + reverseDir(currentRoom.getDoors().get(i).ROOM_DIRECTION + "    "));
+								if(i == currentRoom.getDoors().size() - 1) System.out.print('\n');
+							}
+							int r;
+							// Catch an integer from players input:
+							try{
+								r = s.nextInt();
+								exit = currentRoom.getDoors().get(r);
+							} catch(Exception e){
+								System.out.println("Input Error: Please pick a number from the list of doors:");
+								continue;
+							}
 						}
-						int r = s.nextInt();
-
-						exit = currentRoom.getDoors().get(r);
-						// Move to the coordinates of that door on board
-						// Set players room to null
-
-						// continue with turn from the beginning
-						--diceroll;
-						continue playerturn;
+						// Move the players character to the coordinates of the chosen door:
+						currentPlayer.getCharacter().setPosition(exit.getX(), exit.getY());
+						
+						
+					} else if(currentRoom.getDoors().size() == 1 && (input == 'y' || input == 'Y')){
+						// Get the only door in the room, player choice not needed:
+						exit = currentRoom.getDoors().get(0);
+						// Move the players character to the coordinates of the chosen door:
+						currentPlayer.getCharacter().setPosition(exit.getX(), exit.getY());
+						
+						// Display result:
+						this.board.drawBoard();
+					} else{
+						// Break out of the room turn when player chooses no:
+						break roomturn;
 					}
-				}
 
+					// Move to the coordinates of that door on board
+					// Set players room to null
+
+					// continue with turn from the beginning
+					--diceroll;
+					continue playerturn;
+				} 
+				// If just entered into the room, give player options for suggestion, accusation or stairs
+				// if room has them. All make diceroll 0;
+				else if(roomEntered){
+					break roomturn;
+				}
 			}
+			
 			// if there are stairs in room: stairs(room)
 			// ------------------------------
 			// if not in room: process move request
@@ -485,7 +512,7 @@ public class Game {
 	 * @return
 	 */
 	private static int diceRoll(){
-		return (int) (Math.random() * 6);
+		return (int) (Math.random() * 6 + 1);
 	}
 
 	/**
