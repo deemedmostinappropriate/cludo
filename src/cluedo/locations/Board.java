@@ -18,6 +18,9 @@ public class Board {
 	/** This holds a value of 1 at any space where the character can move to. */
 	private int[][] board;
 	
+	/** The visual representation of the game board.. */
+	private char[][] visualBoard;
+	
 	/** The list of all rooms in the game. */
 	private List<Room> rooms;
 	
@@ -38,6 +41,7 @@ public class Board {
 	
 	public Board(){
 		this.board = new int[SIZE][SIZE];
+		this.visualBoard = new char [SIZE*2][SIZE];
 		this.rooms = new ArrayList<Room>();
 		this.doors = new Door[SIZE][SIZE];
 		this.characters = new ArrayList<>();
@@ -55,13 +59,14 @@ public class Board {
 		this.rooms.add(new Room("HALL"));			
 		parseSquareFile();	//Adds squares to the board.
 		parseDoorFile();	//Adds doors to the board and rooms.
+		parseVisualMap();
 		//Sets up characters
-		this.characters.add(new Character(6,0,"Miss Scarlett"));
-		this.characters.add(new Character(0,7,"Col Mustard"));
-		this.characters.add(new Character(9,24,"Mrs White"));
-		this.characters.add(new Character(14,24,"Mr Green"));
-		this.characters.add(new Character(23,18,"Mrs Peacock"));
-		this.characters.add(new Character(23,5,"Prof Plum"));
+		this.characters.add(new Character(6,0,"Miss Scarlett", "MS"));
+		this.characters.add(new Character(0,7,"Col Mustard", "CM"));
+		this.characters.add(new Character(9,24,"Mrs White", "MW"));
+		this.characters.add(new Character(14,24,"Mr Green", "MG"));
+		this.characters.add(new Character(23,18,"Mrs Peacock", "MP"));
+		this.characters.add(new Character(23,5,"Prof Plum", "PP"));
 		
 	}
 
@@ -147,6 +152,32 @@ public class Board {
 		this.roomsFromWeapons.put(weapon, room);
 	}
 
+	/**
+	 * Draws the board to the Console.
+	 */
+	public void drawBoard(){
+		
+		char[][] map = this.visualBoard.clone();		//Copies board to new array
+		//Adds characters
+		for(Character c : this.characters){
+			map[c.getX()][c.getY()] = c.ABBREV.charAt(0);
+			map[c.getX()+1][c.getY()] = c.ABBREV.charAt(1);
+		}
+		//Adds weapons
+		for(Weapon w : this.roomsFromWeapons.keySet()){
+			map[w.getX()][w.getY()] = w.toString().charAt(0);
+			map[w.getX()+1][w.getY()] = w.toString().charAt(1);
+		}
+
+		//Prints the array
+		for(int i = 0; i < map.length; i++){
+			for(int j = 0; j < map[0].length; j++){
+				System.out.print(map[i][j]);
+			}
+			System.out.println();
+		}
+	}
+	
 
 	/**
 	 * Reads the file ascii-map.txt to fill in the board array.
@@ -167,7 +198,6 @@ public class Board {
 
 			reader.close();		//won't accept being put in finally block.
 		}catch(IOException e){throw new Error(e);}
-
 	}
 
 	/**
@@ -237,6 +267,24 @@ public class Board {
 				door.setRoom(room);			// gives the room to the door.
 			}
 		}
+	}
+	
+	private void parseVisualMap(){
+		BufferedReader reader = null;
+		String line = null;
+		try{
+			reader = new BufferedReader(new FileReader(new File("visual-map.txt")));
+			// Reads each line while there is one
+			for(int row = 0; (line = reader.readLine()) != null; row ++){	
+				// Increments over 2 chars due to spaces.
+				for(int col = 0; col < line.length(); col ++){
+					if(line.charAt(col) != ' ')
+						this.board[row][col] = line.charAt(col);
+				}
+			}
+
+			reader.close();		//won't accept being put in finally block.
+		}catch(IOException e){throw new Error(e);}
 	}
 
 
