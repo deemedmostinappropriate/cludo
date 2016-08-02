@@ -11,14 +11,15 @@ public class Character implements Piece{
 	private int x, y;
 	public final String NAME;
 	private Room room = null;
-	
+	public final String ABBREV;
 
-	public Character(int x, int y, String name){
+	public Character(int x, int y, String name, String abbreviation){
 		this.x = x;
 		this.y = y;
 		this.NAME = name;
+		ABBREV = abbreviation;
 	}
-	
+
 	/**
 	 * Returns the room which the character is in. This can be null.
 	 * @return The room in which the player is standing. 
