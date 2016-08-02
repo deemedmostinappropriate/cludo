@@ -20,17 +20,17 @@ import cluedo.pieces.Character;
 public class Player {
 	/** The character piece associated with this Player */
 	private Character character = null;
-	
+
 	/** Represents the cards in hand. Can be assumed to not contain double-ups
 	 * across all Player objects. */
 	private Card[] hand = null;
-	
+
 	/* These hold the cards known by an individual player to be in other players hands.
 	 * May have double-ups with other Player objects but not within them. */
 	private List<Card.ROOM> knownRooms;
 	private List<Card.CHARACTER> knownCharacters;
 	private List<Card.WEAPON> knownWeapons;
-	
+
 	/** The designated turn position  of this player. */
 	public final int PLAYER_NUM;
 
@@ -51,20 +51,50 @@ public class Player {
 			}
 			str = scan.next();
 			c = str.charAt(0);	
-			choice = c - 'a';		//the index of the player's choice in the list.
-			if(choice < freeCharacters.size()){
-				this.character = freeCharacters.get(choice);	//Sets the character
-				freeCharacters.remove(choice);					//Removes the character from the list, so that it cannot be chosen again.
+			if(c >= 97 && c <= 102){
+
+
+				choice = c - 'a';		//the index of the player's choice in the list.
+				if(choice < freeCharacters.size()){
+					this.character = freeCharacters.get(choice);	//Sets the character
+					freeCharacters.remove(choice);					//Removes the character from the list, so that it cannot be chosen again.
+				}
+				else
+					System.out.println("Sorry, your choice is not valid. Please try again.");
 			}
 			else
 				System.out.println("Sorry, your choice is not valid. Please try again.");
-
 		}
 		if(this.character != null)
 			System.out.printf("Player %d chose %s\n", PLAYER_NUM, this.character.NAME);
 
 	}
-	
+
+
+	/**
+	 * Returns the list of known room cards
+	 * @return The list of room cards
+	 */
+	public List<Card.ROOM> getKnownRooms() {
+		return knownRooms;
+	}
+
+	/**
+	 * Returns the list of known character cards
+	 * @return The list of character cards
+	 */
+	public List<Card.CHARACTER> getKnownCharacters() {
+		return knownCharacters;
+	}
+
+	/**
+	 * Returns the list of known weapon cards
+	 * @return The list of weapon cards
+	 */
+	public List<Card.WEAPON> getKnownWeapons() {
+		return knownWeapons;
+	}
+
 	/**
 	 * Gives the player their hand of cards.
 	 * @param The hand, an array of Cards
@@ -109,9 +139,9 @@ public class Player {
 		// Get current x,y of the players Character:
 		int newX = character.getX();
 		int newY = character.getY();
-		
+
 		String dir;
-		
+
 		switch(direction){
 		case 'W':
 		case 'w':
@@ -136,7 +166,7 @@ public class Player {
 		default:
 			throw new IOException("Input was incorrect.");
 		}
-		
+
 		// If the player is trying to go into a room while at a door, set
 		// the character to be in that room and return successful move.
 		if(board.getDoor(character.getX(), character.getY()) != null){
@@ -148,12 +178,12 @@ public class Player {
 		if(board.getBoard()[newX][newY] == 0){
 			return false;
 		}
-		
+
 		// Otherwise, players character is allowed to move:
 		character.setPosition(newX, newY);
 		return true;
 	}
-	
+
 	/**
 	 * Returns the Room location of this players character, or null if
 	 * not in a Room currently.
@@ -162,7 +192,7 @@ public class Player {
 	public Room characterLocation(){
 		return character.getRoom();
 	}
-	
+
 	/**
 	 * Returns the character object associated with this player.
 	 * @return
@@ -170,4 +200,15 @@ public class Player {
 	public Character getCharacter(){
 		return this.character;
 	}
+
+	/**
+	 * Returns the player's hand
+	 * @return The array of cards which make the hand.
+	 */
+	public Card[] getHand() {
+		return hand;
+	}
+
+
+
 }
