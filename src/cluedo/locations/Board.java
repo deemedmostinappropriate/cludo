@@ -260,6 +260,8 @@ public class Board {
 		}
 
 		this.doors[x][y] = door;			//adds the door to the board
+		door.setX(x);
+		door.setY(key);
 		// adds the door to the room
 		for(Room room : this.rooms){
 			if(room.NAME.equals(roomName)){
