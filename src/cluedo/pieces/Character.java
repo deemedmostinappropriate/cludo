@@ -45,6 +45,23 @@ public class Character implements Piece{
 	}
 	
 	
+	
+	/**
+	 * Sets the x coordinate of this character
+	 * @param The new x coordinate
+	 */
+	public void setX(int x) {
+		this.x = x;
+	}
+
+	/**
+	 * Sets the y coordinate of this character
+	 * @param The new y coordinate
+	 */
+	public void setY(int y) {
+		this.y = y;
+	}
+
 	/**
 	 * Sets new integer values for the x and y coordinates.
 	 * @param New x coordinate.
