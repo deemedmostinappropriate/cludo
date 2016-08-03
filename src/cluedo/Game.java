@@ -148,10 +148,7 @@ public class Game {
 
 		currentPlayer = players.get(currentPlayerIndex);
 
-		// Scan for input while the game is running:
-		Scanner s = new Scanner(System.in);
-
-		playerturn: while(players.size() > 1){
+		gameturn: while(players.size() > 1){
 			// Roll dice and display result
 			diceroll = diceRoll();
 			// Don't ask about leaving room if they have just entered:
@@ -168,7 +165,7 @@ public class Game {
 				System.out.println("Use W A S D to move, press enter to apply: ");
 
 				moveturn: while(diceroll > 0){
-					dir = s.next().charAt(0);
+					dir = scan.next().charAt(0);
 
 					// Move this players character based on the input char:
 					try {
@@ -207,7 +204,6 @@ public class Game {
 						this.board.drawBoard(); //Draws the map with the character in a room.
 						System.out.println("Move Turn Complete for Player " + currentPlayer.PLAYER_NUM);
 					}
-
 				}				
 			}
 			// Check if in a room, show leave options or 
@@ -219,7 +215,7 @@ public class Game {
 					System.out.println("Do you want to leave the current room? (" + currentRoom.NAME + ") y/n: ");
 
 					Door exit = null;			// Pull coordinates from the door player is leaving from.
-					char input = s.next().charAt(0);
+					char input = scan.next().charAt(0);
 
 					// Print the choices of door when there's more than one, and the staircase's room:
 					if(currentRoom.getDoors().size() > 1 && (input == 'y' || input == 'Y')){
@@ -232,12 +228,14 @@ public class Game {
 								System.out.print(i + ": " + reverseDir(currentRoom.getDoors().get(i).ROOM_DIRECTION + "    "));
 								if(i == currentRoom.getDoors().size() - 1) System.out.print('\n');					
 							}
-							if(currentRoom.getStairs() != null)
+							if(currentRoom.getStairs() != null){
 								System.out.printf("%d: Stairs to %s\n", i, currentRoom.getStairs().NAME);
+								break;
+							}
 							int r;
 							// Catch an integer from players input:
 							try{
-								r = s.nextInt();
+								r = scan.nextInt();
 								if(currentRoom.getStairs() == null )
 									exit = currentRoom.getDoors().get(r);
 								else
@@ -269,13 +267,12 @@ public class Game {
 						// Break out of the room turn when player chooses no:
 						break roomturn;
 					}
-
-					// Move to the coordinates of that door on board
 					// Set players room to null
+					changeCharacterRoom(currentPlayer.getCharacter(), null);
 
 					// continue with turn from the beginning
 					--diceroll;
-					continue playerturn;
+					continue gameturn;
 				} 
 				// If just entered into the room, give player options for suggestion, accusation
 				// if room has them. All make diceroll 0;
@@ -283,57 +280,64 @@ public class Game {
 					String choice = null;
 
 					//give player options for suggestion, accusation  
-					int character =0, room = 0, weapon = 0;
+					int character =0, weapon = 0;
+					// Suggest from the current room only:
+					Room location = currentPlayer.characterLocation();
+					int room = Card.ROOM.valueOf(location.NAME).ordinal();
+					
 					try{	
-						while(!choice.equals("a") && !choice.equals("s")){
-							System.out.println("Would you like to make a (s)suggestion or an (a)accusation?");
+						do{
+							System.out.println("Would you like to make a (s)uggestion or an (a)ccusation?");
 							System.out.println("Caution: an accusation may end the game!");
 							choice = scan.next();		//takes player's choice
-						}
-						System.out.println("Which character do you wish to suggest was the murderer?");
+						} while(!choice.equals("a") && !choice.equals("s"));
+						
+						System.out.printf("Which character do you %s?\n",
+								choice.equals("s") ? "wish to suggest was the murderer":"accuse of murder");
 						//gives choices for character
 						for(int c = 0; c < Card.CHARACTER.values().length; c++ ){
-							System.out.printf("(%d) %s", c,Card.CHARACTER.values()[c]);
+							System.out.printf("  (%d) %s\n", c,Card.CHARACTER.values()[c]);
 						}
 						character = scan.nextInt(); 	//takes user choice
-						System.out.println("Which room do you wish to suggest was the scene of the crime?");
-						//gives choices for room
-						for(int c = 0; c < Card.ROOM.values().length; c++ ){
-							System.out.printf("(%d) %s", c,Card.ROOM.values()[c]);
+						
+						// Ask from room only if player is making an accusation
+						if(choice.equals("a")){
+							System.out.println("Which room do you accuse of being where the murder took place?");
+							for(int c = 0; c < Card.ROOM.values().length; c++ ){
+								System.out.printf("  (%d) %s\n", c,Card.ROOM.values()[c]);
+							}
+							room = scan.nextInt();
 						}
-						room = scan.nextInt(); 	//takes user choice
-
-						System.out.println("Which weapon do you wish to suggest was the murder weapon?");
+					
+						System.out.printf("Which weapon do you %s?\n",choice.equals("s") ? 
+								"suggest was the murder weapon":"accuse the muderer of using");
 						//gives choices for weapon
 						for(int c = 0; c < Card.WEAPON.values().length; c++ ){
-							System.out.printf("(%d) %s", c,Card.WEAPON.values()[c]);
+							System.out.printf("  (%d) %s\n", c,Card.WEAPON.values()[c]);
 						}
 						weapon = scan.nextInt(); 	//takes user choice
-
+						
+						System.out.printf("It was %s in the %s with the %s!\n",
+								Card.CHARACTER.values()[character],
+								Card.ROOM.values()[room],
+								Card.WEAPON.values()[weapon]);
+						
 					}catch(Exception e){throw new Error(e);}
+					
+					boolean gameOver = false;
+					
 					if(choice.equals("s"))
 						suggestion(currentPlayer, character, room, weapon);	//calls suggestion method
 					else
-						accusation(currentPlayer, character, room, weapon);//calls accusation method
-
+						gameOver = accusation(currentPlayer, character, room, weapon); //calls accusation method
+					
+					// Game is over because the accusation was correct, or theres only one player left,
+					// leave the outermost loop:
+					if(gameOver || players.size() == 1) break gameturn;
+					
 					break roomturn;
 				}
 			}
-
-			// if there are stairs in room: stairs(room)
-			// ------------------------------
-			// if not in room: process move request
-			// if in room:
-			//     door: move to door (subtract from diceroll)
-			// 	    Game.drawBoard // map, pieces.
-			// 	      character.move
-			// 	      Game.changeCharacterRoom(null)
-			//      process moves
-			// 	  if then in room:
-			// 	    ask if they want to make a suggestion or accusation
-			// 	      process
-			//    stairs: move to room (diceroll to zero)
-			//        ask if they want to make a suggestion or accusation
 
 			// Check if the next player is the beginning of the list of players:
 			if(currentPlayerIndex + 1 == players.size()){
@@ -343,7 +347,9 @@ public class Game {
 				currentPlayer = players.get(++currentPlayerIndex);
 			}
 		}
-		s.close();
+		
+		// Display the winner and close game elements
+		
 	}
 
 	/**
@@ -357,8 +363,6 @@ public class Game {
 	public String suggestion(Player p, int characterChoice, int roomChoice, int weaponChoice){
 		if(characterChoice < 0 || characterChoice >=  Card.CHARACTER.values().length)
 			return "Character could not be found, please try again.";
-		if(roomChoice < 0 || characterChoice >=  Card.ROOM.values().length)
-			return "Room could not be found, please try again.";
 		if(weaponChoice < 0 || characterChoice >=  Card.WEAPON.values().length)
 			return "Weapon could not be found, please try again.";
 
@@ -376,6 +380,29 @@ public class Game {
 		this.board.drawBoard(); //draws the map
 
 		return null;
+	}
+	
+	/**
+	 * Called when a player chooses to make an accusation about the murder.
+	 * If they guess correctly they win the game, otherwise they lose and the game continues without them.
+	 * @param The player making the accusation
+	 * @param The character accused of the crime.
+	 * @param The room where the murder is said to have taken place.
+	 * @param The proposed murder weapon.
+	 * @return A string message telling the player the result of their accusation.
+	 */
+	public boolean accusation(Player p, int characterChoice, int roomChoice, int weaponChoice){
+		Card.CHARACTER character = Card.CHARACTER.values()[characterChoice];
+		Card.ROOM room = Card.ROOM.values()[roomChoice];
+		Card.WEAPON weapon = Card.WEAPON.values()[weaponChoice];
+
+		if(character != this.murderer 
+				|| room != this.murderRoom
+				|| weapon != this.murderWeapon){
+			this.players.remove(p);	//removes the current player from the game.
+			return false;
+		}
+		else return true;
 	}
 
 	/**
@@ -411,7 +438,6 @@ public class Game {
 				}
 			}
 		}
-
 	}
 
 	/**
@@ -454,32 +480,6 @@ public class Game {
 		}
 
 	}
-
-	/**
-	 * Called when a player chooses to make an accusation about the murder.
-	 * If they guess correctly they win the game, otherwise they lose and the game continues without them.
-	 * @param The player making the accusation
-	 * @param The character accused of the crime.
-	 * @param The room where the murder is said to have taken place.
-	 * @param The proposed murder weapon.
-	 * @return A string message telling the player the result of their accusation.
-	 */
-	public boolean accusation(Player p, int characterChoice, int roomChoice, int weaponChoice){
-		Card.CHARACTER character = Card.CHARACTER.values()[characterChoice];
-		Card.ROOM room = Card.ROOM.values()[roomChoice];
-		Card.WEAPON weapon = Card.WEAPON.values()[weaponChoice];
-
-		if(character != this.murderer 
-				|| room != this.murderRoom
-				|| weapon != this.murderWeapon){
-			this.players.remove(p);	//removes the current player from the game.
-			return false;
-		}
-		else
-			return true;
-	}
-
-
 
 	/**
 	 * Assigns the solution cards, and assigns all other cards to player's hands.
