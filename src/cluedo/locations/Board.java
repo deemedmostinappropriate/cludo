@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -158,8 +159,14 @@ public class Board {
 	 * Draws the board to the Console.
 	 */
 	public void drawBoard(){
+		// Copies board to new array
+		char[][] map = new char[SIZE][SIZE*2];		
+		for(int i = 0; i < 25; ++i){
+			for(int j = 0; j < 50; ++j){
+				map[i][j] = visualBoard[i][j];
+			}
+		}
 		
-		char[][] map = this.visualBoard.clone();		//Copies board to new array
 		//Adds characters
 		for(Character c : this.characters){
 			map[c.getY()][c.getX()*2] = c.ABBREV.charAt(0);
@@ -180,7 +187,6 @@ public class Board {
 			System.out.println();
 		}
 	}
-	
 
 	/**
 	 * Reads the file ascii-map.txt to fill in the board array.

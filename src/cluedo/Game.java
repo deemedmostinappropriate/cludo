@@ -156,7 +156,7 @@ public class Game {
 			// Don't ask about leaving room if they have just entered:
 			boolean roomEntered = false;
 
-			System.out.println("Player " +  currentPlayer.PLAYER_NUM + "'s turn: ");
+			System.out.println("Player " +  currentPlayer.PLAYER_NUM + "'s turn ("+ currentPlayer.getCharacter().ABBREV +"): ");
 
 			// Display and process move options if on a traversable board square:
 			if(currentPlayer.characterLocation() == null){
@@ -234,15 +234,14 @@ public class Game {
 						}
 						// Move the players character to the coordinates of the chosen door:
 						currentPlayer.getCharacter().setPosition(exit.getX(), exit.getY());
-						
-						
+						this.board.drawBoard();
+
 					} else if(currentRoom.getDoors().size() == 1 && (input == 'y' || input == 'Y')){
 						// Get the only door in the room, player choice not needed:
 						exit = currentRoom.getDoors().get(0);
 						// Move the players character to the coordinates of the chosen door:
 						currentPlayer.getCharacter().setPosition(exit.getX(), exit.getY());
 						
-						// Display result:
 						this.board.drawBoard();
 					} else{
 						// Break out of the room turn when player chooses no:

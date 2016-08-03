@@ -145,22 +145,22 @@ public class Player {
 		switch(direction){
 		case 'W':
 		case 'w':
-			++newX;
+			++newY;
 			dir = "UP";
 			break;
 		case 'D':
 		case 'd':
-			++newY;
+			++newX;
 			dir = "RIGHT";
 			break;
 		case 'S':
 		case 's':
-			--newX;
+			--newY;
 			dir = "DOWN";
 			break;
 		case 'A':
 		case 'a':
-			--newY;
+			--newX;
 			dir = "LEFT";
 			break;
 		default:
