@@ -108,7 +108,7 @@ public class Board {
 	 */
 	public boolean inRange(int x, int y){
 		return x >= 0 && y >= 0
-				&& x <= SIZE && y <= SIZE;
+				&& x < SIZE && y < SIZE;
 	}
 	
 	/**
@@ -182,10 +182,11 @@ public class Board {
 		//Prints the array
 		for(int i = map.length-1; i >= 0; --i){
 			for(int j = 0; j < map[i].length; ++j){
-				System.out.print(map[i][j]);
+				System.out.printf("%s",map[i][j]);
 			}
 			System.out.println();
 		}
+		
 	}
 
 	/**
@@ -289,7 +290,7 @@ public class Board {
 			for(int row = 0; (line = reader.readLine()) != null; row ++){	
 				// Increments over 2 chars due to spaces.
 				for(int col = 0; col < line.length(); col ++){
-					if(line.charAt(col) != ' ')
+					//if(line.charAt(col) != ' ')
 						this.visualBoard[row][col] = line.charAt(col);
 				}
 			}

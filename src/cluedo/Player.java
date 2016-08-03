@@ -166,7 +166,6 @@ public class Player {
 		default:
 			throw new IOException("Input was incorrect.");
 		}
-
 		// If the player is trying to go into a room while at a door, set
 		// the character to be in that room and return successful move.
 		if(board.getDoor(character.getX(), character.getY()) != null){
