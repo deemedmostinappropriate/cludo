@@ -53,15 +53,24 @@ public class Board {
 		this.roomFromCharacter = new HashMap<>();
 		
 		//Adds rooms to the board.
-		this.rooms.add(new Room("LOUNGE", new int[]{0,1,2,3,4,5}, new int[]{0,0,0,0,0,0}, new int[]{0,1,2,3,4,5},  new int[]{4,4,4,4,4,4}));
-		this.rooms.add(new Room("DINING_ROOM", new int[]{0,1,2,3,4,5}, new int[]{9,9,9,9,9,9}, new int[]{0,1,2,3,4,0}, new int[]{15,15,15,15,15,14}));
-		this.rooms.add(new Room("KITCHEN", new int[]{1,2,3,1,2,3}, new int[]{18,18,18,19,19,19}, new int[]{0,1,2,3,4,0}, new int[]{23,23,23,23,23,22}));
-		this.rooms.add(new Room("BALL_ROOM", new int[]{13,14,15,16,13,14}, new int[]{20,20,20,20,21,21}, new int[]{13,14,15,16,13,14}, new int[]{17,17,17,17,18,18}));
-		this.rooms.add(new Room("CONSERVATORY", new int[]{18,18,18,19,19,19}, new int[]{21,22,23,21,22,23}, new int[]{21,21,21,22,22,22}, new int[]{21,22,23,21,22,23}));
-		this.rooms.add(new Room("BILLIARD_ROOM", new int[]{18,18,18,19,19,19}, new int[]{12,13,14,12,13,14}, new int[]{21,21,21,22,22,22}, new int[]{13,14,15,13,14,15}));
+		Room lounge = new Room("LOUNGE", new int[]{0,1,2,3,4,5}, new int[]{0,0,0,0,0,0}, new int[]{0,1,2,3,4,5},  new int[]{4,4,4,4,4,4});
+		this.rooms.add(lounge);
+		this.rooms.add(new Room("DINING_ROOM", new int[]{0,1,2,3,4,5}, new int[]{10,10,10,10,10,10}, new int[]{0,1,2,3,4,0}, new int[]{14,14,14,14,14,14}));
+		Room kitchen = new Room("KITCHEN", new int[]{1,2,3,1,2,3}, new int[]{19,19,19,20,20,20}, new int[]{0,1,2,3,4,0}, new int[]{23,23,23,23,23,22});
+		this.rooms.add(kitchen);
+		this.rooms.add(new Room("BALL_ROOM", new int[]{13,14,15,16,13,14}, new int[]{20,20,20,20,21,21}, new int[]{13,14,15,16,13,14}, new int[]{18,18,18,19,19,19}));
+		Room conservatory = new Room("CONSERVATORY", new int[]{19,19,19,20,20,20}, new int[]{21,22,23,21,22,23}, new int[]{21,21,21,22,22,22}, new int[]{21,22,23,21,22,23});
+		this.rooms.add(conservatory);
+		this.rooms.add(new Room("BILLIARD_ROOM", new int[]{19,19,19,20,20,20}, new int[]{13,14,15,13,14,15}, new int[]{21,21,21,22,22,22}, new int[]{13,14,15,13,14,15}));
 		this.rooms.add(new Room("LIBRARY", new int[]{18,18,18,19,19,19}, new int[]{7,8,9,7,8,9}, new int[]{21,21,21,22,22,22}, new int[]{7,8,9,7,8,9}));
-		this.rooms.add(new Room("STUDY", new int[]{17,18,19,17,18,19}, new int[]{2,2,2,1,1,1}, new int[]{20,20,20,21,21,21}, new int[]{2,2,2,1,1,1}));
-		this.rooms.add(new Room("HALL", new int[]{10,11,12,13,10,11}, new int[]{7,7,7,7,6,6}, new int[]{10,11,12,13,10,11}, new int[]{2,2,2,2,1,1}));
+		Room study = new Room("STUDY", new int[]{18,19,20,21,22,23}, new int[]{2,2,2,2,2,2}, new int[]{18,19,20,21,22,23}, new int[]{3,3,3,3,3,3});
+		this.rooms.add(study);
+		this.rooms.add(new Room("HALL", new int[]{10,11,12,13,10,11}, new int[]{6,6,6,6,5,5}, new int[]{10,11,12,13,10,11}, new int[]{2,2,2,2,1,1}));
+		//Adds stairs to the corner rooms
+		lounge.setStairs(conservatory);
+		conservatory.setStairs(lounge);
+		kitchen.setStairs(study);
+		study.setStairs(kitchen);
 		
 		parseSquareFile();	//Adds squares to the board.
 		parseDoorFile();	//Adds doors to the board and rooms.
@@ -174,8 +183,8 @@ public class Board {
 		
 		//Adds characters
 		for(Character c : this.characters){
-			map[c.getY()][c.getX()*2] = c.ABBREV.charAt(0);
-			map[c.getY()][c.getX()*2+1] = c.ABBREV.charAt(1);
+				map[c.getY()][c.getX()*2] = c.ABBREV.charAt(0);
+				map[c.getY()][c.getX()*2+1] = c.ABBREV.charAt(1);
 		}
 		//Adds weapons
 		for(Weapon w : this.roomsFromWeapons.keySet()){
