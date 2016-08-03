@@ -283,25 +283,38 @@ public class Game {
 					String choice = null;
 
 					//give player options for suggestion, accusation  
-
+					int character =0, room = 0, weapon = 0;
 					try{	
 						while(!choice.equals("a") && !choice.equals("s")){
 							System.out.println("Would you like to make a (s)suggestion or an (a)accusation?");
 							System.out.println("Caution: an accusation may end the game!");
 							choice = scan.next();		//takes player's choice
 						}
+						System.out.println("Which character do you wish to suggest was the murderer?");
 						//gives choices for character
-						//takes user choice
+						for(int c = 0; c < Card.CHARACTER.values().length; c++ ){
+							System.out.printf("(%d) %s", c,Card.CHARACTER.values()[c]);
+						}
+						character = scan.nextInt(); 	//takes user choice
+						System.out.println("Which room do you wish to suggest was the scene of the crime?");
 						//gives choices for room
-						//takes user choice
+						for(int c = 0; c < Card.ROOM.values().length; c++ ){
+							System.out.printf("(%d) %s", c,Card.ROOM.values()[c]);
+						}
+						room = scan.nextInt(); 	//takes user choice
+
+						System.out.println("Which weapon do you wish to suggest was the murder weapon?");
 						//gives choices for weapon
-						//takes user choice
+						for(int c = 0; c < Card.WEAPON.values().length; c++ ){
+							System.out.printf("(%d) %s", c,Card.WEAPON.values()[c]);
+						}
+						weapon = scan.nextInt(); 	//takes user choice
 
 					}catch(Exception e){throw new Error(e);}
 					if(choice.equals("s"))
-						//calls suggestion method
+						suggestion(currentPlayer, character, room, weapon);	//calls suggestion method
 					else
-						//calls accusation method
+						accusation(currentPlayer, character, room, weapon);//calls accusation method
 
 					break roomturn;
 				}
