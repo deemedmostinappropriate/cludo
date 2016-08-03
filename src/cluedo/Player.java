@@ -172,7 +172,7 @@ public class Player {
 		// the character to be in that room and return successful move.
 		if(board.getDoor(character.getX(), character.getY()) != null){
 			Door d = board.getDoor(character.getX(), character.getY());
-			System.err.println("Door" + dir +d.ROOM_DIRECTION);
+			
 			// Complete move into room if players input matches the entrance
 			// direction of the door:
 			if(d.ROOM_DIRECTION.equals(dir)){
