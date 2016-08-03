@@ -41,13 +41,17 @@ public class Board {
 	private static final int SIZE = 25;
 	
 	public Board(){
+		// Locations relative to the game board itself:
 		this.board = new int[SIZE][SIZE];
 		this.visualBoard = new char [SIZE][SIZE*2];
-		this.rooms = new ArrayList<Room>();
 		this.doors = new Door[SIZE][SIZE];
+		
+		// Items, characters and their locations if/when in rooms:
+		this.rooms = new ArrayList<Room>();
 		this.characters = new ArrayList<>();
 		this.roomsFromWeapons = new HashMap<>();
 		this.roomFromCharacter = new HashMap<>();
+		
 		//Adds rooms to the board.
 		this.rooms.add(new Room("LOUNGE", new int[]{0,1,2,3,4,5}, new int[]{0,0,0,0,0,0}, new int[]{0,1,2,3,4,5},  new int[]{4,4,4,4,4,4}));
 		this.rooms.add(new Room("DINING_ROOM", new int[]{0,1,2,3,4,5}, new int[]{9,9,9,9,9,9}, new int[]{0,1,2,3,4,0}, new int[]{15,15,15,15,15,14}));
@@ -62,6 +66,7 @@ public class Board {
 		parseSquareFile();	//Adds squares to the board.
 		parseDoorFile();	//Adds doors to the board and rooms.
 		parseVisualMap();
+		
 		//Sets up characters
 		this.characters.add(new Character(7,0,"Miss Scarlett", "MS"));
 		this.characters.add(new Character(0,7,"Col Mustard", "CM"));
@@ -171,7 +176,6 @@ public class Board {
 		for(Character c : this.characters){
 			map[c.getY()][c.getX()*2] = c.ABBREV.charAt(0);
 			map[c.getY()][c.getX()*2+1] = c.ABBREV.charAt(1);
-			System.out.println(c.getX() + " " + c.getY() + c.NAME);
 		}
 		//Adds weapons
 		for(Weapon w : this.roomsFromWeapons.keySet()){
@@ -248,7 +252,7 @@ public class Board {
 		Door door = null;
 
 		x = scan.nextInt();
-		y =  scan.nextInt();
+		y = scan.nextInt();
 		key = scan.nextInt();
 		roomName = scan.next();
 

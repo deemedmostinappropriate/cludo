@@ -44,8 +44,6 @@ public class Character implements Piece{
 		return this.y;
 	}
 	
-	
-	
 	/**
 	 * Sets the x coordinate of this character
 	 * @param The new x coordinate
