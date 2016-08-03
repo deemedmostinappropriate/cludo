@@ -17,18 +17,16 @@ import cluedo.pieces.Weapon;
 
 public class Tests {
 	private List<Character>characters;
-	private Board board;
-	Player player;
+	
+	
 	private List<Room> rooms;
-	Character character;
-	Game game;
-
+	Game game = new Game();
+	private Board board = game.getBoard();
+	Player player = game.getPlayers().get(0);
+	Character character = player.getCharacter();
+	
 	@Test
 	public void setup(){
-		this.game = new Game();
-		this.board = game.getBoard();
-		this.player = game.getPlayers().get(0);
-		this.character = player.getCharacter();
 		// Solution implemented properly
 		assertTrue(game.getMurderer() != null);
 		assertTrue(game.getMurderRoom() != null);
@@ -158,17 +156,17 @@ public class Tests {
 	@Test
 	public void illegalSuggestionTests(){
 		//character selection too low
-		assertTrue(game.suggestion(player, -1, 0,0).equals("Character could not be found, please try again."));
+		assertTrue(game.suggestion(player, -1, 0,0) != null); 
 		//character selection too high
-		assertTrue(game.suggestion(player, 10, 0,0).equals("Character could not be found, please try again."));
+		assertTrue(game.suggestion(player, 10, 0,0)!= null); 
 		//room selection too low
-		assertTrue(game.suggestion(player, 0, -1,0).equals("Room could not be found, please try again."));
+		assertTrue(game.suggestion(player, 0, -1,0)!= null); 
 		//room selection too high
-		assertTrue(game.suggestion(player, 0, 10,0).equals("Room could not be found, please try again."));
+		assertTrue(game.suggestion(player, 0, 10,0)!= null); 
 		//weapon selection too low
-		assertTrue(game.suggestion(player, 0, 0,-1).equals("Weapon could not be found, please try again."));
+		assertTrue(game.suggestion(player, 0, 0,-1)!= null); 
 		//weapon selection too high
-		assertTrue(game.suggestion(player, 0, 10,10).equals("Weapon could not be found, please try again."));
+		assertTrue(game.suggestion(player, 0, 10,10)!= null); 
 
 		try{
 			game.suggestion(null, 0, 0, 0);	// null player
