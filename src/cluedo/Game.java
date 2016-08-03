@@ -179,7 +179,6 @@ public class Game {
 									+ " is now at (" + currentPlayer.getCharacter().getX() + ","
 									+ currentPlayer.getCharacter().getY() + ") on the board.");
 
-							this.board.drawBoard(); //draws the map
 						} else{
 							// If the place player's character is moving to is not traversable:
 							System.out.println("There is no square to move to in that direction, please try again.");
@@ -190,15 +189,20 @@ public class Game {
 						System.out.println(e.getMessage() + "Please use W A S D.");
 						continue moveturn;			// Start loop again to receive new input.
 					}
-					if(diceroll != 0){ // Show moves remaining, only after a successful move:
+					if(diceroll != 0 && currentPlayer.characterLocation() == null){
+						// Show moves remaining, only after a successful move:
 						System.out.println("    Moves remaining: " + diceroll);
-					} else if(currentPlayer.characterLocation() != null){
+					}
+					if(currentPlayer.characterLocation() != null){
 						// If the move resulted in player entering a room:
 						// Break out of loop immediately, will automatically go to next conditional.
 						roomEntered = true;
+						this.board.drawBoard(); //Draws the map with the character in a room.
+
 						break moveturn;
 					}
 					else{ // Notify the player they have completed their turn if they did not reach a room:
+						this.board.drawBoard(); //draws the map.
 						System.out.println("Move Turn Complete for Player " + currentPlayer.PLAYER_NUM);
 					}
 				}				
@@ -206,7 +210,7 @@ public class Game {
 			// Check if in a room, show leave options or 
 			roomturn: if(currentPlayer.characterLocation() != null){
 				Room currentRoom = currentPlayer.characterLocation();
-
+				
 				// Only ask the player if they want to leave when they haven't entered in the same turn:
 				if(!roomEntered){
 					System.out.println("Do you want to leave the current room? (" + currentRoom.NAME + ") y/n: ");
@@ -216,7 +220,9 @@ public class Game {
 
 					// Print the choices of door when there's more than one:
 					if(currentRoom.getDoors().size() > 1 && (input == 'y' || input == 'Y')){
+						
 						System.out.println("Type the number of the door you want to leave from: ");
+						
 						while(exit == null){
 							for(int i = 0; i< currentRoom.getDoors().size(); ++i){
 								System.out.print(i + ": " + reverseDir(currentRoom.getDoors().get(i).ROOM_DIRECTION + "    "));
@@ -235,8 +241,9 @@ public class Game {
 						// Move the players character to the coordinates of the chosen door:
 						currentPlayer.getCharacter().setPosition(exit.getX(), exit.getY());
 						this.board.drawBoard();
-
-					} else if(currentRoom.getDoors().size() == 1 && (input == 'y' || input == 'Y')){
+					}
+					
+					else if(currentRoom.getDoors().size() == 1 && (input == 'y' || input == 'Y')){
 						// Get the only door in the room, player choice not needed:
 						exit = currentRoom.getDoors().get(0);
 						// Move the players character to the coordinates of the chosen door:
@@ -286,18 +293,6 @@ public class Game {
 			}
 		}
 		s.close();
-	}
-
-	/**
-	 * Processes the given players input to translate to their character moving around
-	 * the board. 
-	 * @param player
-	 * @param direction
-	 * @return boolean of whether the move was successful
-	 */
-	public boolean processMove(Player player, char direction){
-
-		return false;
 	}
 
 	/**
@@ -523,13 +518,13 @@ public class Game {
 	private static String reverseDir(String dir){
 		switch(dir){
 		case "UP":
-			return "South";
+			return "Bottom";
 		case "RIGHT":
-			return "West";
+			return "Left";
 		case "DOWN":
-			return "North";
+			return "Top";
 		default:
-			return "East";
+			return "Right";
 		}
 	}
 	public static void main(String[] args){
