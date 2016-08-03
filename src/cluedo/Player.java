@@ -175,9 +175,8 @@ public class Player {
 			System.err.println("Door" + dir +d.ROOM_DIRECTION);
 			// Complete move into room if players input matches the entrance
 			// direction of the door:
-			if(d.ROOM_DIRECTION == dir){
-				character.setRoom(d.getRoom());
-				board.setRoomFromCharacter(character.NAME, d.getRoom());
+			if(d.ROOM_DIRECTION.equals(dir)){
+				Game.changeCharacterRoom(this.getCharacter(), d.getRoom());
 				return true;
 			}
 		}
