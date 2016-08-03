@@ -141,11 +141,12 @@ public class Player {
 		int newY = character.getY();
 
 		String dir;
+		int[][] traversable = board.getBoard();
 
 		switch(direction){
 		case 'W':
 		case 'w':
-			++newY;
+			++newY;		// Reversed for drawing
 			dir = "UP";
 			break;
 		case 'D':
@@ -155,7 +156,7 @@ public class Player {
 			break;
 		case 'S':
 		case 's':
-			--newY;
+			--newY;		// Reversed for drawing
 			dir = "DOWN";
 			break;
 		case 'A':
@@ -166,21 +167,22 @@ public class Player {
 		default:
 			throw new IOException("Input was incorrect.");
 		}
-		/*for(int i = 0; i < 25; ++i){
-			for(int j = 0; j < 25; ++j){
-				System.err.print(board.getBoard()[i][j]);
-			}
-			System.err.println();
-		}*/
+		
 		// If the player is trying to go into a room while at a door, set
 		// the character to be in that room and return successful move.
 		if(board.getDoor(character.getX(), character.getY()) != null){
 			Door d = board.getDoor(character.getX(), character.getY());
-			character.setRoom(d.getRoom());
-			return true;
+			System.err.println("Door" + dir +d.ROOM_DIRECTION);
+			// Complete move into room if players input matches the entrance
+			// direction of the door:
+			if(d.ROOM_DIRECTION == dir){
+				character.setRoom(d.getRoom());
+				board.setRoomFromCharacter(character.NAME, d.getRoom());
+				return true;
+			}
 		}
 		// False if the square is non-traversable:
-		if(!board.inRange(newX, newY) || board.getBoard()[newX][newY] == 0){
+		if(!board.inRange(newX, newY) || traversable[newY][newX] == 0){
 			return false;
 		}
 
