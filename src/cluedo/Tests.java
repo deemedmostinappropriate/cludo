@@ -20,7 +20,7 @@ public class Tests {
 	
 	
 	private List<Room> rooms;
-	Game game = new Game();
+	Game game = new Game(false);
 	private Board board = game.getBoard();
 	Player player = game.getPlayers().get(0);
 	Character character = player.getCharacter();
