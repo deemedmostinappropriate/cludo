@@ -38,7 +38,7 @@ public class Game {
 	private Card.ROOM murderRoom;
 	private Card.WEAPON murderWeapon;
 
-	public Game(){
+	public Game(boolean run){
 		int numPlayers = 0, rand = 0;
 		scan = new Scanner(System.in);
 		System.out.println("Welcome to Cluedo");
@@ -62,7 +62,7 @@ public class Game {
 			players.add(new Player(i+1, freeCharacters, scan));	//The player chooses which character to use from the list.
 		int startingPlayer = assignCards();	//Assigns all cards in the game.
 
-		
+
 		List<Weapon> weaponPieces =  new ArrayList<>(Arrays.asList(Weapon.values()));
 		// Distribute weapons between rooms
 		for(Room r : this.board.getRooms()){
@@ -74,7 +74,8 @@ public class Game {
 		}
 
 		this.board.drawBoard(); //draws the map
-		run();
+
+		if(run)	run();		//to turn debug on and off
 		scan.close();				// closes the scanner after running the game.
 	}
 
@@ -83,7 +84,7 @@ public class Game {
 	 * @return
 	 */
 	public Board getBoard(){
-		return this.board;
+		return this.board; 
 	}
 
 	/**
@@ -191,9 +192,10 @@ public class Game {
 					}
 					if(diceroll != 0 && currentPlayer.characterLocation() == null){
 						// Show moves remaining, only after a successful move:
+						this.board.drawBoard(); //Draws the map with the character in a room.
 						System.out.println("    Moves remaining: " + diceroll);
 					}
-					if(currentPlayer.characterLocation() != null){
+					else if(currentPlayer.characterLocation() != null){
 						// If the move resulted in player entering a room:
 						// Break out of loop immediately, will automatically go to next conditional.
 						roomEntered = true;
@@ -202,15 +204,16 @@ public class Game {
 						break moveturn;
 					}
 					else{ // Notify the player they have completed their turn if they did not reach a room:
-						this.board.drawBoard(); //draws the map.
+						this.board.drawBoard(); //Draws the map with the character in a room.
 						System.out.println("Move Turn Complete for Player " + currentPlayer.PLAYER_NUM);
 					}
+
 				}				
 			}
 			// Check if in a room, show leave options or 
 			roomturn: if(currentPlayer.characterLocation() != null){
 				Room currentRoom = currentPlayer.characterLocation();
-				
+
 				// Only ask the player if they want to leave when they haven't entered in the same turn:
 				if(!roomEntered){
 					System.out.println("Do you want to leave the current room? (" + currentRoom.NAME + ") y/n: ");
@@ -218,37 +221,49 @@ public class Game {
 					Door exit = null;			// Pull coordinates from the door player is leaving from.
 					char input = s.next().charAt(0);
 
-					// Print the choices of door when there's more than one:
+					// Print the choices of door when there's more than one, and the staircase's room:
 					if(currentRoom.getDoors().size() > 1 && (input == 'y' || input == 'Y')){
-						
-						System.out.println("Type the number of the door you want to leave from: ");
-						
+
+						System.out.println("Type the number of the door or staircase you want to leave from: ");
+
 						while(exit == null){
-							for(int i = 0; i< currentRoom.getDoors().size(); ++i){
+							int i;
+							for(i = 0; i< currentRoom.getDoors().size(); ++i){
 								System.out.print(i + ": " + reverseDir(currentRoom.getDoors().get(i).ROOM_DIRECTION + "    "));
-								if(i == currentRoom.getDoors().size() - 1) System.out.print('\n');
+								if(i == currentRoom.getDoors().size() - 1) System.out.print('\n');					
 							}
+							if(currentRoom.getStairs() != null)
+								System.out.printf("%d: Stairs to %s\n", i, currentRoom.getStairs().NAME);
 							int r;
 							// Catch an integer from players input:
 							try{
 								r = s.nextInt();
-								exit = currentRoom.getDoors().get(r);
+								if(currentRoom.getStairs() == null )
+									exit = currentRoom.getDoors().get(r);
+								else
+									exit = null;
 							} catch(Exception e){
 								System.out.println("Input Error: Please pick a number from the list of doors:");
 								continue;
 							}
 						}
-						// Move the players character to the coordinates of the chosen door:
-						currentPlayer.getCharacter().setPosition(exit.getX(), exit.getY());
+						if(exit != null){
+							// Move the players character to the coordinates of the chosen door:
+							currentPlayer.getCharacter().setPosition(exit.getX(), exit.getY());
+						}
+						else{
+							//Moves the character to the room at the other end of the stairs.
+							changeCharacterRoom(currentPlayer.getCharacter(), currentRoom.getStairs());
+						}
 						this.board.drawBoard();
 					}
-					
+
 					else if(currentRoom.getDoors().size() == 1 && (input == 'y' || input == 'Y')){
 						// Get the only door in the room, player choice not needed:
 						exit = currentRoom.getDoors().get(0);
 						// Move the players character to the coordinates of the chosen door:
 						currentPlayer.getCharacter().setPosition(exit.getX(), exit.getY());
-						
+
 						this.board.drawBoard();
 					} else{
 						// Break out of the room turn when player chooses no:
@@ -262,13 +277,36 @@ public class Game {
 					--diceroll;
 					continue playerturn;
 				} 
-				// If just entered into the room, give player options for suggestion, accusation or stairs
+				// If just entered into the room, give player options for suggestion, accusation
 				// if room has them. All make diceroll 0;
 				else if(roomEntered){
+					String choice = null;
+
+					//give player options for suggestion, accusation  
+
+					try{	
+						while(!choice.equals("a") && !choice.equals("s")){
+							System.out.println("Would you like to make a (s)suggestion or an (a)accusation?");
+							System.out.println("Caution: an accusation may end the game!");
+							choice = scan.next();		//takes player's choice
+						}
+						//gives choices for character
+						//takes user choice
+						//gives choices for room
+						//takes user choice
+						//gives choices for weapon
+						//takes user choice
+
+					}catch(Exception e){throw new Error(e);}
+					if(choice.equals("s"))
+						//calls suggestion method
+					else
+						//calls accusation method
+
 					break roomturn;
 				}
 			}
-			
+
 			// if there are stairs in room: stairs(room)
 			// ------------------------------
 			// if not in room: process move request
@@ -372,7 +410,7 @@ public class Game {
 	 * @param The character.
 	 * @param The new room to move the character to.
 	 */
-	public void changeCharacterRoom(Character c, Room r){
+	public static void changeCharacterRoom(Character c, Room r){
 		boolean contains = false;
 		if(c.getRoom() != null)
 			c.getRoom().removeCharacter(c);		//Removes character from old room
@@ -528,7 +566,7 @@ public class Game {
 		}
 	}
 	public static void main(String[] args){
-		new Game();
+		new Game(true);
 	}
 
 
