@@ -290,8 +290,7 @@ public class Board {
 			for(int row = 0; (line = reader.readLine()) != null; row ++){	
 				// Increments over 2 chars due to spaces.
 				for(int col = 0; col < line.length(); col ++){
-					//if(line.charAt(col) != ' ')
-						this.visualBoard[row][col] = line.charAt(col);
+					this.visualBoard[row][col] = line.charAt(col);
 				}
 			}
 

@@ -166,6 +166,12 @@ public class Player {
 		default:
 			throw new IOException("Input was incorrect.");
 		}
+		/*for(int i = 0; i < 25; ++i){
+			for(int j = 0; j < 25; ++j){
+				System.err.print(board.getBoard()[i][j]);
+			}
+			System.err.println();
+		}*/
 		// If the player is trying to go into a room while at a door, set
 		// the character to be in that room and return successful move.
 		if(board.getDoor(character.getX(), character.getY()) != null){
