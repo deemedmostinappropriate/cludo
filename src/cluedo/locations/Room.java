@@ -22,9 +22,10 @@ public class Room {
 	private List<Character> characters = null;
 	private int[] weaponPositionsX,  weaponPositionsY; //for mapping placement of weapons in rooms.
 	private int[] charPositionsX, charPositionsY; //for mapping placement of characters in rooms.
+	private Room stairs;
 	
 
-	public Room(String name, int[] weaponX, int[] weaponY, int[] charX, int[] charY){
+	public Room(String name, int[] weaponX, int[] weaponY, int[] charX, int[] charY, Room stairs){
 		this.NAME = name;
 		this.weaponPositionsX = weaponX;
 		this.weaponPositionsY = weaponY;
@@ -33,6 +34,7 @@ public class Room {
 		this.weapons = new ArrayList<>();
 		this.doors = new ArrayList<Door>();
 		this.characters = new ArrayList<>();
+		this.stairs = stairs;
 	}
 	
 	/**
@@ -49,6 +51,14 @@ public class Room {
 	 */
 	public List<Door> getDoors(){
 		return this.doors;
+	}
+	
+	/**
+	 * Returns the room associated with the stairs in this room, if there are any.
+	 * @return The room from the stairs.
+	 */
+	public Room getStairs(){
+		return this.stairs;
 	}
 
 	/**
