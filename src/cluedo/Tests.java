@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -215,7 +216,7 @@ public class Tests {
 
 		//attempt to illegally modify hand.
 		player.setHand(null);
-		assertTrue(player.getHand().equals(hand));
+		assertTrue(Arrays.equals(player.getHand(), hand));
 
 		//Attempt to learn null.
 		try{
