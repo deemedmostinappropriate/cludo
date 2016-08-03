@@ -414,9 +414,10 @@ public class Game {
 		boolean contains = false;
 		Room oldRoom = this.board.getRoomFromWeapon(w);
 		if(oldRoom != null)
-			oldRoom.removeWeapon(w);	//Removes the weapon from the old room
-		this.board.setRoomFromWeapon(w, r);					//Changes mapping of weapon -> room in board.
-		r.addWeapon(w);										//Moves the weapon to the new room.
+			oldRoom.removeWeapon(w);						// Removes the weapon from the old room
+		this.board.setRoomFromWeapon(w, r);					// Changes mapping of weapon -> room in board.
+		if(r == null) return;
+		r.addWeapon(w);										// Moves the weapon to the new room.
 		if(r.getWeapons().isEmpty()){
 			w.setX(r.getWeaponPositionsX()[0]);
 			w.setY(r.getWeaponPositionsY()[0]);
