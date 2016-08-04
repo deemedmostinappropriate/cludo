@@ -27,6 +27,7 @@ public class Tests {
 	
 	@Test
 	public void setup(){
+
 		// Solution implemented properly
 		assertTrue(game.getMurderer() != null);
 		assertTrue(game.getMurderRoom() != null);
@@ -142,7 +143,9 @@ public class Tests {
 
 	@Test
 	public void legalSuggestionTests(){
-		assertNull(game.suggestion(player, 0, 0, 0));		//should process properly
+		try{
+			game.suggestion(player);		//should process properly
+		}catch(IllegalArgumentException e){fail();}
 		Weapon weapon = Weapon.values()[0];
 		Room room = board.getRooms().get(0);
 		Character character = board.getCharacters().get(0);
@@ -155,42 +158,20 @@ public class Tests {
 
 	@Test
 	public void illegalSuggestionTests(){
-		//character selection too low
-		assertTrue(game.suggestion(player, -1, 0,0) != null); 
-		//character selection too high
-		assertTrue(game.suggestion(player, 10, 0,0)!= null); 
-		//room selection too low
-		assertTrue(game.suggestion(player, 0, -1,0)!= null); 
-		//room selection too high
-		assertTrue(game.suggestion(player, 0, 10,0)!= null); 
-		//weapon selection too low
-		assertTrue(game.suggestion(player, 0, 0,-1)!= null); 
-		//weapon selection too high
-		assertTrue(game.suggestion(player, 0, 10,10)!= null); 
-
 		try{
-			game.suggestion(null, 0, 0, 0);	// null player
+			game.suggestion(new Player(99, null, null)); 	//not current player
 			fail();
 		}catch(RuntimeException e){}
+		try{
+			game.suggestion(null);	// null player
+			fail();
+		}catch(IllegalArgumentException e){}
 	}
 
 	@Test
 	public void illegalAccusationTests(){
-		//character selection too low
-		assertFalse(game.accusation(player, -1, 0,0));
-		//character selection too high
-		assertFalse(game.accusation(player, 10, 0,0));
-		//room selection too low
-		assertFalse(game.accusation(player, 0, -1,0));
-		//room selection too high
-		assertFalse(game.accusation(player, 0, 10,0));
-		//weapon selection too low
-		assertFalse(game.accusation(player, 0, 0,-1));
-		//weapon selection too high
-		assertFalse(game.accusation(player, 0, 10,10));
-
 		try{
-			game.suggestion(null, 0, 0, 0);	// null player
+			game.suggestion(null);	// null player
 			fail();
 		}catch(RuntimeException e){}
 	}
@@ -198,13 +179,13 @@ public class Tests {
 	@Test
 	public void gameChangeCharacterRoomTests(){
 		try{
-			game.changeCharacterRoom(null, board.getRooms().get(0));	//should fail for null parameter 1
+			game.getBoard().changeCharacterRoom(null, board.getRooms().get(0));	//should fail for null parameter 1
 			fail();
 		}catch(Exception e){}
 
 
 		try{
-			game.changeCharacterRoom(character, null);	
+			game.getBoard().changeCharacterRoom(character, null);	
 		}catch(Exception e){fail();}	//should not throw an exception.
 	}
 
