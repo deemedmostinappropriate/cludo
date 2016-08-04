@@ -103,8 +103,10 @@ public class Player {
 		if(this.hand != null)
 			return;
 		this.hand = hand;
-		for(Card card: hand)
-			learn(card);	//adds the card to the list of the player's known cards.
+		for(Card card: hand){
+			if(card != null)
+				learn(card);	//adds the card to the list of the player's known cards.
+		}
 	}
 
 	/**
@@ -176,7 +178,7 @@ public class Player {
 			// Complete move into room if players input matches the entrance
 			// direction of the door:
 			if(d.ROOM_DIRECTION.equals(dir)){
-				Game.changeCharacterRoom(this.getCharacter(), d.getRoom());
+				board.changeCharacterRoom(this.getCharacter(), d.getRoom());
 				return true;
 			}
 		}
@@ -215,6 +217,22 @@ public class Player {
 		return hand;
 	}
 
-
+	/**
+	 * Prints the cards that are known by the player.
+	 */
+	public void printKnownCards(){
+		System.out.printf("Character cards you have seen:\t");
+		for(Card c : this.knownCharacters)
+			System.out.printf("%s\t",c.toString());
+		System.out.println();
+		System.out.printf("Room cards you have seen:\t");
+		for(Card c : this.knownRooms)
+			System.out.printf("%s\t",c.toString());
+		System.out.println();
+		System.out.printf("Weapon cards you have seen:\t");
+		for(Card c : this.knownWeapons)
+			System.out.printf("%s\t", c.toString());
+		System.out.printf("\n\n");
+	}
 
 }
