@@ -12,6 +12,7 @@ import java.util.Scanner;
 
 import cluedo.Card;
 import cluedo.Card.WEAPON;
+import cluedo.Game;
 import cluedo.pieces.Character;
 import cluedo.pieces.Weapon;
 
@@ -199,7 +200,7 @@ public class Board {
 			}
 			System.out.println();
 		}
-		
+		System.out.println();
 	}
 
 	/**
@@ -309,6 +310,91 @@ public class Board {
 
 			reader.close();		//won't accept being put in finally block.
 		}catch(IOException e){throw new Error(e);}
+	}
+
+	/**
+	 * Changes the Character.room field to the new room.
+	 * Removes the character from any room they were in.
+	 * Adds the player to the new room.
+	 * If the room is null, the player will be removed from their room, and have its field changed.
+	 * In this instance it will not be added to a new room.
+	 * @param c TODO
+	 * @param r TODO
+	 * @param The character.
+	 * @param The new room to move the character to.
+	 */
+	public void changeCharacterRoom(Character c, Room r){
+		boolean contains = false;
+		if(c.getRoom() != null)
+			c.getRoom().removeCharacter(c);		//Removes character from old room
+		c.setRoom(r);								//Changes characters record of room.
+		setRoomFromCharacter(c.NAME, null);
+		if(r == null)
+			return;
+		r.addCharacter(c);						//Moves character to the new room.
+	
+		//gets X to set to
+		if(r.getCharacters().isEmpty()){
+			c.setX(r.getCharPositionsX()[0]);
+			c.setY(r.getCharPositionsY()[0]);
+		}
+		else{
+			// Finds the first character position which is not currently occupied.
+			for(int x = 0; x < r.getCharPositionsX().length; x++){
+				contains = false;
+				for(int piece = 0; piece < r.getCharacters().size(); piece++){
+					if(r.getCharacters().get(piece).getX() == r.getCharPositionsX()[x]){
+						contains = true;
+						break;
+					}
+				}
+				if(!contains){
+					c.setX(r.getCharPositionsX()[x]);
+					c.setY(r.getCharPositionsY()[x]);
+					return;
+				}
+			}
+		}
+	
+	}
+
+	/**
+	 * Moves the weapon piece to the room
+	 * @param The weapon
+	 * @param The room
+	 * @param game TODO
+	 * @param w TODO
+	 * @param r TODO
+	 */
+	public void changeWeaponRoom(Weapon w, Room r){
+		boolean contains = false;
+		Room oldRoom = getRoomFromWeapon(w);
+		if(oldRoom != null)
+			oldRoom.removeWeapon(w);						// Removes the weapon from the old room
+		setRoomFromWeapon(w, r);					// Changes mapping of weapon -> room in board.
+		if(r == null) return;
+		r.addWeapon(w);										// Moves the weapon to the new room.
+		if(r.getWeapons().isEmpty()){
+			w.setX(r.getWeaponPositionsX()[0]);
+			w.setY(r.getWeaponPositionsY()[0]);
+		}
+		else{
+			// Finds the first weapon position which is not currently occupied.
+			for(int x = 0; x < r.getWeaponPositionsX().length; x++){
+				contains = false;
+				for(int piece = 0; piece < r.getWeapons().size(); piece++){
+					if(r.getWeapons().get(piece).getX() == r.getWeaponPositionsX()[x]){
+						contains = true;
+						break;
+					}
+				}
+				if(!contains){
+					w.setX(r.getWeaponPositionsX()[x]);
+					w.setY(r.getWeaponPositionsY()[x]);
+					return;
+				}
+			}
+		}
 	}
 
 
