@@ -19,15 +19,17 @@ public class Tests {
 	private List<Character>characters;
 	
 	
-	private List<Room> rooms;
+	
 	Game game = new Game(false);
-	private Board board = game.getBoard();
+	Board board = game.getBoard();
 	Player player = game.getPlayers().get(0);
 	Character character = player.getCharacter();
-	
+	List<Room> rooms;
+
 	@Test
 	public void setup(){
-
+		Game game = new Game(false);
+		
 		// Solution implemented properly
 		assertTrue(game.getMurderer() != null);
 		assertTrue(game.getMurderRoom() != null);
@@ -48,6 +50,10 @@ public class Tests {
 
 	@Test
 	public void legalMoves() throws IOException{
+		Game game = new Game(false);
+		Board board = game.getBoard();
+		Player player = game.getPlayers().get(0);
+		
 		character.setPosition(5,7);			//sets to safe square
 		//move up ends up in correct square (x,y+1)
 		assert(player.move('w', board));
@@ -77,6 +83,10 @@ public class Tests {
 
 	@Test
 	public void illegalMoves() throws IOException{
+		Game game = new Game(false);
+		Board board = game.getBoard();
+		Player player = game.getPlayers().get(0);
+		
 		character.setPosition(0,7);		//resets to unsafe square(walls above, below and to left)
 		assertFalse(player.move('w', board));		//illegal move up into non-room wall
 		assertFalse(player.move('s', board));		//illegal move down into non-room wall
@@ -103,6 +113,10 @@ public class Tests {
 
 	@Test
 	public void legalRoomTests() throws IOException{
+		Game game = new Game(false);
+		Board board = game.getBoard();
+		Player player = game.getPlayers().get(0);
+		
 		character.setRoom(null);
 		character.setPosition(6,6);	//door to lounge
 		player.move('s', board);	//processes player request to walk down
@@ -121,6 +135,10 @@ public class Tests {
 
 	@Test
 	public void illegalRoomTests()throws IOException {
+		Game game = new Game(false);
+		Board board = game.getBoard();
+		Player player = game.getPlayers().get(0);
+		
 		character.setRoom(null);
 		character.setPosition(6,6);	//door to lounge
 		player.move('a', board);	//processes player request to walk left
@@ -143,6 +161,10 @@ public class Tests {
 
 	@Test
 	public void legalSuggestionTests(){
+		Game game = new Game(false);
+		Board board = game.getBoard();
+		Player player = game.getPlayers().get(0);
+		
 		try{
 			game.suggestion(player);		//should process properly
 		}catch(IllegalArgumentException e){fail();}
@@ -158,6 +180,10 @@ public class Tests {
 
 	@Test
 	public void illegalSuggestionTests(){
+		Game game = new Game(false);
+		Board board = game.getBoard();
+		Player player = game.getPlayers().get(0);
+		
 		try{
 			game.suggestion(new Player(99, null, null)); 	//not current player
 			fail();
@@ -170,6 +196,10 @@ public class Tests {
 
 	@Test
 	public void illegalAccusationTests(){
+		Game game = new Game(false);
+		Board board = game.getBoard();
+		Player player = game.getPlayers().get(0);
+		
 		try{
 			game.suggestion(null);	// null player
 			fail();
@@ -178,6 +208,10 @@ public class Tests {
 
 	@Test
 	public void gameChangeCharacterRoomTests(){
+		Game game = new Game(false);
+		Board board = game.getBoard();
+		Player player = game.getPlayers().get(0);
+		
 		try{
 			game.getBoard().changeCharacterRoom(null, board.getRooms().get(0));	//should fail for null parameter 1
 			fail();
@@ -191,6 +225,9 @@ public class Tests {
 
 	@Test
 	public void playerTests(){
+		Game game = new Game(false);
+		Board board = game.getBoard();
+		Player player = game.getPlayers().get(0);
 		Card[] hand = player.getHand();
 
 		//attempt to illegally modify hand.
@@ -207,6 +244,7 @@ public class Tests {
 
 	@Test
 	public void characterTests(){
+		
 		//construction
 		try{
 			new Character(-1, 5, "", "");		// x position too low
@@ -258,6 +296,10 @@ public class Tests {
 
 	@Test
 	public void boardTests(){
+		Game game = new Game(false);
+		Board board = game.getBoard();
+		Player player = game.getPlayers().get(0);
+		
 		//in range
 		assertTrue(board.inRange(0, 0));
 		assertTrue(board.inRange(24, 24));
@@ -322,6 +364,10 @@ public class Tests {
 
 	@Test
 	public void roomTests(){
+		Game game = new Game(false);
+		Board board = game.getBoard();
+		Player player = game.getPlayers().get(0);
+		
 		Room room = board.getRooms().get(0);
 		//addWeapon
 		try{

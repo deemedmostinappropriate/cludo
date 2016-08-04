@@ -340,7 +340,12 @@ public class Game {
 	 * A suggestion made by the player to learn more about the murder.
 	 * @param The player who made the suggestion
 	 */
-	public void suggestion(Player p){
+	public void suggestion(Player p)throws IllegalArgumentException{
+		if(p == null)
+			throw new IllegalArgumentException("Null argument received.");
+		if(!p.equals(currentPlayer))
+			throw new RuntimeException("Only the current player can make suggestions.");
+		
 		//give player options for suggestion, accusation  
 		int characterChoice = 0, weaponChoice = 0;
 		Room location = p.characterLocation();		// Suggest from the current room only:
