@@ -5,12 +5,7 @@ package cluedo.pieces;
  *
  */
 public enum Weapon implements Piece{
-		CANDLESTICK,
-		DAGGER,
-		LEAD_PIPE,
-		REVOLVER,
-		ROPE,
-		SPANNER;
+	ROPE, DAGGER, CANDLESTICK, REVOLVER, LEADPIPE, SPANNER;
 	
 	private int x = 0, y = 0;
 
