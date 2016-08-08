@@ -29,7 +29,14 @@ public class Board {
 	/** The board image. **/
 	private BufferedImage boardImage;
 	/** Board width and height. **/
-	public final int BOARD_WIDTH = 700, BOARD_HEIGHT = 700;
+	public final int BOARD_WIDTH = 700, BOARD_HEIGHT = 600;   
+	/** Vertical and horizontal offsets for start of board squares(tiles), based on board dimension 700*600	**/
+	public final int HORI_OFFSET = 23, VERT_OFFSET = 8;
+	/** Dimensions of our squares. Note that this produces a rectangle. Based on board dimension 700*600. **/
+	public final int SQ_WIDTH = 27, SQ_HEIGHT = 22;
+	
+	
+	
 	/** This holds a value of 1 at any space where the character can move to. */
 	private int[][] board;
 	/** The visual representation of the game board.. */
