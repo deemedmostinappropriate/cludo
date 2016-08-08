@@ -3,61 +3,27 @@ package cluedo;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
-
 import org.junit.Test;
-
 import cluedo.locations.Board;
 import cluedo.locations.Room;
 import cluedo.pieces.Character;
 import cluedo.pieces.Weapon;
 
 public class Tests {
-	private List<Character>characters;
-	
-	
-	
-	Game game = new Game(false);
-	Board board = game.getBoard();
-	Player player = game.getPlayers().get(0);
-	Character character = player.getCharacter();
-	List<Room> rooms;
-
-	@Test
-	public void setup(){
-		Game game = new Game(false);
-		
-		// Solution implemented properly
-		assertTrue(game.getMurderer() != null);
-		assertTrue(game.getMurderRoom() != null);
-		assertTrue(game.getMurderWeapon() != null);
-		// Hands distributeds
-		int cardsInHands = 0;
-		for(Player p : game.getPlayers()){
-			assertTrue(p.getHand() != null && p.getHand().length != 0);		//no players have empty hands
-			cardsInHands += p.getHand().length;
-		}
-		assertTrue(cardsInHands == 18);//all hands total 18 (all cards - solution)
-
-		assert(true);
-	}
 
 
 	//safe movement in any direction from (5,7)
 
 	@Test
 	public void legalMoves() throws IOException{
-		Game game = new Game(false);
-		Board board = game.getBoard();
-		Player player = game.getPlayers().get(0);
-		
+		Board board = new Board();
+		Character character = board.getCharacters().get(0);
+		Player player = new Player(0 , character);
 		character.setPosition(5,7);			//sets to safe square
+
 		//move up ends up in correct square (x,y+1)
 		assert(player.move('w', board));
-		//ToDo:process move		
+		//ToDo:process move
 		assert(character.getX() == 5 && character.getY() == 8);
 
 		//right ends up in correct square (x+1,y)
@@ -76,17 +42,17 @@ public class Tests {
 		character.setPosition(5,7);		//resets to safe square
 		assert(player.move('a', board));
 		//ToDo:process move
-		assert(character.getX() == 4 && character.getY() == 7);  
+		assert(character.getX() == 4 && character.getY() == 7);
 
 
 	}
 
 	@Test
 	public void illegalMoves() throws IOException{
-		Game game = new Game(false);
-		Board board = game.getBoard();
-		Player player = game.getPlayers().get(0);
-		
+		Board board = new Board();
+		Character character = board.getCharacters().get(0);
+		Player player = new Player(0 , character);
+
 		character.setPosition(0,7);		//resets to unsafe square(walls above, below and to left)
 		assertFalse(player.move('w', board));		//illegal move up into non-room wall
 		assertFalse(player.move('s', board));		//illegal move down into non-room wall
@@ -107,132 +73,66 @@ public class Tests {
 	//movement into room:
 	//player is on door square
 	//if player direction is door's direction
-	//then room contains player 
+	//then room contains player
 	// room contains player
 
 
 	@Test
 	public void legalRoomTests() throws IOException{
-		Game game = new Game(false);
-		Board board = game.getBoard();
-		Player player = game.getPlayers().get(0);
-		
+		Board board = new Board();
+		Character character = board.getCharacters().get(0);
+		Player player = new Player(0 , character);
+
 		character.setRoom(null);
 		character.setPosition(6,6);	//door to lounge
 		player.move('s', board);	//processes player request to walk down
 		//ToDo: process movement
 		assertTrue(character.getRoom() != null);		//is in a room.
-		assertTrue(character.getRoom().equals(rooms.get(0))); // is in correct room.
-		assertTrue(rooms.get(0).getCharacters().contains(character)); //room holds character
-		assertTrue(board.getRoomFromCharacter(character.NAME) != null); //roomFromCharacter map updated
-		assertTrue(board.getRoomFromCharacter(character.NAME).equals(
-				rooms.get(0)));	// room mapped to character name.
-
-
-		//test moving out of room.
+		assertTrue(character.getRoom().equals(board.getRooms().get(0))); // is in correct room.
+		assertTrue(board.getRooms().get(0).getCharacters().contains(character)); //room holds character
 
 	}
 
 	@Test
 	public void illegalRoomTests()throws IOException {
-		Game game = new Game(false);
-		Board board = game.getBoard();
-		Player player = game.getPlayers().get(0);
-		
+		Board board = new Board();
+		Character character = board.getCharacters().get(0);
+		Player player = new Player(0 , character);
+
 		character.setRoom(null);
 		character.setPosition(6,6);	//door to lounge
 		player.move('a', board);	//processes player request to walk left
 		//ToDo: process movement
 		assertTrue(character.getRoom() == null); //cannot move into lounge by walking left
-
-
-
-
 	}
 
-
-	//movement from rooms
-	//on stepping out of a room, the player's position is updated to the square
-
-	//movement via staircase
-	//old room does not contain character
-	//new room does contain character
-	//
-
-	@Test
-	public void legalSuggestionTests(){
-		Game game = new Game(false);
-		Board board = game.getBoard();
-		Player player = game.getPlayers().get(0);
-		
-		try{
-			game.suggestion(player);		//should process properly
-		}catch(IllegalArgumentException e){fail();}
-		Weapon weapon = Weapon.values()[0];
-		Room room = board.getRooms().get(0);
-		Character character = board.getCharacters().get(0);
-		assertTrue(room.getWeapons().contains(weapon));	//rope should be held in lounge
-		assertTrue(board.getRoomFromWeapon(weapon).equals(room));//lounge should be mapped to weapon
-		assertTrue(player.getKnownCharacters().contains(character));
-		assertTrue(player.getKnownRooms().contains(room));
-		assertTrue(player.getKnownWeapons().contains(weapon));
-	}
-
-	@Test
-	public void illegalSuggestionTests(){
-		Game game = new Game(false);
-		Board board = game.getBoard();
-		Player player = game.getPlayers().get(0);
-		
-		try{
-			game.suggestion(new Player(99, null, null)); 	//not current player
-			fail();
-		}catch(RuntimeException e){}
-		try{
-			game.suggestion(null);	// null player
-			fail();
-		}catch(IllegalArgumentException e){}
-	}
-
-	@Test
-	public void illegalAccusationTests(){
-		Game game = new Game(false);
-		Board board = game.getBoard();
-		Player player = game.getPlayers().get(0);
-		
-		try{
-			game.suggestion(null);	// null player
-			fail();
-		}catch(RuntimeException e){}
-	}
 
 	@Test
 	public void gameChangeCharacterRoomTests(){
-		Game game = new Game(false);
-		Board board = game.getBoard();
-		Player player = game.getPlayers().get(0);
-		
+		Board board = new Board();
+		Character character = board.getCharacters().get(0);
+
 		try{
-			game.getBoard().changeCharacterRoom(null, board.getRooms().get(0));	//should fail for null parameter 1
+			board.changeCharacterRoom(null, board.getRooms().get(0));	//should fail for null parameter 1
 			fail();
 		}catch(Exception e){}
 
-
 		try{
-			game.getBoard().changeCharacterRoom(character, null);	
+			board.changeCharacterRoom(character, null);
 		}catch(Exception e){fail();}	//should not throw an exception.
 	}
 
 	@Test
 	public void playerTests(){
-		Game game = new Game(false);
-		Board board = game.getBoard();
-		Player player = game.getPlayers().get(0);
-		Card[] hand = player.getHand();
+		Board board = new Board();
+		Character character = board.getCharacters().get(0);
+		Player player = new Player(0 , character);
 
 		//attempt to illegally modify hand.
-		player.setHand(null);
-		assertTrue(Arrays.equals(player.getHand(), hand));
+		try{
+			player.setHand(null);		//null hand
+			fail();
+		}catch(Exception e){}
 
 		//Attempt to learn null.
 		try{
@@ -244,7 +144,9 @@ public class Tests {
 
 	@Test
 	public void characterTests(){
-		
+		Board board = new Board();
+		Character character = board.getCharacters().get(0);
+
 		//construction
 		try{
 			new Character(-1, 5, "", "");		// x position too low
@@ -296,10 +198,9 @@ public class Tests {
 
 	@Test
 	public void boardTests(){
-		Game game = new Game(false);
-		Board board = game.getBoard();
-		Player player = game.getPlayers().get(0);
-		
+		Board board = new Board();
+		Character character = board.getCharacters().get(0);
+
 		//in range
 		assertTrue(board.inRange(0, 0));
 		assertTrue(board.inRange(24, 24));
@@ -325,25 +226,11 @@ public class Tests {
 			fail();
 		}catch(IllegalArgumentException e){}
 
-		try{
-			board.getRoomFromCharacter("Scarlett");		// contains part of name only
-			fail();
-		}catch(IllegalArgumentException e){}
 
 		//setRoomFromCharacter
 		Room room = board.getRooms().get(0);
 		try{
 			board.setRoomFromCharacter(null, room);		// name null
-			fail();
-		}catch(IllegalArgumentException e){}
-
-		try{
-			board.setRoomFromCharacter("sdfsdf", room);		// name wrong
-			fail();
-		}catch(IllegalArgumentException e){}
-
-		try{
-			board.setRoomFromCharacter("sdfsdf", room);		// name wrong
 			fail();
 		}catch(IllegalArgumentException e){}
 
@@ -358,16 +245,14 @@ public class Tests {
 		}catch(IllegalArgumentException e){}
 
 		try{
-			board.setRoomFromWeapon(Weapon.CANDLESTICK, null);		// name null		
+			board.setRoomFromWeapon(Weapon.CANDLESTICK, null);		// name null
 		}catch(IllegalArgumentException e){fail();} //should not throw exception
 	}
 
 	@Test
 	public void roomTests(){
-		Game game = new Game(false);
-		Board board = game.getBoard();
-		Player player = game.getPlayers().get(0);
-		
+		Board board = new Board();
+
 		Room room = board.getRooms().get(0);
 		//addWeapon
 		try{
@@ -377,7 +262,8 @@ public class Tests {
 
 		try{
 			room.addWeapon(null); 	//weapon already contained in room
-		}catch(IllegalArgumentException e){fail();} // should be ok.
+			fail();
+		}catch(IllegalArgumentException e){}
 
 		//addDoor
 		try{
@@ -387,7 +273,8 @@ public class Tests {
 
 		try{
 			room.addDoor(null); 	//door already contained in room
-		}catch(IllegalArgumentException e){fail();} // should be ok.
+			fail();
+		}catch(IllegalArgumentException e){}
 
 		//addCharacter
 		try{
@@ -397,7 +284,8 @@ public class Tests {
 
 		try{
 			room.addCharacter(null); 	//character already contained in room
-		}catch(IllegalArgumentException e){fail();} // should be ok.
+			fail();
+		}catch(IllegalArgumentException e){} // should be ok.
 
 		// removeWeapon
 		try{
@@ -409,7 +297,7 @@ public class Tests {
 			room.removeWeapon(Weapon.CANDLESTICK); 	// loop is prep for next one.
 		}catch(IllegalArgumentException e){}	//may throw
 		try{
-			room.removeWeapon(Weapon.CANDLESTICK); 	
+			room.removeWeapon(Weapon.CANDLESTICK);
 			fail();
 		}catch(IllegalArgumentException e){}	//should throw
 
@@ -424,7 +312,7 @@ public class Tests {
 			room.removeCharacter(c);// loop is prep for next one.
 		}catch(IllegalArgumentException e){}	//may throw
 		try{
-			room.removeCharacter(c); 	
+			room.removeCharacter(c);
 			fail();
 		}catch(IllegalArgumentException e){}	//should throw
 	}

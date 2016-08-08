@@ -1,4 +1,6 @@
 package cluedo.locations;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -10,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import javax.imageio.ImageIO;
+
 import cluedo.Card;
 import cluedo.Card.WEAPON;
 import cluedo.Game;
@@ -17,42 +21,46 @@ import cluedo.pieces.Character;
 import cluedo.pieces.Weapon;
 
 public class Board {
+	private BufferedImage boardImage;
+
 	/** This holds a value of 1 at any space where the character can move to. */
 	private int[][] board;
-	
+
 	/** The visual representation of the game board.. */
 	private char[][] visualBoard;
-	
+
 	/** The list of all rooms in the game. */
 	private List<Room> rooms;
-	
+
 	/** Holds the x,y locations of all doors. */
 	private Door[][] doors;
-	
+
 	/** Lists the characters on the board, used to access their locations. */
 	private List<Character> characters;
-	
+
 	/** A map of weapons and the room they are in. */
 	private Map<Weapon, Room> roomsFromWeapons;
-	
+
 	/** A map of Characters and the room they are currently in. Matches to Character.NAME. */
 	private Map<String, Room> roomFromCharacter;
-	
+
 	/** The size of the game board in total */
 	private static final int SIZE = 25;
-	
+
 	public Board(){
+		this.boardImage = loadImage("clue_game_board");
+
 		// Locations relative to the game board itself:
 		this.board = new int[SIZE][SIZE];
 		this.visualBoard = new char [SIZE][SIZE*2];
 		this.doors = new Door[SIZE][SIZE];
-		
+
 		// Items, characters and their locations if/when in rooms:
 		this.rooms = new ArrayList<Room>();
 		this.characters = new ArrayList<>();
 		this.roomsFromWeapons = new HashMap<>();
 		this.roomFromCharacter = new HashMap<>();
-		
+
 		//Adds rooms to the board.
 		Room lounge = new Room("LOUNGE", new int[]{0,1,2,3,4,5}, new int[]{0,0,0,0,0,0}, new int[]{0,1,2,3,4,5},  new int[]{4,4,4,4,4,4});
 		this.rooms.add(lounge);
@@ -72,11 +80,11 @@ public class Board {
 		conservatory.setStairs(lounge);
 		kitchen.setStairs(study);
 		study.setStairs(kitchen);
-		
+
 		parseSquareFile();	//Adds squares to the board.
 		parseDoorFile();	//Adds doors to the board and rooms.
 		parseVisualMap();
-		
+
 		//Sets up characters
 		this.characters.add(new Character(7,0,"Miss Scarlett", "MS"));
 		this.characters.add(new Character(0,7,"Col Mustard", "CM"));
@@ -84,7 +92,7 @@ public class Board {
 		this.characters.add(new Character(14,24,"Mr Green", "MG"));
 		this.characters.add(new Character(23,18,"Mrs Peacock", "MP"));
 		this.characters.add(new Character(23,5,"Prof Plum", "PP"));
-		
+
 	}
 
 	/**
@@ -94,7 +102,7 @@ public class Board {
 	public int[][] getBoard(){
 		return this.board;
 	}
-	
+
 	/**
 	 * Returns a door associated with the given x,y or null if it doesn't exist.
 	 * @param x
@@ -112,8 +120,8 @@ public class Board {
 	public List<Character> getCharacters(){
 		return this.characters;
 	}
-	
-	
+
+
 	/**
 	 * Returns a boolean of whether or not a given x,y is in range of
 	 * the board's x,y.
@@ -125,7 +133,7 @@ public class Board {
 		return x >= 0 && y >= 0
 				&& x < SIZE && y < SIZE;
 	}
-	
+
 	/**
 	 * Return the list of rooms.
 	 * @return A list of rooms.
@@ -133,7 +141,7 @@ public class Board {
 	public List<Room> getRooms(){
 		return this.rooms;
 	}
-	
+
 	/**
 	 * Returns the room which a particular weapon piece resides.
 	 * @param The weapon
@@ -142,7 +150,7 @@ public class Board {
 	public Room getRoomFromWeapon(Weapon weapon){
 		return this.roomsFromWeapons.get(weapon);
 	}
-	
+
 	/**
 	 * Returns the room in which a particualr character piece resides.
 	 * @param The character's name.
@@ -151,7 +159,7 @@ public class Board {
 	public Room getRoomFromCharacter(String characterName){
 		return this.roomFromCharacter.get(characterName);
 	}
-	
+
 	/**
 	 * Maps a character name to the room, in which they reside.
 	 * @param The character's name.
@@ -160,7 +168,7 @@ public class Board {
 	public void setRoomFromCharacter(String characterName, Room room){
 		this.roomFromCharacter.put(characterName, room);
 	}
-	
+
 	/**
 	 * Changes this.roomsFromWeapons to point from the weapon to the new room
 	 * @param The weapon
@@ -171,17 +179,12 @@ public class Board {
 	}
 
 	/**
-	 * Draws the board to the Console.
+	 * Draws the board to the canvas
 	 */
-	public void drawBoard(){
-		// Copies board to new array
-		char[][] map = new char[SIZE][SIZE*2];		
-		for(int i = 0; i < 25; ++i){
-			for(int j = 0; j < 50; ++j){
-				map[i][j] = visualBoard[i][j];
-			}
-		}
-		
+	public void draw(Graphics g){
+		g.drawImage(this.boardImage, 0, 0, null);
+
+		/*
 		//Adds characters
 		for(Character c : this.characters){
 				map[c.getY()][c.getX()*2] = c.ABBREV.charAt(0);
@@ -192,7 +195,8 @@ public class Board {
 			map[w.getY()][w.getX()*2] = w.toString().charAt(0);
 			map[w.getY()][w.getX()*2+1] = w.toString().charAt(1);
 		}
-
+		 */
+		/*
 		//Prints the array
 		for(int i = map.length-1; i >= 0; --i){
 			for(int j = 0; j < map[i].length; ++j){
@@ -201,6 +205,7 @@ public class Board {
 			System.out.println();
 		}
 		System.out.println();
+		 */
 	}
 
 	/**
@@ -294,7 +299,7 @@ public class Board {
 			}
 		}
 	}
-	
+
 	private void parseVisualMap(){
 		BufferedReader reader = null;
 		String line = null;
@@ -332,7 +337,7 @@ public class Board {
 		if(r == null)
 			return;
 		r.addCharacter(c);						//Moves character to the new room.
-	
+
 		//gets X to set to
 		if(r.getCharacters().isEmpty()){
 			c.setX(r.getCharPositionsX()[0]);
@@ -355,7 +360,7 @@ public class Board {
 				}
 			}
 		}
-	
+
 	}
 
 	/**
@@ -397,5 +402,19 @@ public class Board {
 		}
 	}
 
+	/**
+	 * Loads an image from a filepath
+	 * @param The filepath as a string
+	 * @return The buffered image
+	 */
+	public BufferedImage loadImage(String filepath){
+		BufferedImage b = null;
+		try {
+			b =  ImageIO.read(new File(filepath));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return b;
+	}
 
 }

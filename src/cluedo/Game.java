@@ -1,14 +1,10 @@
 package cluedo;
+import java.awt.Graphics;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
-import java.util.Set;
-
-import cluedo.Card.CHARACTER;
-import cluedo.Card.ROOM;
-import cluedo.Card.WEAPON;
 import cluedo.locations.Board;
 import cluedo.locations.Door;
 import cluedo.locations.Room;
@@ -31,30 +27,32 @@ public class Game {
 	private Player currentPlayer = null;
 
 	/** Holds references to all players currently in a game. */
-	private static List<Player> players;
+	private List<Player> players;
 
-	/** For a the reult from a player's roll of the dice.**/
+	/** For a the result from a player's roll of the dice.**/
 	private int diceroll = 0;
 
 	/** The index of the current player in the list of players. **/
 	private int currentPlayerIndex = 0;
 
-	/* The game is over when all of these are correctly guessed by the player: */
+	/** The character card in the solution. **/
 	private Card.CHARACTER murderer;
+	/** The room card in the solution. **/
 	private Card.ROOM murderRoom;
+	/** The weapon card in the solution. **/
 	private Card.WEAPON murderWeapon;
 
-	public Game(boolean run){
+	public Game(){
 		int numPlayers = 0, rand = 0;
 		scan = new Scanner(System.in);
 		System.out.println("Welcome to Cluedo");
 		System.out.println("How many people are playing? (enter a number between 3 and 6):");
+
 		// Makes sure the number of players is in the range of 3-6.
 		while(numPlayers < 3 || numPlayers > 6){
 			numPlayers = scan.nextInt();
-			if(numPlayers < 3 || numPlayers > 6){
+			if(numPlayers < 3 || numPlayers > 6)
 				System.out.println("Please enter a number between 3 and 6:");
-			}
 		}
 		this.numPlayers = numPlayers;
 		this.board = new Board();//Set up board
@@ -64,8 +62,33 @@ public class Game {
 		freeCharacters.addAll(this.board.getCharacters());		//adds all characters to the list.
 
 		// Set up players
-		for(int i = 0; i < numPlayers; i++)
-			players.add(new Player(i+1, freeCharacters, scan));	//The player chooses which character to use from the list.
+		for(int i = 0; i < numPlayers; i++){
+			Character character = null;
+			while(character == null){
+				System.out.printf("Player %d, please choose your character:\n", i);
+				for(int j = 0; j < freeCharacters.size(); j++){
+					System.out.printf("(%c) %s\n",'a'+j, freeCharacters.get(j).NAME); 	//e.g (a)Colonel Mustard
+				}
+				String str = scan.next();
+				char c = str.charAt(0);
+				if(c >= 97 && c <= 102){
+					int choice = c - 'a';		//the index of the player's choice in the list.
+					if(choice < freeCharacters.size()){
+						character = freeCharacters.get(choice);	//Sets the character
+						freeCharacters.remove(choice);					//Removes the character from the list, so that it cannot be chosen again.
+					}
+					else
+						System.out.println("Sorry, your choice is not valid. Please try again.");
+				}
+				else
+					System.out.println("Sorry, your choice is not valid. Please try again.");
+			}
+			if(character != null)
+				System.out.printf("Player %d chose %s\n", i, character.NAME);
+
+			players.add(new Player(i+1, character));	//The player chooses which character to use from the list.
+		}
+
 		int startingPlayer = assignCards();	//Assigns all cards in the game.
 
 		List<Weapon> weaponPieces = new ArrayList<>(Arrays.asList(Weapon.values()));
@@ -77,7 +100,7 @@ public class Game {
 			this.getBoard().changeWeaponRoom(weaponPieces.get(rand), r); //adds a weapon to the room
 			weaponPieces.remove(rand);						//removes the weapon from the list of weapon pieces.
 		}
-		if(run)	run(startingPlayer);		//to turn debug on and off
+		run(startingPlayer);
 		scan.close();				// closes the scanner after running the game.
 	}
 
@@ -86,7 +109,7 @@ public class Game {
 	 * @return
 	 */
 	public Board getBoard(){
-		return this.board; 
+		return this.board;
 	}
 
 	/**
@@ -141,7 +164,7 @@ public class Game {
 		while(players.size() > 1){
 			boolean roomEntered = false;		// Don't ask about leaving room if they have just entered:
 			this.diceroll = diceRoll();		// Roll dice and display result
-			this.board.drawBoard(); //draws the board
+			this.board.draw(); //draws the board
 			System.out.println("Player " +  currentPlayer.PLAYER_NUM + "'s turn ("+ currentPlayer.getCharacter().ABBREV +"): ");
 			currentPlayer.printKnownCards();//print out list of cards player knows about
 
@@ -151,19 +174,36 @@ public class Game {
 				System.out.println("Would you like to move or make an accusation?Choose (1)move, or (0)accusation");
 				System.out.println("Caution: an accusation may end the game!");
 				int choice = 99;
-				do{
-					choice = scan.nextInt();
-				}while(choice != 0 && choice != 1);
-				if(choice == 1){
-					roomEntered = doMovement();	
-					System.out.println("Would you like to move or make an accusation?Choose (1)no, or (0)yes");
-					choice = 99;
-					do{
+
+				while(choice != 0 && choice != 1){
+					try{
 						choice = scan.nextInt();
-					}while(choice != 0 && choice != 1);
-					if(choice == 0){
-						accusation(currentPlayer);
-						break;
+					}catch(Exception e){
+						System.out.println("Your choice was invalid. Please try again.");
+						scan.next();
+						continue;
+					}
+				}
+
+
+				if(choice == 1){
+					roomEntered = doMovement();
+					if(!roomEntered){
+						System.out.println("Would you like to make an accusation?Choose (1)no, or (0)yes");
+						choice = 99;
+						while(choice != 0 && choice != 1){
+							try{
+								choice = scan.nextInt();
+							}catch(Exception e){
+								System.out.println("Your choice was invalid. Please try again.");
+								scan.next();
+								continue;
+							}
+						}
+						if(choice == 0){
+							accusation(currentPlayer);
+							break;
+						}
 					}
 				}
 				else{
@@ -176,13 +216,13 @@ public class Game {
 			}
 
 
-			// Check if in a room, show leave options or 
+			// Check if in a room, show leave options or
 			if(currentPlayer.characterLocation() != null){
 				Room currentRoom = currentPlayer.characterLocation();
 				if(doRoomTurn(currentRoom, roomEntered))
 					break;
 				else
-					doMovement();	
+					doMovement();
 			}
 			updateCurrentPlayer();
 
@@ -215,33 +255,33 @@ public class Game {
 
 				if(currentPlayer.move(dir, board)){
 					-- this.diceroll;			// Take away from remaining moves:
-					// Print success and the new location:
 					System.out.printf("%s  is now at (%d, %d) on the board.\n", character.NAME, character.getX(), character.getY());
 				} else{
 					// If the place player's character is moving to is not traversable:
-					this.board.drawBoard();
+					this.board.draw();
 					System.out.println("There is no square to move to in that direction, please try again.");
 					continue;		// Start loop again to receive new input.
 				}
 			}catch (IOException e) {
 				// Catch an exception if the input char from player is not w a s d
 				System.out.println(e.getMessage() + "Please use W A S D.");
+				scan.next();
 				continue;		// Start loop again to receive new input.
 			}
 
 			if(this.diceroll != 0 && currentPlayer.characterLocation() == null){
-				this.board.drawBoard(); //Draws the map with the character in a room.
+				this.board.draw(); //Draws the map with the character in a room.
 				currentPlayer.printKnownCards();
 				System.out.println("    Moves remaining: " + this.diceroll);		// Show moves remaining, only after a successful move:
 
 			}
 			else if(currentPlayer.characterLocation() != null){		// If the move resulted in player entering a room:
-				this.board.drawBoard(); //Draws the map with the character in a room.
+				this.board.draw(); //Draws the map with the character in a room.
 				currentPlayer.printKnownCards();
 				return true;
 			}
 			else{ // Notify the player they have completed their turn if they did not reach a room:
-				this.board.drawBoard(); //Draws the map with the character in a room.
+				this.board.draw(); //Draws the map with the character in a room.
 				System.out.println("Move Turn Complete for Player " + currentPlayer.PLAYER_NUM);
 			}
 		}
@@ -270,14 +310,14 @@ public class Game {
 			System.out.println("Type the number of the door or staircase you want to leave from: ");
 			int i, r = 999;
 			while(exit == null){
-				if(currentRoom.getDoors().size() == 1 && currentRoom.getStairs() == null)	
+				if(currentRoom.getDoors().size() == 1 && currentRoom.getStairs() == null)
 					exit = 	currentRoom.getDoors().get(0);	//only one exit available.
 				for(i = 0; i< currentRoom.getDoors().size(); ++i)
 					System.out.printf("%d: %s\t", i, reverseDir(currentRoom.getDoors().get(i).ROOM_DIRECTION));
 
 				if(currentRoom.getStairs() != null)
 					System.out.printf("%d: Stairs to %s\n", i, currentRoom.getStairs().NAME);
-				System.out.println();	
+				System.out.println();
 				// Catch an integer from players input:
 				try{
 					r = scan.nextInt();
@@ -301,11 +341,11 @@ public class Game {
 				this.diceroll = 0;
 				return doRoomEntry();		//asks usual room entry questions.
 			}
-			this.board.drawBoard();
+			this.board.draw();
 			board.changeCharacterRoom(character, null);	// Set players room to null
 			--this.diceroll;
 			return false;		// continue with turn from the beginning
-		} 
+		}
 		// If just entered into the room, give player options for suggestion, accusation
 		// if room has them. All make diceroll 0;
 		else if(roomEntered && doRoomEntry())
@@ -320,7 +360,8 @@ public class Game {
 	private boolean doRoomEntry(){
 		boolean gameOver = false;
 		String choice = "";
-		try{	
+		this.diceroll = 0;
+		try{
 			do{
 				System.out.println("Would you like to make a (s)uggestion or an (a)ccusation?");
 				System.out.println("Caution: an accusation may end the game!");
@@ -345,8 +386,8 @@ public class Game {
 			throw new IllegalArgumentException("Null argument received.");
 		if(!p.equals(currentPlayer))
 			throw new RuntimeException("Only the current player can make suggestions.");
-		
-		//give player options for suggestion, accusation  
+
+		//give player options for suggestion, accusation
 		int characterChoice = 0, weaponChoice = 0;
 		Room location = p.characterLocation();		// Suggest from the current room only:
 		int roomChoice = Card.ROOM.valueOf(location.NAME).ordinal();
@@ -379,8 +420,6 @@ public class Game {
 					Card.WEAPON.values()[weaponChoice]);
 		}catch(Exception e){throw new Error(e);}
 
-
-
 		Character character = this.board.getCharacters().get(characterChoice);
 		Room room = this.board.getRooms().get(roomChoice);
 		Weapon weapon = Weapon.values()[weaponChoice];
@@ -388,28 +427,37 @@ public class Game {
 		board.changeCharacterRoom(character, room);
 		board.changeWeaponRoom(weapon, room);
 
-		this.board.drawBoard(); //draws the map
+		this.board.draw(); //draws the map
 
 		Card roomCard = Card.ROOM.values()[roomChoice];
 		Card characterCard = Card.CHARACTER.values()[characterChoice];
 		Card weaponCard = Card.WEAPON.values()[weaponChoice];
 
-		p.learn(roomCard);					//Adds the Room to the player's set of known Rooms
-		p.learn(characterCard);			//Adds the Character to the player's set of known Characters
-		p.learn(weaponCard);				//Adds the Weapon to the player's set of known Weapons
 
 		//Check for a player to refute this suggestion.
-		for(int i = 0; i < this.players.size(); i++){
-			Player otherPlayer = this.players.get(i);
-			if(otherPlayer.equals(p))
-				for(Card c: otherPlayer.getHand()){
-					if(c == roomCard || c == characterCard || c == weaponCard){
-						System.out.printf("Player %d refutes this suggestion!", i);
-						return;
+		outside:
+			for(int i = 0; i < this.players.size(); i++){
+				Player otherPlayer = this.players.get(i);
+				if(!otherPlayer.equals(p)){
+					for(Card c: otherPlayer.getHand()){
+						if(c == roomCard){
+							System.out.printf("Player %d refutes this suggestion with %s\n", i, c.toString());
+							p.learn(c);
+							break outside;
+						}
+						else if( c == characterCard){
+							System.out.printf("Player %d refutes this suggestion with %s\n", i, c.toString());
+							p.learn(c);
+							break outside;
+						}
+						else if( c == weaponCard){
+							System.out.printf("Player %d refutes this suggestion with %s\n", i, c.toString());
+							p.learn(c);
+							break outside;
+						}
 					}
 				}
-		}
-		System.out.printf("No player refuted Player %d's suggestion.", currentPlayer.PLAYER_NUM);
+			}
 		pauseForResponse();
 	}
 
@@ -424,10 +472,10 @@ public class Game {
 			throw new IllegalArgumentException("Null argument received.");
 		if(!p.equals(currentPlayer))
 			throw new RuntimeException("Only the current player can make suggestions.");
-		
+
 		int characterChoice = 0, roomChoice = 0, weaponChoice = 0;
 
-		try{	
+		try{
 			do{
 				System.out.printf("Which character do you want to accuse of murder?\n");
 				//gives choices for character
@@ -466,7 +514,7 @@ public class Game {
 		Card.ROOM room = Card.ROOM.values()[roomChoice];
 		Card.WEAPON weapon = Card.WEAPON.values()[weaponChoice];
 
-		if(character != this.murderer 
+		if(character != this.murderer
 				|| room != this.murderRoom
 				|| weapon != this.murderWeapon){
 			this.players.remove(p);	//removes the current player from the game.
@@ -539,7 +587,7 @@ public class Game {
 	}
 
 	/**
-	 * Chooses a card at random from the selection list. 
+	 * Chooses a card at random from the selection list.
 	 * All other cards in the list are added to the master list.
 	 * @param <T>
 	 * @param A list of cards to select from
@@ -565,7 +613,7 @@ public class Game {
 	}
 
 	/**
-	 * Returns a String of the direction corresponding to the reverse of the given 
+	 * Returns a String of the direction corresponding to the reverse of the given
 	 * direction string. Used with the direction held in Door objects.
 	 * @param dir
 	 * @return
@@ -599,7 +647,11 @@ public class Game {
 	}
 
 	public static void main(String[] args){
-		new Game(true);
+		new Game();
+	}
+
+	public void draw(Graphics g) {
+		this.board.draw(g);
 	}
 
 

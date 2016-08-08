@@ -2,11 +2,6 @@ package cluedo;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
-
-import cluedo.Card.CHARACTER;
-import cluedo.Card.ROOM;
-import cluedo.Card.WEAPON;
 import cluedo.locations.Board;
 import cluedo.locations.Door;
 import cluedo.locations.Room;
@@ -25,49 +20,29 @@ public class Player {
 	 * across all Player objects. */
 	private Card[] hand = null;
 
-	/* These hold the cards known by an individual player to be in other players hands.
-	 * May have double-ups with other Player objects but not within them. */
+	/** Room cards which the player has seen. **/
 	private List<Card.ROOM> knownRooms;
+
+	/** Character cards which the player has seen. **/
 	private List<Card.CHARACTER> knownCharacters;
+
+	/** Weapon cards which the player has seen. **/
 	private List<Card.WEAPON> knownWeapons;
 
 	/** The designated turn position  of this player. */
 	public final int PLAYER_NUM;
 
-	public Player(int playerNumber, List<Character> freeCharacters, Scanner scan){
+	/**
+	 * The Player constructor.
+	 * @param The number associated with the player
+	 * @param The player's character
+	 */
+	public Player(int playerNumber, Character character){
 		PLAYER_NUM = playerNumber;
 		this.knownRooms = new ArrayList<>();
 		this.knownCharacters = new ArrayList<>();
 		this.knownWeapons = new ArrayList<>();
-		int choice = 0;
-		String str = null;
-		char c = '\0';
-
-		//Requests player to choose character from list of free characters.
-		while(this.character == null){
-			System.out.printf("Player %d, please choose your character:\n", PLAYER_NUM);
-			for(int i = 0; i < freeCharacters.size(); i++){
-				System.out.printf("(%c) %s\n",'a'+i, freeCharacters.get(i).NAME); 	//e.g (a)Colonel Mustard
-			}
-			str = scan.next();
-			c = str.charAt(0);	
-			if(c >= 97 && c <= 102){
-
-
-				choice = c - 'a';		//the index of the player's choice in the list.
-				if(choice < freeCharacters.size()){
-					this.character = freeCharacters.get(choice);	//Sets the character
-					freeCharacters.remove(choice);					//Removes the character from the list, so that it cannot be chosen again.
-				}
-				else
-					System.out.println("Sorry, your choice is not valid. Please try again.");
-			}
-			else
-				System.out.println("Sorry, your choice is not valid. Please try again.");
-		}
-		if(this.character != null)
-			System.out.printf("Player %d chose %s\n", PLAYER_NUM, this.character.NAME);
-
+		this.character = character;
 	}
 
 
@@ -102,6 +77,8 @@ public class Player {
 	public void setHand(Card[] hand){
 		if(this.hand != null)
 			return;
+		if(hand == null)
+			throw new IllegalArgumentException("Null hand passed in");
 		this.hand = hand;
 		for(Card card: hand){
 			if(card != null)
@@ -135,9 +112,11 @@ public class Player {
 	 * @param New y coordinate
 	 * @param The game board.
 	 * @return Whether or not the player is able to make the move.
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public boolean move(char direction, Board board) throws IOException{
+		if(board == null)
+			throw new IllegalArgumentException("Argument is null.");
 		// Get current x,y of the players Character:
 		int newX = character.getX();
 		int newY = character.getY();
@@ -167,14 +146,14 @@ public class Player {
 			dir = "LEFT";
 			break;
 		default:
-			throw new IOException("Input was incorrect.");
+			return false;
 		}
-		
+
 		// If the player is trying to go into a room while at a door, set
 		// the character to be in that room and return successful move.
 		if(board.getDoor(character.getX(), character.getY()) != null){
 			Door d = board.getDoor(character.getX(), character.getY());
-			
+
 			// Complete move into room if players input matches the entrance
 			// direction of the door:
 			if(d.ROOM_DIRECTION.equals(dir)){
@@ -195,7 +174,7 @@ public class Player {
 	/**
 	 * Returns the Room location of this players character, or null if
 	 * not in a Room currently.
-	 * @return
+	 * @return The room which the character is in. Can be null.
 	 */
 	public Room characterLocation(){
 		return character.getRoom();
