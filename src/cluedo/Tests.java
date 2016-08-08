@@ -9,6 +9,11 @@ import cluedo.locations.Room;
 import cluedo.pieces.Character;
 import cluedo.pieces.Weapon;
 
+/**
+ * The test suite for the Cluedo application.
+ * @author Daniel Anastasi
+ *
+ */
 public class Tests {
 
 

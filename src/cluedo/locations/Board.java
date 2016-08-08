@@ -20,6 +20,11 @@ import cluedo.Game;
 import cluedo.pieces.Character;
 import cluedo.pieces.Weapon;
 
+/**
+ * The game board: Holds the character and weapon pieces.
+ * @author Daniel Anastasi
+ *
+ */
 public class Board {
 	/** The board image. **/
 	private BufferedImage boardImage;

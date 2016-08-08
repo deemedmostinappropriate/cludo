@@ -11,8 +11,12 @@ import cluedo.locations.Room;
 import cluedo.pieces.Character;
 import cluedo.pieces.Weapon;
 
-//package assignment1.cluedo;
-
+/**
+ * The application class for a Cluedo game.
+ * For 3-6 players.
+ * @author Daniel Anastasi
+ *
+ */
 public class Game {
 	/** The graphic user interface for this game. **/
 	private GUI gui;
