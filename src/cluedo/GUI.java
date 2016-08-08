@@ -23,7 +23,7 @@ public class GUI extends JFrame{
 	/** Height of the menu. **/
 	public final int MENU_HEIGHT = 25;
 	/** Height of the button panel. **/
-	public final int BUTTON_PANEL_HEIGHT = 30;
+	public final int BUTTON_PANEL_HEIGHT = 40;
 	/** The Canvas for the game**/
 	private Canvas canvas;
 	/** The menu **/
