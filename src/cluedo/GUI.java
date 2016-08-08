@@ -17,10 +17,12 @@ import java.awt.Image;
 import javax.swing.*;
 
 public class GUI extends JFrame{
+	/** Window width and height. **/
+	public final int WINDOW_WIDTH = 715, WINDOW_HEIGHT = 900;
+	/** Height of the menu. **/
+	public final int MENU_HEIGHT = 25;
 	/** The Canvas for the game**/
 	private JPanel canvas;
-	/** Width and height of the frame. **/
-	public final int WINDOW_WIDTH, WINDOW_HEIGHT, MENU_HEIGHT;
 	/** The size of text drawn.**/
 	private final float TEXT_SIZE = 20;
 	/** The image for double buffering **/
@@ -38,9 +40,7 @@ public class GUI extends JFrame{
 
 	public GUI(String appName){
 		super(appName);
-		WINDOW_WIDTH = 1080;
-		WINDOW_HEIGHT = 720;
-		MENU_HEIGHT = 25;
+
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);	
 		setLayout(new BorderLayout());
 		//Sets up menu

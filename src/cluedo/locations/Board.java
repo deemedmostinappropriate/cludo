@@ -21,34 +21,29 @@ import cluedo.pieces.Character;
 import cluedo.pieces.Weapon;
 
 public class Board {
+	/** The board image. **/
 	private BufferedImage boardImage;
-
+	/** Board width and height. **/
+	public final int BOARD_WIDTH = 700, BOARD_HEIGHT = 700;
 	/** This holds a value of 1 at any space where the character can move to. */
 	private int[][] board;
-
 	/** The visual representation of the game board.. */
 	private char[][] visualBoard;
-
 	/** The list of all rooms in the game. */
 	private List<Room> rooms;
-
 	/** Holds the x,y locations of all doors. */
 	private Door[][] doors;
-
 	/** Lists the characters on the board, used to access their locations. */
 	private List<Character> characters;
-
 	/** A map of weapons and the room they are in. */
 	private Map<Weapon, Room> roomsFromWeapons;
-
 	/** A map of Characters and the room they are currently in. Matches to Character.NAME. */
 	private Map<String, Room> roomFromCharacter;
-
 	/** The size of the game board in total */
 	private static final int SIZE = 25;
 
 	public Board(){
-		this.boardImage = loadImage("clue_game_board");
+		this.boardImage = loadImage("clue_game_board.jpg");
 
 		// Locations relative to the game board itself:
 		this.board = new int[SIZE][SIZE];
@@ -182,7 +177,7 @@ public class Board {
 	 * Draws the board to the canvas
 	 */
 	public void draw(Graphics g){
-		g.drawImage(this.boardImage, 0, 0, null);
+		g.drawImage(this.boardImage, 0, 0, BOARD_WIDTH, BOARD_HEIGHT, null);	//fits image to size
 
 		/*
 		//Adds characters
@@ -208,6 +203,23 @@ public class Board {
 		 */
 	}
 
+	/**
+	 * Distributes all weapons around the rooms.
+	 */
+	public void distributeWeapons(){
+		int rand = 0;
+		List<Weapon> weaponPieces = new ArrayList<>(Arrays.asList(Weapon.values()));
+		// Distribute weapons between rooms
+		for(Room r : this.rooms){
+			if(weaponPieces.isEmpty())
+				break;
+			rand = (int)(Math.random()*weaponPieces.size());	//index of the weapon
+			changeWeaponRoom(weaponPieces.get(rand), r); //adds a weapon to the room
+			weaponPieces.remove(rand);						//removes the weapon from the list of weapon pieces.
+		}
+
+	}
+	
 	/**
 	 * Reads the file ascii-map.txt to fill in the board array.
 	 */

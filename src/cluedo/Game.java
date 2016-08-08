@@ -14,49 +14,38 @@ import cluedo.pieces.Weapon;
 //package assignment1.cluedo;
 
 public class Game {
+	/** The graphic user interface for this game. **/
+	private GUI gui;
 	/** Scanner for use in any input scanning, including use by other objects. */
 	public static Scanner scan;
-
 	/** The amount of players in the current game. */
 	private int numPlayers;
-
 	/** The board to be interacted with. */
 	private Board board;
-
 	/** A reference to the player whose turn it is. */
 	private Player currentPlayer = null;
-
 	/** Holds references to all players currently in a game. */
 	private List<Player> players;
-
 	/** For a the result from a player's roll of the dice.**/
 	private int diceroll = 0;
-
 	/** The index of the current player in the list of players. **/
 	private int currentPlayerIndex = 0;
-
 	/** The character card in the solution. **/
 	private Card.CHARACTER murderer;
 	/** The room card in the solution. **/
 	private Card.ROOM murderRoom;
 	/** The weapon card in the solution. **/
 	private Card.WEAPON murderWeapon;
-
+	
 	public Game(){
-		int numPlayers = 0, rand = 0;
 		scan = new Scanner(System.in);
-		System.out.println("Welcome to Cluedo");
-		System.out.println("How many people are playing? (enter a number between 3 and 6):");
-
-		// Makes sure the number of players is in the range of 3-6.
-		while(numPlayers < 3 || numPlayers > 6){
-			numPlayers = scan.nextInt();
-			if(numPlayers < 3 || numPlayers > 6)
-				System.out.println("Please enter a number between 3 and 6:");
-		}
-		this.numPlayers = numPlayers;
 		this.board = new Board();//Set up board
 		this.players = new ArrayList<Player>();
+		this.numPlayers = 3;
+
+		this.gui = new GUI("CLUEDO");		//set up after objects created
+		this.gui.setGame(this);
+		
 
 		List<Character> freeCharacters = new ArrayList<Character>();
 		freeCharacters.addAll(this.board.getCharacters());		//adds all characters to the list.
@@ -89,17 +78,9 @@ public class Game {
 			players.add(new Player(i+1, character));	//The player chooses which character to use from the list.
 		}
 
-		int startingPlayer = assignCards();	//Assigns all cards in the game.
-
-		List<Weapon> weaponPieces = new ArrayList<>(Arrays.asList(Weapon.values()));
-		// Distribute weapons between rooms
-		for(Room r : this.board.getRooms()){
-			if(weaponPieces.isEmpty())
-				break;
-			rand = (int)(Math.random()*weaponPieces.size());	//index of the weapon
-			this.getBoard().changeWeaponRoom(weaponPieces.get(rand), r); //adds a weapon to the room
-			weaponPieces.remove(rand);						//removes the weapon from the list of weapon pieces.
-		}
+		assignCards();	//Assigns all cards in the game.
+		this.board.distributeWeapons();//distributes weapons around the board.
+		int startingPlayer = 0;		//generate random number if there is time.
 		run(startingPlayer);
 		scan.close();				// closes the scanner after running the game.
 	}
@@ -164,7 +145,11 @@ public class Game {
 		while(players.size() > 1){
 			boolean roomEntered = false;		// Don't ask about leaving room if they have just entered:
 			this.diceroll = diceRoll();		// Roll dice and display result
-			this.board.draw(); //draws the board
+			
+			
+			//draws the board
+			
+			
 			System.out.println("Player " +  currentPlayer.PLAYER_NUM + "'s turn ("+ currentPlayer.getCharacter().ABBREV +"): ");
 			currentPlayer.printKnownCards();//print out list of cards player knows about
 
@@ -258,7 +243,9 @@ public class Game {
 					System.out.printf("%s  is now at (%d, %d) on the board.\n", character.NAME, character.getX(), character.getY());
 				} else{
 					// If the place player's character is moving to is not traversable:
-					this.board.draw();
+					
+					//draws the board
+					
 					System.out.println("There is no square to move to in that direction, please try again.");
 					continue;		// Start loop again to receive new input.
 				}
@@ -270,19 +257,30 @@ public class Game {
 			}
 
 			if(this.diceroll != 0 && currentPlayer.characterLocation() == null){
-				this.board.draw(); //Draws the map with the character in a room.
+				
+				
+				//draws the board
+				
+				
 				currentPlayer.printKnownCards();
 				System.out.println("    Moves remaining: " + this.diceroll);		// Show moves remaining, only after a successful move:
 
 			}
 			else if(currentPlayer.characterLocation() != null){		// If the move resulted in player entering a room:
-				this.board.draw(); //Draws the map with the character in a room.
+				
+				//draws the board //Draws the map with the character in a room.
+				
+				
 				currentPlayer.printKnownCards();
 				return true;
 			}
 			else{ // Notify the player they have completed their turn if they did not reach a room:
-				this.board.draw(); //Draws the map with the character in a room.
+				
+				//draws the board //Draws the map with the character in a room.
+				
+				
 				System.out.println("Move Turn Complete for Player " + currentPlayer.PLAYER_NUM);
+				
 			}
 		}
 		return false;
@@ -341,7 +339,10 @@ public class Game {
 				this.diceroll = 0;
 				return doRoomEntry();		//asks usual room entry questions.
 			}
-			this.board.draw();
+			
+			//draws the board
+			
+			
 			board.changeCharacterRoom(character, null);	// Set players room to null
 			--this.diceroll;
 			return false;		// continue with turn from the beginning
@@ -427,8 +428,10 @@ public class Game {
 		board.changeCharacterRoom(character, room);
 		board.changeWeaponRoom(weapon, room);
 
-		this.board.draw(); //draws the map
+		
+		//draws the board
 
+		
 		Card roomCard = Card.ROOM.values()[roomChoice];
 		Card characterCard = Card.CHARACTER.values()[characterChoice];
 		Card weaponCard = Card.WEAPON.values()[weaponChoice];
