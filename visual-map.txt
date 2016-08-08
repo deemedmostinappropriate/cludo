@@ -1,25 +1,25 @@
-0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 1 1 0 0 0 0 0 0 $ 0
-0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 d 1 d 1 1 1 1 1 0 0
-$ 0 0 0 0 0 0 1 1 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 0
-0 1 1 1 1 1 d 1 1 0 0 0 0 0 0 1 1 1 0 0 0 0 0 0 0
-1 1 1 1 1 1 1 1 1 1 1 d d 1 1 1 1 0 0 0 0 0 0 0 0
-0 1 1 1 1 1 d 1 1 1 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 1 1 1 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 1 1 1 1 1 d 1 d 0 0
-0 0 0 0 0 0 0 0 d 1 0 0 0 0 0 1 1 1 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 1 1 1 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 1 1 1 0 0 0 0 0 0 0
-0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 d 0 0 0 0 0 0 0
-0 1 1 1 1 1 1 1 1 d 1 1 1 1 d 1 1 1 0 0 0 0 0 0 0
-1 1 1 1 d 1 1 1 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 0 0
-0 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 0
-0 0 0 0 0 0 1 d 0 0 0 0 0 0 0 0 d 1 d 0 0 0 $ 0 0
-0 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0
-0 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0
-0 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0
-0 0 0 0 0 $ 0 1 1 1 0 0 0 0 1 1 1 0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0
+LoLoLoLoLoLo0 1 0 0 H H H H 0 1 1 0 S S S S S S 0
+LoLoLoLoLoLoLo1 1 H H H H H H 1 1 S S S S S S S 0
+LoLoLoLoLoLoLo1 1 H H H H H H 1 1 S S S S S S S 0
+LoLoLoLoLoLoLo1 1 H H H H H H 1 1 S S S S S S $ 0
+LoLoLoLoLoLoLo1 1 H H H H H H d 1 d 1 1 1 1 1 0 0
+$ LoLoLoLoLoLo1 1 H H H H H H 1 1 1 1 1 1 1 1 1 0
+0 1 1 1 1 1 d 1 1 H H H H H H 1 1 1 LiLiLiLiLi0 0
+1 1 1 1 1 1 1 1 1 1 1 d d 1 1 1 1 LiLiLiLiLiLiLi0
+0 1 1 1 1 1 d 1 1 1 0 0 0 0 0 1 1 LiLiLiLiLiLiLi0
+D D D D D D D D 1 1 0 0 0 0 0 1 1 LiLiLiLiLiLiLi0
+D D D D D D D D 1 1 0 0 0 0 0 1 1 1 LiLiLiLiLi0 0
+D D D D D D D D 1 1 0 0 0 0 0 1 1 1 1 1 d 1 d 0 0
+D D D D D D D D d 1 0 0 0 0 0 1 1 1 BiBiBiBiBiBi0
+D D D D D D D D 1 1 0 0 0 0 0 1 1 1 BiBiBiBiBiBi0
+D D D D D D D D 1 1 0 0 0 0 0 1 1 1 BiBiBiBiBiBi0
+D D D D D 1 1 1 1 1 1 1 1 1 1 1 1 d BiBiBiBiBiBi0
+0 1 1 1 1 1 1 1 1 d 1 1 1 1 d 1 1 1 BiBiBiBiBiBi0
+1 1 1 1 d 1 1 1 BaBaBaBaBaBaBaBa1 1 1 1 1 1 1 0 0
+0 K K K K K 1 1 BaBaBaBaBaBaBaBa1 1 1 1 1 1 1 1 0
+K K K K K K 1 d BaBaBaBaBaBaBaBad 1 d C C C $ 0 0
+K K K K K K 1 1 BaBaBaBaBaBaBaBa1 1 C C C C C C 0
+K K K K K K 1 1 BaBaBaBaBaBaBaBa1 1 C C C C C C 0
+K K K K K K 1 1 BaBaBaBaBaBaBaBa1 1 C C C C C C 0
+K K K K K $ 0 1 1 1 BaBaBaBa1 1 1 0 C C C C C C 0
+K K K K K K 0 0 0 1 BaBaBaBa1 0 0 0 C C C C C C 0
