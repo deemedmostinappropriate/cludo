@@ -24,6 +24,8 @@ public class Weapon implements Piece{
 	private BufferedImage image = null;
 	/** The x and y position of this Weapon in relation to squares on the board.**/
 	private int x = 0, y = 0;
+	/** X and Y for drawing the piece. **/
+	private int realX = 0, realY = 0;
 	/** The name of the weapon**/
 	public final Name name; 
 	
@@ -54,19 +56,23 @@ public class Weapon implements Piece{
 
 	/**
 	 * Sets the x coordinate of this piece on the board.
+	 * Also sets the real value for drawing.
 	 * @param The x value.
 	 */
 	public void setX(int x) {
 		this.x = x;
+		this.realX =  x * Board.SQ_WIDTH + (Board.PIECE_OFFSET * (x + 1));
 	}
 
 
 	/**
 	 * Sets the y coordinate of this piece on the board.
+	 * Also sets the real values for drawing.
 	 * @param The y value.
 	 */
 	public void setY(int y) {
 		this.y = y;
+		this.realY = Board.BOARD_HEIGHT - ((y + 1) * Board.SQ_HEIGHT + (Board.PIECE_OFFSET * (y +1)));
 	}
 
 	/**
@@ -82,10 +88,8 @@ public class Weapon implements Piece{
 	 * Draws this weapon to the canvas.
 	 */
 	public void draw(Graphics g){
-		int x = this.x * Board.SQ_WIDTH + Board.HORI_OFFSET;
-		int y = this.y * Board.SQ_HEIGHT + Board.VERT_OFFSET;
-		g.drawImage(this.image, x, y, null);
+		g.drawImage(this.image, realX, realY, Board.SQ_WIDTH, Board.SQ_HEIGHT, null);
 	}
-
+	
 
 }

@@ -216,7 +216,7 @@ public class Tests {
 
 		//getRoomFromWeapon
 		try{
-			board.getRoomFromWeapon(null);		// weapon null
+			board.getRoomFromWeaponName(null);		// weapon null
 			fail();
 		}catch(IllegalArgumentException e){}
 
@@ -249,8 +249,9 @@ public class Tests {
 			fail();
 		}catch(IllegalArgumentException e){}
 
+		Weapon w = new Weapon(null, null);
 		try{
-			board.setRoomFromWeapon(Weapon.CANDLESTICK, null);		// name null
+			board.setRoomFromWeapon(w, null);		// room name null
 		}catch(IllegalArgumentException e){fail();} //should not throw exception
 	}
 
@@ -298,11 +299,12 @@ public class Tests {
 			fail();
 		}catch(IllegalArgumentException e){}
 
+		Weapon w = new Weapon(null, null);
 		try{
-			room.removeWeapon(Weapon.CANDLESTICK); 	// loop is prep for next one.
+			room.removeWeapon(w); 	// loop is prep for next one.
 		}catch(IllegalArgumentException e){}	//may throw
 		try{
-			room.removeWeapon(Weapon.CANDLESTICK);
+			room.removeWeapon(w);
 			fail();
 		}catch(IllegalArgumentException e){}	//should throw
 

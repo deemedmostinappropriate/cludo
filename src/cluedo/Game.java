@@ -42,14 +42,20 @@ public class Game {
 	private Card.WEAPON murderWeapon;
 	
 	public Game(){
+		
+		
 		scan = new Scanner(System.in);
 		this.board = new Board();//Set up board
-		this.players = new ArrayList<Player>();
-		this.numPlayers = 3;
-
 		this.gui = new GUI("CLUEDO");		//set up after objects created
 		this.gui.setGame(this);
 		
+		while(true)
+			this.gui.draw();// draws the board.
+		/*
+		this.players = new ArrayList<Player>();
+		this.numPlayers = 3;
+
+	
 
 		List<Character> freeCharacters = new ArrayList<Character>();
 		freeCharacters.addAll(this.board.getCharacters());		//adds all characters to the list.
@@ -83,10 +89,10 @@ public class Game {
 		}
 
 		assignCards();	//Assigns all cards in the game.
-		this.board.distributeWeapons();//distributes weapons around the board.
 		int startingPlayer = 0;		//generate random number if there is time.
 		run(startingPlayer);
 		scan.close();				// closes the scanner after running the game.
+		*/
 	}
 
 	/**
@@ -427,7 +433,7 @@ public class Game {
 
 		Character character = this.board.getCharacters().get(characterChoice);
 		Room room = this.board.getRooms().get(roomChoice);
-		Weapon weapon = Weapon.values()[weaponChoice];
+		Weapon weapon = this.board.findWeaponFromName(Weapon.Name.values()[weaponChoice]);
 
 		board.changeCharacterRoom(character, room);
 		board.changeWeaponRoom(weapon, room);

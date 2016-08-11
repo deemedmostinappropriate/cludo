@@ -1,4 +1,6 @@
 package cluedo.pieces;
+import java.awt.Graphics;
+
 import cluedo.locations.Room;
 
 /**
@@ -7,7 +9,7 @@ import cluedo.locations.Room;
  *
  */
 public class Character implements Piece{
-	
+	//private BufferedImage image;
 	private int x, y;
 	public final String NAME;
 	private Room room = null;
@@ -78,4 +80,11 @@ public class Character implements Piece{
 		this.room = room;
 	}
 	
+	/**
+	 * Draws the character piece.
+	 * @param The graphics object
+	 */
+	public void draw(Graphics g){
+		
+	}
 }

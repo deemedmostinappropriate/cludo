@@ -28,23 +28,20 @@ import cluedo.pieces.Weapon;
 public class Board {
 
 	/** Board width and height. **/
-	public final int BOARD_WIDTH = 700, BOARD_HEIGHT = 600;   
-	/** Vertical and horizontal offsets for start of board squares(tiles), based on board dimension 700*600	**/
-	public static final int HORI_OFFSET = 23, VERT_OFFSET = 8;
-	/** Dimensions of our squares. Note that this produces a rectangle. Based on board dimension 700*600. **/
-	public static final int SQ_WIDTH = 27, SQ_HEIGHT = 22;
+	public static final int BOARD_WIDTH = 651, BOARD_HEIGHT = 703;   	//earlier 700,600
+	/** Dimensions of our squares, not including black borders. Based on board dimension 645, 713**/
+	public static final int SQ_WIDTH= 24, SQ_HEIGHT = 25;
+	/** Offset to compensate for board borders**/
+	public static final int PIECE_OFFSET = 3;
 	/** The size of the game board in squares */
 	private static final int SIZE = 25;
+	
 	/** Weapon image width and height for template image cropping. **/
-	public final int WEAPON_WIDTH = 170, WEAPON_HEIGHT = 222;	
-	/** Weapon template offsets for cropping. **/
-	public final int VERT_W_OFFSET1 = 62, VERT_W_OFFSET2 = 74, HORI_W_OFFSET1 = 7,HORI_W_OFFSET2 = 15, HORI_W_OFFSET3 = 24;
+	public final int WEAPON_WIDTH = 170, WEAPON_HEIGHT = 220;	
 
 	/** The board image. **/
 	private BufferedImage boardImage;
-	/** The weapons template image **/
-	private BufferedImage weaponTemplate;
-
+	
 	/** This holds a value of 1 at any space where the character can move to. */
 	private int[][] board;
 	/** The visual representation of the game board.. */
@@ -59,8 +56,8 @@ public class Board {
 	private Map<Weapon, Room> roomsFromWeapons;
 	/** A map of Characters and the room they are currently in. Matches to Character.NAME. */
 	private Map<String, Room> roomFromCharacter;
-	
-	private List<BufferedImage> weaponImages;
+	/** A list of the game's weapon pieces**/
+	private List<Weapon> weapons;
 
 	public Board(){
 		// Items, characters and their locations if/when in rooms:
@@ -73,13 +70,7 @@ public class Board {
 		this.board = new int[SIZE][SIZE];
 		this.visualBoard = new char [SIZE][SIZE*2];
 		this.doors = new Door[SIZE][SIZE];
-
-		//loads game images
-		this.boardImage = loadImage("clue_game_board.jpg");
-		this.weaponTemplate = loadImage("weapons.jpg");
-
-		
-		
+		this.boardImage = loadImage("./Images/cluedoBoard.jpeg");		//loads board image
 
 		//Adds rooms to the board.
 		Room lounge = new Room("LOUNGE", new int[]{0,1,2,3,4,5}, new int[]{0,0,0,0,0,0}, new int[]{0,1,2,3,4,5},  new int[]{4,4,4,4,4,4});
@@ -116,20 +107,16 @@ public class Board {
 		
 		int rand = 0, weaponIndex = 0, vertOffset = 0, horiOffset = 0;
 		List<Weapon.Name> weaponNames = new ArrayList<>(Arrays.asList(Weapon.Name.values()));
+		this.weapons = new ArrayList<>();
 		Weapon w = null;
-		BufferedImage[] subs = new BufferedImage[6];//An array for weapon sub-images
-		//subs[0] = 		
-		//order in image 5,2, 
-		
-		// Distribute weapons between rooms
-		while(!weaponNames.isEmpty()){
+		// Creates and distribute weapons between rooms
+		for(Weapon.Name name : weaponNames){
 			rand = (int)(Math.random()*this.rooms.size());	//index of the room chosen at random
-			w = new Weapon(weaponNames.get(weaponIndex), this.weaponTemplate.getSubimage(x, y, w, h));
-			changeWeaponRoom(w, r); //adds a weapon to the room
-			weaponNames.remove(rand);						//removes the weapon from the list of weapon pieces.
+			w = new Weapon(name, loadImage("./Images/"+name.toString()+".jpg"));
+			this.weapons.add(w);	//adds the weapon to the list.
+			changeWeaponRoom(w, this.rooms.get(rand)); //adds a weapon to the room
 		}
-		
-		
+
 	}
 
 	/**
@@ -180,11 +167,19 @@ public class Board {
 	}
 
 	/**
+	 * Returns a list of the weapon pieces/
+	 * @return A list of Weapons
+	 */
+	public List<Weapon> getWeapons(){
+		return this.weapons;
+	}
+	
+	/**
 	 * Returns the room which a particular weapon piece resides.
-	 * @param The weapon
+	 * @param The weapon's name
 	 * @return The room.
 	 */
-	public Room getRoomFromWeapon(Weapon weapon){
+	public Room getRoomFromWeaponName(Weapon.Name weapon){
 		return this.roomsFromWeapons.get(weapon);
 	}
 
@@ -221,6 +216,11 @@ public class Board {
 	public void draw(Graphics g){
 		g.drawImage(this.boardImage, 0, 0, BOARD_WIDTH, BOARD_HEIGHT, null);	//fits image to size
 
+		//draws the weapons
+		for(Weapon w : this.weapons){
+			w.draw(g);
+		}
+		
 		/*
 		//Adds characters
 		for(Character c : this.characters){
@@ -411,7 +411,7 @@ public class Board {
 	 */
 	public void changeWeaponRoom(Weapon w, Room r){
 		boolean contains = false;
-		Room oldRoom = getRoomFromWeapon(w);
+		Room oldRoom = getRoomFromWeaponName(w.name);
 		if(oldRoom != null)
 			oldRoom.removeWeapon(w);						// Removes the weapon from the old room
 		setRoomFromWeapon(w, r);					// Changes mapping of weapon -> room in board.
@@ -438,6 +438,20 @@ public class Board {
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Returns the weapon with the given name.
+	 * This method assumes that the weapon is in the map roomsFromWeapons
+	 * @param The name of the weapon
+	 * @return The weapon
+	 */
+	public Weapon findWeaponFromName(Weapon.Name name){
+		for(Weapon w : this.roomsFromWeapons.keySet()){
+			if(w.name == name)
+				return w;
+		}
+		return null;
 	}
 
 	/**

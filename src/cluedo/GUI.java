@@ -80,7 +80,13 @@ public class GUI extends JFrame{
 		setVisible(true);				//Display the window.
 	}
 
-
+	/**
+	 * Used to repaint JPanel component.
+	 */
+	public void draw(){
+		this.canvas.repaint();
+	}
+	
 
 	/**
 	 * Provides the Canvas with a Game object for drawing.
