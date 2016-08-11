@@ -20,6 +20,8 @@ import cluedo.pieces.Weapon;
 public class Game {
 	/** The graphic user interface for this game. **/
 	private GUI gui;
+	/** A return from an event listener**/
+	private Object eventMessage = null;
 	/** Scanner for use in any input scanning, including use by other objects. */
 	public static Scanner scan;
 	/** The amount of players in the current game. */
@@ -41,6 +43,7 @@ public class Game {
 	/** The weapon card in the solution. **/
 	private Card.WEAPON murderWeapon;
 	
+	
 	public Game(){
 		
 		
@@ -61,6 +64,10 @@ public class Game {
 		playerNumSelection.add((Integer)5);
 		playerNumSelection.add((Integer)6);
 		this.gui.radioButtonSelection("How many characters are playing?", playerNumSelection);	//User(s) choose number of players
+		while(eventMessage == null){}	//loops while awaiting player input
+		if(!(eventMessage instanceof Integer))
+			throw new RuntimeException("Menu output not an integer.");
+		
 		
 		this.numPlayers = 3;
 
@@ -156,6 +163,14 @@ public class Game {
 	 */
 	public Card.WEAPON getMurderWeapon() {
 		return murderWeapon;
+	}
+	
+	/**
+	 * Sets the most recent message from an event listener
+	 * @param The message
+	 */
+	public void setEventMessage(Object message){
+		this.eventMessage = message;
 	}
 
 	/**
@@ -681,7 +696,7 @@ public class Game {
 		this.board.draw(g);
 	}
 
-
+	
 
 
 }
