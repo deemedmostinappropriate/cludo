@@ -6,6 +6,10 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
+
 import javax.swing.*;
 
 /**
@@ -24,6 +28,8 @@ public class GUI extends JFrame{
 	public final int MENU_HEIGHT = 25;
 	/** Height of the button panel. **/
 	public final int BUTTON_PANEL_HEIGHT = 40;
+	/** X and Y coordinates for pop up menus.**/
+	public final int POPUP_X = 200, POPUP_Y = 200;
 	/** The Canvas for the game**/
 	private Canvas canvas;
 	/** The menu **/
@@ -38,6 +44,8 @@ public class GUI extends JFrame{
 	private JButton rollDice;
 	/** A panel to organis the buttons**/
 	private JPanel buttonPanel;
+	/** A popup menu**/
+	private JPopupMenu popupMenu;
 	
 	
 	/** The size of text drawn.**/
@@ -63,8 +71,10 @@ public class GUI extends JFrame{
 		this.buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 		this.buttonPanel.add(this.rollDice);
 		this.buttonPanel.add(this.nextTurn);
+		//The popup menu
+		this.popupMenu = new JPopupMenu(); 
 		
-		//getContentPane().
+		
 		this.canvas = new Canvas();
 		this.canvas.setBackground(Color.BLACK);	//provides a black background
 		this.canvas.setPreferredSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
@@ -78,6 +88,33 @@ public class GUI extends JFrame{
 		setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 		setLocationRelativeTo(null);
 		setVisible(true);				//Display the window.
+	}
+	
+	
+	/**
+	 * Displays a popup menu with radio buttons for the user to make a choice based on the contents of the elements parameter.
+	 * @param A string label for the menu
+	 * @param A list of objects to choose from.
+	 * @return The index of the element chosen.
+	 */
+	public int radioButtonSelection(String label, List<Object> elements){
+		int result = 0;
+		this.popupMenu.setLabel(label);
+		ActionListener al = new ActionListener() {
+		      public void actionPerformed(ActionEvent e) {
+		        result = e.getActionCommand().charAt(0);
+		      }	
+		    };
+		
+		
+		for(Object o : elements){
+			JRadioButtonMenuItem b = new JRadioButtonMenuItem(o.toString());	//Creates a radio button with the object as a string
+			b.addActionListener(al);
+			menu.add(b);	//adds the button to the menu.
+		}
+		this.popupMenu.show(this, POPUP_X, POPUP_Y);	//Displays the window
+		
+		return result;
 	}
 
 	/**

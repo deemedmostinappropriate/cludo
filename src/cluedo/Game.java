@@ -48,13 +48,27 @@ public class Game {
 		this.board = new Board();//Set up board
 		this.gui = new GUI("CLUEDO");		//set up after objects created
 		this.gui.setGame(this);
-		
+		/*
 		while(true)
 			this.gui.draw();// draws the board.
-		/*
+		*/
+		
 		this.players = new ArrayList<Player>();
+		// Sets up player number choosing.
+		List<Object> playerNumSelection = new ArrayList<>();
+		playerNumSelection.add((Integer)3);
+		playerNumSelection.add((Integer)4);
+		playerNumSelection.add((Integer)5);
+		playerNumSelection.add((Integer)6);
+		this.gui.radioButtonSelection("How many characters are playing?", playerNumSelection);	//User(s) choose number of players
+		
 		this.numPlayers = 3;
 
+		
+		//Player enters their name
+		//String path = JOptionPane.showInputDialog("Enter a path");
+		
+		//player choose their characters
 	
 
 		List<Character> freeCharacters = new ArrayList<Character>();
@@ -92,7 +106,7 @@ public class Game {
 		int startingPlayer = 0;		//generate random number if there is time.
 		run(startingPlayer);
 		scan.close();				// closes the scanner after running the game.
-		*/
+		
 	}
 
 	/**
