@@ -221,18 +221,10 @@ public class Board {
 			w.draw(g);
 		}
 
-		/*
-		//Adds characters
-		for(Character c : this.characters){
-				map[c.getY()][c.getX()*2] = c.ABBREV.charAt(0);
-				map[c.getY()][c.getX()*2+1] = c.ABBREV.charAt(1);
-		}
-		//Adds weapons
-		for(Weapon w : this.roomsFromWeapons.keySet()){
-			map[w.getY()][w.getX()*2] = w.toString().charAt(0);
-			map[w.getY()][w.getX()*2+1] = w.toString().charAt(1);
-		}
-		 */
+		for(Character c : this.characters)
+			c.draw(g);
+
+
 		/*
 		//Prints the array
 		for(int i = map.length-1; i >= 0; --i){

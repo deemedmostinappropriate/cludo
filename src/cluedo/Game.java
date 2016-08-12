@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
+
 import cluedo.locations.Board;
 import cluedo.locations.Door;
 import cluedo.locations.Room;
@@ -21,7 +23,7 @@ public class Game {
 	/** The graphic user interface for this game. **/
 	private GUI gui;
 	/** A return from an event listener**/
-	private Object eventMessage = null;
+	private String eventMessage = null;
 	/** Scanner for use in any input scanning, including use by other objects. */
 	public static Scanner scan;
 	/** The amount of players in the current game. */
@@ -42,10 +44,14 @@ public class Game {
 	private Card.ROOM murderRoom;
 	/** The weapon card in the solution. **/
 	private Card.WEAPON murderWeapon;
+	/** The game state. **/
+	private String gameState = null;
+	/** The greater application. **/
+	private Application app = null;
 
-
-	public Game(){
-
+	public Game(Application app){
+		this.app = app;
+		this.gameState = "PLAYING";
 
 		scan = new Scanner(System.in);
 		this.board = new Board();//Set up board
@@ -55,7 +61,6 @@ public class Game {
 		while(true)
 			this.gui.draw();// draws the board.
 		*/
-
 		this.gui.draw();
 
 		this.players = new ArrayList<Player>();
@@ -66,13 +71,10 @@ public class Game {
 		playerNumSelection.add((Integer)5);
 		playerNumSelection.add((Integer)6);
 		this.gui.radioButtonSelection("How many characters are playing?", playerNumSelection);	//User(s) choose number of players
-		while(eventMessage == null){}	//loops while awaiting player input
-		if(!(eventMessage instanceof Integer))
-			throw new RuntimeException("Menu output not an integer.");
+		awaitResponse();
+		this.numPlayers = Integer.valueOf(eventMessage);
 
-
-		this.numPlayers = 3;
-
+		System.out.printf("Event is : %s\n",this.eventMessage);
 
 		//Player enters their name
 		//String path = JOptionPane.showInputDialog("Enter a path");
@@ -171,9 +173,18 @@ public class Game {
 	 * Sets the most recent message from an event listener
 	 * @param The message
 	 */
-	public void setEventMessage(Object message){
+	public void setEventMessage(String message){
 		this.eventMessage = message;
 	}
+
+	/**
+	 * Initiliazes game with input from user.
+	 */
+	public void setupGame(){
+
+
+	}
+
 
 	/**
 	 * Runs the game loop.
@@ -183,7 +194,7 @@ public class Game {
 		currentPlayer = players.get(startingPlayer);
 
 		//The game loop.
-		while(players.size() > 1){
+		while(players.size() > 1 && this.gameState.equals("PLAYING")){
 			boolean roomEntered = false;		// Don't ask about leaving room if they have just entered:
 			this.diceroll = diceRoll();		// Roll dice and display result
 
@@ -256,6 +267,8 @@ public class Game {
 			String securityGap = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
 			System.out.printf("\nDon't look at another player's hand!!!%s", securityGap);
 		}
+		if(this.gameState.equals("NewGAME"))
+			Application.newGame(this.app); //starts a new game.
 
 		// Display the winner and close game elements
 		System.out.printf("Congratulations Player %s, you have won the game!\n", this.players.get(0).PLAYER_NUM);
@@ -502,7 +515,7 @@ public class Game {
 					}
 				}
 			}
-		pauseForResponse();
+		awaitResponse();
 	}
 
 	/**
@@ -563,7 +576,7 @@ public class Game {
 				|| weapon != this.murderWeapon){
 			this.players.remove(p);	//removes the current player from the game.
 			System.out.printf("Player %d has guessed incorrectly, and is out of the game!\n", p.PLAYER_NUM);
-			pauseForResponse();
+			awaitResponse();
 			return false;
 		}
 		else return true;
@@ -572,13 +585,14 @@ public class Game {
 	/**
 	 * Pauses gameplay while waiting for a player response.
 	 */
-	public void pauseForResponse(){
-		try{
-			System.out.println("Press c key to continue.");
-			while(scan.next().charAt(0) != 'c'){
-				System.out.println("Press c key  to continue.");
+	public void awaitResponse(){
+		while(this.eventMessage == null){
+			try {
+				TimeUnit.MILLISECONDS.sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
-		}catch(Exception e){throw new Error(e);}
+		}
 	}
 
 	/**
@@ -690,9 +704,7 @@ public class Game {
 		}
 	}
 
-	public static void main(String[] args){
-		new Game();
-	}
+
 
 	public void draw(Graphics g) {
 		this.board.draw(g);
