@@ -13,10 +13,10 @@ import java.util.List;
 import javax.swing.*;
 
 /**
- * A graphical user interface. 
+ * A graphical user interface.
  * This example uses JMenuBar, JPanel, JButton, JTextField, JRadioButton, and JDialog components.
  * Also uses a mouse listener.
- * 
+ *
  * @author Daniel Anastasi
  *
  */
@@ -42,21 +42,21 @@ public class GUI extends JFrame{
 	private JButton rollDice;
 	/** A panel to organis the buttons**/
 	private JPanel buttonPanel;
-	
-	
-	
+
+
+
 	/** The size of text drawn.**/
 	private final float TEXT_SIZE = 20;
-	
+
 	public GUI(String appName){
 		super(appName);
 
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);	
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLayout(new BorderLayout());
 		//Sets up menu
 		this.menu = new JMenuBar();
 		this.menu.setLayout(new FlowLayout(FlowLayout.LEFT));	//aligns the items to the left
-		this.fileItem = new JMenuItem("File");	
+		this.fileItem = new JMenuItem("File");
 		this.gameItem = new JMenuItem("Game");
 		this.menu.add(this.fileItem);
 		this.menu.add(this.gameItem);
@@ -68,7 +68,7 @@ public class GUI extends JFrame{
 		this.buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 		this.buttonPanel.add(this.rollDice);
 		this.buttonPanel.add(this.nextTurn);
-	
+
 		this.canvas = new Canvas();
 		this.canvas.setBackground(Color.BLACK);	//provides a black background
 		this.canvas.setPreferredSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
@@ -76,23 +76,23 @@ public class GUI extends JFrame{
 		add(this.menu, BorderLayout.PAGE_START);
 		add(this.canvas, BorderLayout.CENTER);
 		add(this.buttonPanel, BorderLayout.PAGE_END);
-		
-		
+
+
 
 		setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 		setLocationRelativeTo(null);
 		setVisible(true);				//Display the window.
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Used to repaint JPanel component.
 	 */
 	public void draw(){
 		this.canvas.repaint();
 	}
-	
+
 
 	/**
 	 * Provides the Canvas with a Game object for drawing.
@@ -101,6 +101,16 @@ public class GUI extends JFrame{
 	public void setGame(Game game){
 		if(this.canvas != null)
 			this.canvas.setGame(game);
+	}
+
+
+	/**
+	 * Passes the parameters to the canvas which will handle the request.
+	 * @param A string.
+	 * @param A list of objects for choices using radio buttons.
+	 */
+	public void radioButtonSelection(String string, List<Object> playerNumSelection) {
+		this.canvas.radioButtonSelection(string, playerNumSelection);
 	}
 
 

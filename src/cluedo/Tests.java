@@ -154,27 +154,27 @@ public class Tests {
 
 		//construction
 		try{
-			new Character(-1, 5, "", "");		// x position too low
+			new Character(-1, 5, "", "",null);		// x position too low
 			fail();
 		}catch(IllegalArgumentException e){}
 
 		try{
-			new Character(25, 5, "", "");		// x position too high
+			new Character(25, 5, "", "",null);		// x position too high
 			fail();
 		}catch(IllegalArgumentException e){}
 
 		try{
-			new Character(5, -1, "", "");		// y position too low
+			new Character(5, -1, "", "",null);		// y position too low
 			fail();
 		}catch(IllegalArgumentException e){}
 
 		try{
-			new Character(5, 25, "", "");		// y position too high
+			new Character(5, 25, "", "",null);		// y position too high
 			fail();
 		}catch(IllegalArgumentException e){}
 
 		try{
-			new Character(5, 25, null, "");		// name is null
+			new Character(5, 25, null, "",null);		// name is null
 			fail();
 		}catch(IllegalArgumentException e){}
 

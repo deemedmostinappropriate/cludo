@@ -11,7 +11,7 @@ import cluedo.locations.Board;
  *
  */
 public class Weapon implements Piece{
-	
+
 	/**
 	 * The names of the potential murder weapons.
 	 * @author Daniel Anastasi
@@ -19,7 +19,7 @@ public class Weapon implements Piece{
 	public enum Name{
 		ROPE, DAGGER, CANDLESTICK, REVOLVER, LEADPIPE, SPANNER;
 	}
-	
+
 	/** The image for the board. **/
 	private BufferedImage image = null;
 	/** The x and y position of this Weapon in relation to squares on the board.**/
@@ -27,20 +27,20 @@ public class Weapon implements Piece{
 	/** X and Y for drawing the piece. **/
 	private int realX = 0, realY = 0;
 	/** The name of the weapon**/
-	public final Name name; 
-	
-	
+	public final Name name;
+
+
 	public Weapon(Name name, BufferedImage image){
 		this.name = name;
 		this.image = image;
 	}
-	
-	
-	
+
+
+
 
 	/**
 	 * Returns the x coordinate of this piece on the board.
-	 * @return The x value	
+	 * @return The x value
 	 */
 	public int getX() {
 		return x;
@@ -90,6 +90,6 @@ public class Weapon implements Piece{
 	public void draw(Graphics g){
 		g.drawImage(this.image, realX, realY, Board.SQ_WIDTH, Board.SQ_HEIGHT, null);
 	}
-	
+
 
 }

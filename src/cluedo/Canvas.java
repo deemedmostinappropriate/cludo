@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
+import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
@@ -67,6 +68,14 @@ public class Canvas extends JPanel implements ActionListener{
 		}
 		this.popupMenu.show(this, POPUP_X, POPUP_Y);	//Displays the window
 
+		//trying jdialog
+		JDialog j = new JDialog();
+		//j.setVisible(true);
+		j.setTitle(label);
+
+
+
+
 		return result;
 	}
 
@@ -76,6 +85,6 @@ public class Canvas extends JPanel implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource().equals(this.popupMenu))
 			this.game.setEventMessage(Integer.getInteger(e.getActionCommand()));		//passes a message to the game.
-	}	
+	}
 
 }

@@ -35,13 +35,13 @@ public class Board {
 	public static final int PIECE_OFFSET = 3;
 	/** The size of the game board in squares */
 	private static final int SIZE = 25;
-	
+
 	/** Weapon image width and height for template image cropping. **/
-	public final int WEAPON_WIDTH = 170, WEAPON_HEIGHT = 220;	
+	public final int WEAPON_WIDTH = 170, WEAPON_HEIGHT = 220;
 
 	/** The board image. **/
 	private BufferedImage boardImage;
-	
+
 	/** This holds a value of 1 at any space where the character can move to. */
 	private int[][] board;
 	/** The visual representation of the game board.. */
@@ -97,14 +97,14 @@ public class Board {
 		parseVisualMap();
 
 		//Sets up characters
-		this.characters.add(new Character(7,0,"Miss Scarlett", "MS"));
-		this.characters.add(new Character(0,7,"Col Mustard", "CM"));
-		this.characters.add(new Character(9,24,"Mrs White", "MW"));
-		this.characters.add(new Character(14,24,"Mr Green", "MG"));
-		this.characters.add(new Character(23,18,"Mrs Peacock", "MP"));
-		this.characters.add(new Character(23,5,"Prof Plum", "PP"));
+		this.characters.add(new Character(7,0,"Miss Scarlett", "MS", loadImage("./Images/Miss Scarlett.png")));
+		this.characters.add(new Character(0,7,"Col Mustard", "CM", loadImage("./Images/Col Mustard.png")));
+		this.characters.add(new Character(9,24,"Mrs White", "MW", loadImage("./Images/Mrs White.png")));
+		this.characters.add(new Character(14,24,"Mr Green", "MG", loadImage("./Images/Mr Green.png")));
+		this.characters.add(new Character(23,18,"Mrs Peacock", "MP", loadImage("./Images/Mrs Peacock.png")));
+		this.characters.add(new Character(23,5,"Prof Plum", "PP", loadImage("./Images/Prof Plum.png")));
 
-		
+
 		int rand = 0, weaponIndex = 0, vertOffset = 0, horiOffset = 0;
 		List<Weapon.Name> weaponNames = new ArrayList<>(Arrays.asList(Weapon.Name.values()));
 		this.weapons = new ArrayList<>();
@@ -173,7 +173,7 @@ public class Board {
 	public List<Weapon> getWeapons(){
 		return this.weapons;
 	}
-	
+
 	/**
 	 * Returns the room which a particular weapon piece resides.
 	 * @param The weapon's name
@@ -220,7 +220,7 @@ public class Board {
 		for(Weapon w : this.weapons){
 			w.draw(g);
 		}
-		
+
 		/*
 		//Adds characters
 		for(Character c : this.characters){
@@ -268,7 +268,7 @@ public class Board {
 	}
 
 	/**
-	 * Fills the board array with Square object. 
+	 * Fills the board array with Square object.
 	 * Loads the square data from a file.
 	 */
 	private void parseDoorFile(){
@@ -296,7 +296,7 @@ public class Board {
 	 * @param X coordinate integer
 	 * @param Y coordinate integer
 	 * @param Key integer representing the walls around the square.
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	private void parseDoor(Scanner scan) throws IOException{
 
@@ -344,7 +344,7 @@ public class Board {
 		try{
 			reader = new BufferedReader(new FileReader(new File("visual-map.txt")));
 			// Reads each line while there is one
-			for(int row = 0; (line = reader.readLine()) != null; row ++){	
+			for(int row = 0; (line = reader.readLine()) != null; row ++){
 				// Increments over 2 chars due to spaces.
 				for(int col = 0; col < line.length(); col ++){
 					this.visualBoard[row][col] = line.charAt(col);
@@ -439,7 +439,7 @@ public class Board {
 			}
 		}
 	}
-	
+
 	/**
 	 * Returns the weapon with the given name.
 	 * This method assumes that the weapon is in the map roomsFromWeapons

@@ -42,11 +42,11 @@ public class Game {
 	private Card.ROOM murderRoom;
 	/** The weapon card in the solution. **/
 	private Card.WEAPON murderWeapon;
-	
-	
+
+
 	public Game(){
-		
-		
+
+
 		scan = new Scanner(System.in);
 		this.board = new Board();//Set up board
 		this.gui = new GUI("CLUEDO");		//set up after objects created
@@ -55,7 +55,9 @@ public class Game {
 		while(true)
 			this.gui.draw();// draws the board.
 		*/
-		
+
+		this.gui.draw();
+
 		this.players = new ArrayList<Player>();
 		// Sets up player number choosing.
 		List<Object> playerNumSelection = new ArrayList<>();
@@ -67,16 +69,16 @@ public class Game {
 		while(eventMessage == null){}	//loops while awaiting player input
 		if(!(eventMessage instanceof Integer))
 			throw new RuntimeException("Menu output not an integer.");
-		
-		
+
+
 		this.numPlayers = 3;
 
-		
+
 		//Player enters their name
 		//String path = JOptionPane.showInputDialog("Enter a path");
-		
+
 		//player choose their characters
-	
+
 
 		List<Character> freeCharacters = new ArrayList<Character>();
 		freeCharacters.addAll(this.board.getCharacters());		//adds all characters to the list.
@@ -113,7 +115,7 @@ public class Game {
 		int startingPlayer = 0;		//generate random number if there is time.
 		run(startingPlayer);
 		scan.close();				// closes the scanner after running the game.
-		
+
 	}
 
 	/**
@@ -164,7 +166,7 @@ public class Game {
 	public Card.WEAPON getMurderWeapon() {
 		return murderWeapon;
 	}
-	
+
 	/**
 	 * Sets the most recent message from an event listener
 	 * @param The message
@@ -184,11 +186,11 @@ public class Game {
 		while(players.size() > 1){
 			boolean roomEntered = false;		// Don't ask about leaving room if they have just entered:
 			this.diceroll = diceRoll();		// Roll dice and display result
-			
-			
+
+
 			//draws the board
-			
-			
+
+
 			System.out.println("Player " +  currentPlayer.PLAYER_NUM + "'s turn ("+ currentPlayer.getCharacter().ABBREV +"): ");
 			currentPlayer.printKnownCards();//print out list of cards player knows about
 
@@ -282,9 +284,9 @@ public class Game {
 					System.out.printf("%s  is now at (%d, %d) on the board.\n", character.NAME, character.getX(), character.getY());
 				} else{
 					// If the place player's character is moving to is not traversable:
-					
+
 					//draws the board
-					
+
 					System.out.println("There is no square to move to in that direction, please try again.");
 					continue;		// Start loop again to receive new input.
 				}
@@ -296,30 +298,30 @@ public class Game {
 			}
 
 			if(this.diceroll != 0 && currentPlayer.characterLocation() == null){
-				
-				
+
+
 				//draws the board
-				
-				
+
+
 				currentPlayer.printKnownCards();
 				System.out.println("    Moves remaining: " + this.diceroll);		// Show moves remaining, only after a successful move:
 
 			}
 			else if(currentPlayer.characterLocation() != null){		// If the move resulted in player entering a room:
-				
+
 				//draws the board //Draws the map with the character in a room.
-				
-				
+
+
 				currentPlayer.printKnownCards();
 				return true;
 			}
 			else{ // Notify the player they have completed their turn if they did not reach a room:
-				
+
 				//draws the board //Draws the map with the character in a room.
-				
-				
+
+
 				System.out.println("Move Turn Complete for Player " + currentPlayer.PLAYER_NUM);
-				
+
 			}
 		}
 		return false;
@@ -378,10 +380,10 @@ public class Game {
 				this.diceroll = 0;
 				return doRoomEntry();		//asks usual room entry questions.
 			}
-			
+
 			//draws the board
-			
-			
+
+
 			board.changeCharacterRoom(character, null);	// Set players room to null
 			--this.diceroll;
 			return false;		// continue with turn from the beginning
@@ -467,10 +469,10 @@ public class Game {
 		board.changeCharacterRoom(character, room);
 		board.changeWeaponRoom(weapon, room);
 
-		
+
 		//draws the board
 
-		
+
 		Card roomCard = Card.ROOM.values()[roomChoice];
 		Card characterCard = Card.CHARACTER.values()[characterChoice];
 		Card weaponCard = Card.WEAPON.values()[weaponChoice];
@@ -696,7 +698,7 @@ public class Game {
 		this.board.draw(g);
 	}
 
-	
+
 
 
 }

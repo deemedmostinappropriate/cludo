@@ -139,7 +139,6 @@ public class Room {
 		this.characters.add(character);
 	}
 	
-	
 	/**
 	 * Removes a weapon from the room.
 	 * @param The weapon to remove from the room.
