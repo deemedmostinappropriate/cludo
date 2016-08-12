@@ -6,6 +6,7 @@ import cluedo.locations.Board;
 import cluedo.locations.Door;
 import cluedo.locations.Room;
 import cluedo.pieces.Character;
+import cluedo.pieces.Weapon;
 
 /**
  * Stores all player data, including the cards they know about, their character, and their player number.
@@ -29,16 +30,16 @@ public class Player {
 	/** Weapon cards which the player has seen. **/
 	private List<Card.WEAPON> knownWeapons;
 
-	/** The designated turn position  of this player. */
-	public final int PLAYER_NUM;
+	/** The player's name. */
+	public final String PLAYER_NAME;
 
 	/**
 	 * The Player constructor.
 	 * @param The number associated with the player
 	 * @param The player's character
 	 */
-	public Player(int playerNumber, Character character){
-		PLAYER_NUM = playerNumber;
+	public Player(String name, Character character){
+		PLAYER_NAME = name;
 		this.knownRooms = new ArrayList<>();
 		this.knownCharacters = new ArrayList<>();
 		this.knownWeapons = new ArrayList<>();
@@ -69,6 +70,32 @@ public class Player {
 	public List<Card.WEAPON> getKnownWeapons() {
 		return knownWeapons;
 	}
+	
+	/**
+	 * Returns the Room location of this players character, or null if
+	 * not in a Room currently.
+	 * @return The room which the character is in. Can be null.
+	 */
+	public Room getCharacterLocation(){
+		return character.getRoom();
+	}
+
+	/**
+	 * Returns the character object associated with this player.
+	 * @return
+	 */
+	public Character getCharacter(){
+		return this.character;
+	}
+
+	/**
+	 * Returns the player's hand
+	 * @return The array of cards which make the hand.
+	 */
+	public Card[] getHand() {
+		return hand;
+	}
+
 
 	/**
 	 * Gives the player their hand of cards.
@@ -171,30 +198,6 @@ public class Player {
 		return true;
 	}
 
-	/**
-	 * Returns the Room location of this players character, or null if
-	 * not in a Room currently.
-	 * @return The room which the character is in. Can be null.
-	 */
-	public Room characterLocation(){
-		return character.getRoom();
-	}
-
-	/**
-	 * Returns the character object associated with this player.
-	 * @return
-	 */
-	public Character getCharacter(){
-		return this.character;
-	}
-
-	/**
-	 * Returns the player's hand
-	 * @return The array of cards which make the hand.
-	 */
-	public Card[] getHand() {
-		return hand;
-	}
 
 	/**
 	 * Prints the cards that are known by the player.
@@ -213,5 +216,6 @@ public class Player {
 			System.out.printf("%s\t", c.toString());
 		System.out.printf("\n\n");
 	}
+	
 
 }

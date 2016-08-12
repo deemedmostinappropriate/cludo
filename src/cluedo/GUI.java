@@ -27,10 +27,10 @@ import javax.swing.event.PopupMenuListener;
 
 public class GUI extends JFrame implements ActionListener, PopupMenuListener{
 	/** X and Y coordinates for pop up menus.**/
-	public final int POPUP_X = 200, POPUP_Y = 200;
+	public final int POPUP_X = 600, POPUP_Y = 300;
 	public final int POPUP_WIDTH = 400, POPUP_HEIGHT = 400;
 	/** A popup menu**/
-	private JDialog dialog;
+	private JDialog dialog = null;		//closed via actionPerformed
 
 	/** Window width and height. **/
 	public final int WINDOW_WIDTH = 715, WINDOW_HEIGHT = 900;
@@ -92,16 +92,11 @@ public class GUI extends JFrame implements ActionListener, PopupMenuListener{
 		add(this.canvas, BorderLayout.CENTER);
 		add(this.buttonPanel, BorderLayout.PAGE_END);
 
-		//The popup menu
-		this.dialog = new JDialog();
-		this.dialog.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
 		setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 		setLocationRelativeTo(null);
 		setVisible(true);				//Display the window.
 	}
-
-
 
 	/**
 	 * Used to repaint JPanel component.
@@ -109,7 +104,6 @@ public class GUI extends JFrame implements ActionListener, PopupMenuListener{
 	public void draw(){
 		this.canvas.repaint();
 	}
-
 
 	/**
 	 * Provides the Canvas with a Game object for drawing.
@@ -121,7 +115,6 @@ public class GUI extends JFrame implements ActionListener, PopupMenuListener{
 		this.game = game;
 	}
 
-
 	/**
 	 * Displays a dialog with radio buttons for the user to make a choice based on the contents of the elements parameter.
 	 * The dialog contains a panel arrange its contents.
@@ -131,11 +124,7 @@ public class GUI extends JFrame implements ActionListener, PopupMenuListener{
 	 */
 	public void radioButtonSelection(String label, List<Object> elements){
 		//this.popupMenu.setLabel(label);		//Sets a new label for the menu
-		this.dialog.add(new JLabel(label));
-		this.dialog.setLocation(this.POPUP_X, this.POPUP_Y);
-		this.dialog.setPreferredSize(new Dimension(POPUP_WIDTH, POPUP_HEIGHT));
-		this.dialog.setLayout(new BorderLayout());
-		this.dialog.setTitle(label);
+		this.dialog = basicDialog(label);
 		ButtonGroup bg = new ButtonGroup();	//organises the buttons so that no two can be selected at the same time.
 		JPanel panel = new JPanel();		//holds the buttons
 		panel.setLayout(new GridLayout(4,1));
@@ -150,10 +139,8 @@ public class GUI extends JFrame implements ActionListener, PopupMenuListener{
 		}
 		JButton ok = new JButton("Continue");
 		ok.addActionListener(this);
-
 		this.dialog.add(ok, BorderLayout.SOUTH);	//adds the continue button at the bottom of the dialog.
-		this.dialog.pack();
-		this.dialog.setVisible(true);
+		this.dialog.pack();	
 	}
 
 	/**
@@ -165,18 +152,31 @@ public class GUI extends JFrame implements ActionListener, PopupMenuListener{
 		// If continue button on dialog pressed
 		if(e.getActionCommand().equals("Continue")){
 			Component[] comps = this.dialog.getContentPane().getComponents();
-			p = (JPanel)comps[1];
+			if(comps[0] instanceof JPanel){
+				p = (JPanel)comps[0];
+				comps = p.getComponents();
+			}
+			else if(comps.length > 1 && comps[1] instanceof JPanel){
+				p = (JPanel)comps[1];
+				comps = p.getComponents();
+			}
 			Component chosen = null;
 			String event = null;
 
-			for(Component b : p.getComponents()){
+			for(Component b : comps){
 				if(b instanceof JButton)
 					continue;
-				JRadioButtonMenuItem i = (JRadioButtonMenuItem) b;
-				if(i.isSelected()){
-					chosen = i;		// this is the chosen button.
-					event = i.getText();	// the text from the button.
-					break;
+				else if(b instanceof JRadioButtonMenuItem){
+					JRadioButtonMenuItem i = (JRadioButtonMenuItem) b;
+					if(i.isSelected()){
+						chosen = i;		// this is the chosen button.
+						event = i.getText();	// the text from the button.
+						break;
+					}
+				}
+				else if(b instanceof JTextField){
+					chosen = b;	//pacifies return condition
+					event = ((JTextField)b).getText();
 				}
 			}
 			if(chosen == null)
@@ -184,6 +184,40 @@ public class GUI extends JFrame implements ActionListener, PopupMenuListener{
 			this.dialog.dispose();		// we can close the window now that it has no use.
 			this.game.setEventMessage(event);		//passes a message to the game.
 		}
+	}
+
+	/**
+	 * Creates a JDialog window with a text field.
+	 * @param string
+	 */
+	public void popUpTextQuery(String string) {
+		this.dialog = basicDialog(string);			// dialog window for text field
+
+		JTextField tf = new JTextField();			// text field
+		JButton ok = new JButton("Continue");		// button to exit
+		ok.addActionListener(this);
+		this.dialog.add(tf, BorderLayout.NORTH);				//adds the text field to the window
+		this.dialog.add(ok, BorderLayout.SOUTH);				//adds the continue button to the window
+		this.dialog.pack();
+		
+	}
+	
+	
+
+	/**
+	 * Returns a JDialog window.
+	 * @param The title for the window.
+	 * @return The JDialog
+	 */
+	public JDialog basicDialog(String title){
+		JDialog d = new JDialog();
+		d.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);	//prevents closing with close button
+		d.setLocation(this.POPUP_X, this.POPUP_Y);
+		d.setPreferredSize(new Dimension(POPUP_WIDTH, POPUP_HEIGHT));
+		d.setVisible(true);					// window can be seen
+		d.setLayout(new BorderLayout());	// A default layout
+		d.setTitle(title);				//The title in the border of the window
+		return d;
 	}
 
 	@Override
@@ -203,5 +237,9 @@ public class GUI extends JFrame implements ActionListener, PopupMenuListener{
 		// TODO Auto-generated method stub
 
 	}
+
+
+
+
 
 }

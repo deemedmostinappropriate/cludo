@@ -23,7 +23,7 @@ public class Tests {
 	public void legalMoves() throws IOException{
 		Board board = new Board();
 		Character character = board.getCharacters().get(0);
-		Player player = new Player(0 , character);
+		Player player = new Player(null , character);
 		character.setPosition(5,7);			//sets to safe square
 
 		//move up ends up in correct square (x,y+1)
@@ -56,7 +56,7 @@ public class Tests {
 	public void illegalMoves() throws IOException{
 		Board board = new Board();
 		Character character = board.getCharacters().get(0);
-		Player player = new Player(0 , character);
+		Player player = new Player(null , character);
 
 		character.setPosition(0,7);		//resets to unsafe square(walls above, below and to left)
 		assertFalse(player.move('w', board));		//illegal move up into non-room wall
@@ -86,7 +86,7 @@ public class Tests {
 	public void legalRoomTests() throws IOException{
 		Board board = new Board();
 		Character character = board.getCharacters().get(0);
-		Player player = new Player(0 , character);
+		Player player = new Player(null , character);
 
 		character.setRoom(null);
 		character.setPosition(6,6);	//door to lounge
@@ -102,7 +102,7 @@ public class Tests {
 	public void illegalRoomTests()throws IOException {
 		Board board = new Board();
 		Character character = board.getCharacters().get(0);
-		Player player = new Player(0 , character);
+		Player player = new Player(null , character);
 
 		character.setRoom(null);
 		character.setPosition(6,6);	//door to lounge
@@ -131,7 +131,7 @@ public class Tests {
 	public void playerTests(){
 		Board board = new Board();
 		Character character = board.getCharacters().get(0);
-		Player player = new Player(0 , character);
+		Player player = new Player(null , character);
 
 		//attempt to illegally modify hand.
 		try{

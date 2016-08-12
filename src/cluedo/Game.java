@@ -20,34 +20,37 @@ import cluedo.pieces.Weapon;
  *
  */
 public class Game {
+	/** The greater application. **/
+	private Application app = null;
 	/** The graphic user interface for this game. **/
 	private GUI gui;
+	/** The game state. **/
+	private String gameState = null;
 	/** A return from an event listener**/
 	private String eventMessage = null;
 	/** Scanner for use in any input scanning, including use by other objects. */
 	public static Scanner scan;
-	/** The amount of players in the current game. */
-	private int numPlayers;
+	
 	/** The board to be interacted with. */
 	private Board board;
-	/** A reference to the player whose turn it is. */
-	private Player currentPlayer = null;
 	/** Holds references to all players currently in a game. */
 	private List<Player> players;
-	/** For a the result from a player's roll of the dice.**/
-	private int diceroll = 0;
-	/** The index of the current player in the list of players. **/
-	private int currentPlayerIndex = 0;
 	/** The character card in the solution. **/
 	private Card.CHARACTER murderer;
 	/** The room card in the solution. **/
 	private Card.ROOM murderRoom;
 	/** The weapon card in the solution. **/
 	private Card.WEAPON murderWeapon;
-	/** The game state. **/
-	private String gameState = null;
-	/** The greater application. **/
-	private Application app = null;
+	
+	/** The amount of players in the current game. */
+	private int numPlayers;
+	/** A reference to the player whose turn it is. */
+	private Player currentPlayer = null;
+	/** For a the result from a player's roll of the dice.**/
+	private int diceroll = 0;
+	/** The index of the current player in the list of players. **/
+	private int currentPlayerIndex = 0;
+	
 
 	public Game(Application app){
 		this.app = app;
@@ -57,39 +60,53 @@ public class Game {
 		this.board = new Board();//Set up board
 		this.gui = new GUI("CLUEDO");		//set up after objects created
 		this.gui.setGame(this);
-		/*
-		while(true)
-			this.gui.draw();// draws the board.
-		*/
 		this.gui.draw();
 
-		this.players = new ArrayList<Player>();
-		// Sets up player number choosing.
-		List<Object> playerNumSelection = new ArrayList<>();
-		playerNumSelection.add((Integer)3);
-		playerNumSelection.add((Integer)4);
-		playerNumSelection.add((Integer)5);
-		playerNumSelection.add((Integer)6);
-		this.gui.radioButtonSelection("How many characters are playing?", playerNumSelection);	//User(s) choose number of players
-		awaitResponse();
-		this.numPlayers = Integer.valueOf(eventMessage);
+		
+		this.numPlayers = setNumPlayers();	//Determines the number of players in the game.
 
-		System.out.printf("Event is : %s\n",this.eventMessage);
-
-		//Player enters their name
+		this.players = setupPlayers(); //Player enters their name
+		
+		
 		//String path = JOptionPane.showInputDialog("Enter a path");
 
 		//player choose their characters
 
 
+
+		assignCards();	//Assigns all cards in the game.
+		int startingPlayer = 0;		//generate random number if there is time.
+		run(startingPlayer);
+		scan.close();				// closes the scanner after running the game.
+
+	}
+
+	
+	/**
+	 * Creates all player objects.
+	 * @return A list of player objects.
+	 */
+	private List<Player> setupPlayers() {
+		List<Player> players = new ArrayList<Player>();
 		List<Character> freeCharacters = new ArrayList<Character>();
 		freeCharacters.addAll(this.board.getCharacters());		//adds all characters to the list.
-
-		// Set up players
-		for(int i = 0; i < numPlayers; i++){
-			Character character = null;
+		
+		Character character = null;
+		String name = null;
+		// Each player chooses their name and character.
+		for(int i = 0; i < this.numPlayers; i++){
+			character = null;
 			while(character == null){
-				System.out.printf("Player %d, please choose your character:\n", i);
+				
+				gui.popUpTextQuery("Please write your name");//Player chooses their name
+				awaitResponse();
+				name = this.eventMessage;	// Retrieves the player's name
+				this.eventMessage = null;	// Resets the event message for future comms from GUI
+
+				
+				
+				
+				
 				for(int j = 0; j < freeCharacters.size(); j++){
 					System.out.printf("(%c) %s\n",'a'+j, freeCharacters.get(j).NAME); 	//e.g (a)Colonel Mustard
 				}
@@ -110,15 +127,13 @@ public class Game {
 			if(character != null)
 				System.out.printf("Player %d chose %s\n", i, character.NAME);
 
-			players.add(new Player(i+1, character));	//The player chooses which character to use from the list.
+			players.add(new Player(name, character));	//The player chooses which character to use from the list.
 		}
-
-		assignCards();	//Assigns all cards in the game.
-		int startingPlayer = 0;		//generate random number if there is time.
-		run(startingPlayer);
-		scan.close();				// closes the scanner after running the game.
-
+		return players;
+		
 	}
+
+
 
 	/**
 	 * Returns the game board
@@ -177,14 +192,6 @@ public class Game {
 		this.eventMessage = message;
 	}
 
-	/**
-	 * Initiliazes game with input from user.
-	 */
-	public void setupGame(){
-
-
-	}
-
 
 	/**
 	 * Runs the game loop.
@@ -202,11 +209,11 @@ public class Game {
 			//draws the board
 
 
-			System.out.println("Player " +  currentPlayer.PLAYER_NUM + "'s turn ("+ currentPlayer.getCharacter().ABBREV +"): ");
+			System.out.println("Player " +  currentPlayer.PLAYER_NAME + "'s turn ("+ currentPlayer.getCharacter().ABBREV +"): ");
 			currentPlayer.printKnownCards();//print out list of cards player knows about
 
 			// Display and process move options if on a traversable board square:
-			if(currentPlayer.characterLocation() == null){
+			if(currentPlayer.getCharacterLocation() == null){
 				System.out.printf("Your Dice Roll is:  %d\n ", diceroll);
 				System.out.println("Would you like to move or make an accusation?Choose (1)move, or (0)accusation");
 				System.out.println("Caution: an accusation may end the game!");
@@ -247,15 +254,11 @@ public class Game {
 					accusation(currentPlayer);
 					break;
 				}
-
-
-
 			}
 
-
 			// Check if in a room, show leave options or
-			if(currentPlayer.characterLocation() != null){
-				Room currentRoom = currentPlayer.characterLocation();
+			if(currentPlayer.getCharacterLocation() != null){
+				Room currentRoom = currentPlayer.getCharacterLocation();
 				if(doRoomTurn(currentRoom, roomEntered))
 					break;
 				else
@@ -271,7 +274,7 @@ public class Game {
 			Application.newGame(this.app); //starts a new game.
 
 		// Display the winner and close game elements
-		System.out.printf("Congratulations Player %s, you have won the game!\n", this.players.get(0).PLAYER_NUM);
+		System.out.printf("Congratulations Player %s, you have won the game!\n", this.players.get(0).PLAYER_NAME);
 	}
 
 	/**
@@ -310,7 +313,7 @@ public class Game {
 				continue;		// Start loop again to receive new input.
 			}
 
-			if(this.diceroll != 0 && currentPlayer.characterLocation() == null){
+			if(this.diceroll != 0 && currentPlayer.getCharacterLocation() == null){
 
 
 				//draws the board
@@ -320,7 +323,7 @@ public class Game {
 				System.out.println("    Moves remaining: " + this.diceroll);		// Show moves remaining, only after a successful move:
 
 			}
-			else if(currentPlayer.characterLocation() != null){		// If the move resulted in player entering a room:
+			else if(currentPlayer.getCharacterLocation() != null){		// If the move resulted in player entering a room:
 
 				//draws the board //Draws the map with the character in a room.
 
@@ -333,7 +336,7 @@ public class Game {
 				//draws the board //Draws the map with the character in a room.
 
 
-				System.out.println("Move Turn Complete for Player " + currentPlayer.PLAYER_NUM);
+				System.out.println("Move Turn Complete for Player " + currentPlayer.PLAYER_NAME);
 
 			}
 		}
@@ -432,6 +435,7 @@ public class Game {
 		return gameOver || players.size() == 1;			// Game is over because the accusation was correct, or theres only one player left,
 	}
 
+
 	/**
 	 * A suggestion made by the player to learn more about the murder.
 	 * @param The player who made the suggestion
@@ -444,7 +448,7 @@ public class Game {
 
 		//give player options for suggestion, accusation
 		int characterChoice = 0, weaponChoice = 0;
-		Room location = p.characterLocation();		// Suggest from the current room only:
+		Room location = p.getCharacterLocation();		// Suggest from the current room only:
 		int roomChoice = Card.ROOM.valueOf(location.NAME).ordinal();
 
 		try{
@@ -562,7 +566,7 @@ public class Game {
 
 		}catch(Exception e){throw new Error(e);}
 		System.out.printf("Player %d states: It was %s in the %s with the %s!\n",
-				currentPlayer.PLAYER_NUM,
+				currentPlayer.PLAYER_NAME,
 				Card.CHARACTER.values()[characterChoice],
 				Card.ROOM.values()[roomChoice],
 				Card.WEAPON.values()[weaponChoice]);
@@ -575,7 +579,7 @@ public class Game {
 				|| room != this.murderRoom
 				|| weapon != this.murderWeapon){
 			this.players.remove(p);	//removes the current player from the game.
-			System.out.printf("Player %d has guessed incorrectly, and is out of the game!\n", p.PLAYER_NUM);
+			System.out.printf("Player %d has guessed incorrectly, and is out of the game!\n", p.PLAYER_NAME);
 			awaitResponse();
 			return false;
 		}
@@ -593,6 +597,24 @@ public class Game {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	/**
+	 * Determines the number of players in the game
+	 * @return The number of players in the game.
+	 */
+	private int setNumPlayers() {
+		// Sets up player number choosing.
+				List<Object> playerNumSelection = new ArrayList<>();
+				playerNumSelection.add((Integer)3);
+				playerNumSelection.add((Integer)4);
+				playerNumSelection.add((Integer)5);
+				playerNumSelection.add((Integer)6);
+				this.gui.radioButtonSelection("How many characters are playing?", playerNumSelection);	//User(s) choose number of players
+				awaitResponse();
+				Integer i = Integer.valueOf(this.eventMessage);
+				this.eventMessage = null;						//resets the event message for future communications from GUI.
+				return i;
 	}
 
 	/**
