@@ -4,9 +4,11 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
 import javax.swing.JButton;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JTextField;
@@ -17,7 +19,7 @@ import javax.swing.JTextField;
  *
  */
 
-public class Listener implements ActionListener, MouseMotionListener{
+public class Listener implements ActionListener, MouseMotionListener, MouseListener{
 	/** The cluedo game**/
 	private Game game;
 	/** The application interface**/
@@ -83,11 +85,62 @@ public class Listener implements ActionListener, MouseMotionListener{
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-
 		this.game.doToolTip(e.getX(),e.getY());
 
 	}
 
+	@Override
+	public void mouseClicked(MouseEvent e) {
 
+		Component c = e.getComponent();
+		if(c == null){
+			int x = e.getX(), y = e.getY();
+			// Is the click in the bounds of the die image?
+			if(x > game.DIE_X && x < game.DIE_X + game.DIE_WIDTH
+					&& y > game.DIE_Y && y < game.DIE_Y + game.DIE_HEIGHT){
+				game.setMouseClickMessage("DIE");
+			}
+			else
+				return;
+		}
+
+
+		if(c.equals(this.gui.fileItem)){
+			((JMenuItem)c).setEnabled(true);	//makes the menu item be pressed.
+		}
+
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	/**
+	 * Changes the text in a label in the gui.
+	 * @param The new text.
+	 */
+	public void changeLabel(String i){
+		this.gui.instruction.setText(i);
+	}
 
 }

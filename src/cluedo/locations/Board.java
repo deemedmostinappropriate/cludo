@@ -45,6 +45,8 @@ public class Board {
 
 	/** The board image. **/
 	private BufferedImage boardImage;
+	/** Die image**/
+	private BufferedImage[] die;
 
 	/** This holds a value of 1 at any space where the character can move to. */
 	private int[][] board;
@@ -79,6 +81,7 @@ public class Board {
 		this.weaponCards = new ArrayList<>();
 		this.roomCards = new ArrayList<>();
 		this.characterCards = new ArrayList<>();
+		this.die = new BufferedImage[6];
 
 		// Locations relative to the game board itself:
 		this.board = new int[SIZE][SIZE];
@@ -135,6 +138,21 @@ public class Board {
 		loadWeaponCards(new String[]{"ROPE", "KNIFE","CANDLESTICK","REVOLVER", "LEADPIPE", "WRENCH"});
 		loadRoomCards(new String[]{"LOUNGE", "DINING_ROOM", "KITCHEN", "BALL_ROOM", "CONSERVATORY", "BILLIARD_ROOM", "LIBRARY", "STUDY", "HALL"});
 		loadCharacterCards(new String[]{"MISS_SCARLETT", "COL_MUSTARD", "MRS_WHITE", "MR_GREEN", "MRS_PEACOCK", "PROF_PLUM"});
+
+		loadDieImages(); //Loads die images
+
+	}
+
+	/**
+	 * Loads images of the game die.
+	 */
+	private void loadDieImages(){
+		int num = 0;
+		for(int i = 0; i < 6; i++){
+			num = i+1;
+			String s = "./Images/"+num+".png";
+			this.die[i] = loadImage("./Images/"+num+".png");
+		}
 	}
 
 	/**
@@ -191,19 +209,6 @@ public class Board {
 	 */
 	public List<Character> getCharacters(){
 		return this.characters;
-	}
-
-
-	/**
-	 * Returns a boolean of whether or not a given x,y is in range of
-	 * the board's x,y.
-	 * @param x
-	 * @param y
-	 * @return
-	 */
-	public boolean inRange(int x, int y){
-		return x >= 0 && y >= 0
-				&& x < SIZE && y < SIZE;
 	}
 
 	/**
@@ -265,6 +270,15 @@ public class Board {
 	}
 
 	/**
+	 * Returns the image of the die with the roll specified.
+	 * @param The die roll.
+	 * @return The image.
+	 */
+	public BufferedImage getDieImage(int roll){
+		return this.die[roll-1];
+	}
+
+	/**
 	 * Maps a character name to the room, in which they reside.
 	 * @param The character's name.
 	 * @param The room.
@@ -295,7 +309,18 @@ public class Board {
 		//draws the characters
 		for(Character c : this.characters)
 			c.draw(g);
+	}
 
+	/**
+	 * Returns a boolean of whether or not a given x,y is in range of
+	 * the board's x,y.
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public boolean inRange(int x, int y){
+		return x >= 0 && y >= 0
+				&& x < SIZE && y < SIZE;
 	}
 
 

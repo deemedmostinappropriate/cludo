@@ -47,22 +47,24 @@ public class GUI extends JFrame{
 	/** Height of the button panel. **/
 	public final int BUTTON_PANEL_HEIGHT = 40;
 	/** The Canvas for the game**/
-	private Canvas canvas;
+	public final Canvas canvas;
 	/** The menu **/
-	private JMenuBar menu;
+	public final JMenuBar menu;
 	/** File button for the menu**/
-	private JMenuItem fileItem;
+	public final JMenuItem fileItem;
 	/** Game button for the menu**/
-	private JMenuItem gameItem;
+	public final JMenuItem gameItem;
 	/** Button to switch to next turn.**/
-	private JButton nextTurn;
+	public final JButton nextTurn;
 	/** Button to roll dice.**/
-	private JButton rollDice;
+	public final JButton rollDie;
+	/** A label to give instructions to the player.**/
+	public final JLabel instruction;
 	/** A panel to organise the buttons**/
-	private JPanel buttonPanel;
+	public final JPanel buttonPanel;
 
-	/** The size of text drawn.**/
-	private final float TEXT_SIZE = 20;
+			/** The size of text drawn.**/
+			private final float TEXT_SIZE = 20;
 
 	public GUI(String appName, Game game){
 		super(appName);
@@ -73,17 +75,23 @@ public class GUI extends JFrame{
 		this.menu = new JMenuBar();
 		this.menu.setLayout(new FlowLayout(FlowLayout.LEFT));	//aligns the items to the left
 		this.fileItem = new JMenuItem("File");
+		this.fileItem.addMouseListener(this.listener);
+
 		this.gameItem = new JMenuItem("Game");
+		this.gameItem.addMouseListener(this.listener);
+
 		this.menu.add(this.fileItem);
 		this.menu.add(this.gameItem);
 		//Jbuttons
 		this.nextTurn = new JButton("Next Turn");
-		this.rollDice = new JButton("Roll Dice");
+		this.rollDie = new JButton("Roll Die");
+		this.instruction = new JLabel("Loading Game");
 		this.buttonPanel = new JPanel();			//holds our buttons
 		this.buttonPanel.setPreferredSize(new Dimension(WINDOW_WIDTH, BUTTON_PANEL_HEIGHT));
 		this.buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-		this.buttonPanel.add(this.rollDice);
+		this.buttonPanel.add(this.rollDie);
 		this.buttonPanel.add(this.nextTurn);
+		this.buttonPanel.add(this.instruction);
 
 		this.canvas = new Canvas(game);
 		this.canvas.setBackground(Color.BLACK);	//provides a black background
