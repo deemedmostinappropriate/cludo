@@ -10,6 +10,9 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.util.List;
 
 import javax.swing.*;
@@ -25,15 +28,20 @@ import javax.swing.event.PopupMenuListener;
  *
  */
 
-public class GUI extends JFrame implements ActionListener, PopupMenuListener{
+public class GUI extends JFrame{
 	/** X and Y coordinates for pop up menus.**/
 	public final int POPUP_X = 600, POPUP_Y = 300;
 	public final int POPUP_WIDTH = 400, POPUP_HEIGHT = 400;
+
+	/** An event listener**/
+	private Listener listener = null;
+
 	/** A popup menu**/
 	private JDialog dialog = null;		//closed via actionPerformed
-
+	/** Offset for JFrame border **/
+	public final int BORDER_OFFSET = 4;
 	/** Window width and height. **/
-	public final int WINDOW_WIDTH = 715, WINDOW_HEIGHT = 900;
+	public final int WINDOW_WIDTH = 651 + BORDER_OFFSET, WINDOW_HEIGHT = 920;	//once 715
 	/** Height of the menu. **/
 	public final int MENU_HEIGHT = 25;
 	/** Height of the button panel. **/
@@ -50,20 +58,13 @@ public class GUI extends JFrame implements ActionListener, PopupMenuListener{
 	private JButton nextTurn;
 	/** Button to roll dice.**/
 	private JButton rollDice;
-	/** A panel to organis the buttons**/
+	/** A panel to organise the buttons**/
 	private JPanel buttonPanel;
-
-
-
-	/** The Game object. **/
-	private Game game = null;
-
-
 
 	/** The size of text drawn.**/
 	private final float TEXT_SIZE = 20;
 
-	public GUI(String appName){
+	public GUI(String appName, Game game){
 		super(appName);
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -84,7 +85,7 @@ public class GUI extends JFrame implements ActionListener, PopupMenuListener{
 		this.buttonPanel.add(this.rollDice);
 		this.buttonPanel.add(this.nextTurn);
 
-		this.canvas = new Canvas();
+		this.canvas = new Canvas(game);
 		this.canvas.setBackground(Color.BLACK);	//provides a black background
 		this.canvas.setPreferredSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
 		this.menu.setPreferredSize(new Dimension(WINDOW_WIDTH, MENU_HEIGHT));
@@ -92,27 +93,27 @@ public class GUI extends JFrame implements ActionListener, PopupMenuListener{
 		add(this.canvas, BorderLayout.CENTER);
 		add(this.buttonPanel, BorderLayout.PAGE_END);
 
-
 		setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 		setLocationRelativeTo(null);
 		setVisible(true);				//Display the window.
 	}
 
 	/**
-	 * Used to repaint JPanel component.
+	 * Returns the dialog component.
+	 * @return A JDialog component.
 	 */
-	public void draw(){
-		this.canvas.repaint();
+	public JDialog getDialog(){
+		return this.dialog;
 	}
 
 	/**
-	 * Provides the Canvas with a Game object for drawing.
-	 * @param The game object.
+	 * Sets the event listener.
+	 * @param An event listener.
 	 */
-	public void setGame(Game game){
-		if(this.canvas != null)
-			this.canvas.setGame(game);
-		this.game = game;
+	public void setListener(Listener l){
+		if(this.listener != null)
+			return;
+		this.listener = l;
 	}
 
 	/**
@@ -133,57 +134,14 @@ public class GUI extends JFrame implements ActionListener, PopupMenuListener{
 		// Adds buttons to the panel and to the ButtonGroup
 		for(Object o : elements){
 			JRadioButtonMenuItem but = new JRadioButtonMenuItem(o.toString());
-			but.addActionListener(this);
+			but.addActionListener(listener);
 			bg.add(but);		//adds button to the group.
 			panel.add(but);		//adds button to the panel.
 		}
 		JButton ok = new JButton("Continue");
-		ok.addActionListener(this);
+		ok.addActionListener(listener);
 		this.dialog.add(ok, BorderLayout.SOUTH);	//adds the continue button at the bottom of the dialog.
-		this.dialog.pack();	
-	}
-
-	/**
-	 * Detects actions performed on components.
-	 */
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		JPanel p = null;
-		// If continue button on dialog pressed
-		if(e.getActionCommand().equals("Continue")){
-			Component[] comps = this.dialog.getContentPane().getComponents();
-			if(comps[0] instanceof JPanel){
-				p = (JPanel)comps[0];
-				comps = p.getComponents();
-			}
-			else if(comps.length > 1 && comps[1] instanceof JPanel){
-				p = (JPanel)comps[1];
-				comps = p.getComponents();
-			}
-			Component chosen = null;
-			String event = null;
-
-			for(Component b : comps){
-				if(b instanceof JButton)
-					continue;
-				else if(b instanceof JRadioButtonMenuItem){
-					JRadioButtonMenuItem i = (JRadioButtonMenuItem) b;
-					if(i.isSelected()){
-						chosen = i;		// this is the chosen button.
-						event = i.getText();	// the text from the button.
-						break;
-					}
-				}
-				else if(b instanceof JTextField){
-					chosen = b;	//pacifies return condition
-					event = ((JTextField)b).getText();
-				}
-			}
-			if(chosen == null)
-				return;						// prevents exit without selection
-			this.dialog.dispose();		// we can close the window now that it has no use.
-			this.game.setEventMessage(event);		//passes a message to the game.
-		}
+		this.dialog.pack();
 	}
 
 	/**
@@ -195,14 +153,11 @@ public class GUI extends JFrame implements ActionListener, PopupMenuListener{
 
 		JTextField tf = new JTextField();			// text field
 		JButton ok = new JButton("Continue");		// button to exit
-		ok.addActionListener(this);
+		ok.addActionListener(listener);
 		this.dialog.add(tf, BorderLayout.NORTH);				//adds the text field to the window
 		this.dialog.add(ok, BorderLayout.SOUTH);				//adds the continue button to the window
 		this.dialog.pack();
-		
 	}
-	
-	
 
 	/**
 	 * Returns a JDialog window.
@@ -220,26 +175,11 @@ public class GUI extends JFrame implements ActionListener, PopupMenuListener{
 		return d;
 	}
 
-	@Override
-	public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-		// TODO Auto-generated method stub
-
+	/**
+	 * Used to repaint JPanel component.
+	 */
+	public void draw(){
+		this.canvas.repaint();
 	}
-
-	@Override
-	public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void popupMenuCanceled(PopupMenuEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-
-
-
 
 }

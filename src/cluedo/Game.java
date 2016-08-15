@@ -3,15 +3,22 @@ import java.awt.Graphics;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 import cluedo.locations.Board;
 import cluedo.locations.Door;
 import cluedo.locations.Room;
+import cluedo.pieces.Card;
 import cluedo.pieces.Character;
+import cluedo.pieces.CharacterCard;
+import cluedo.pieces.RoomCard;
 import cluedo.pieces.Weapon;
+import cluedo.pieces.WeaponCard;
 
 /**
  * The application class for a Cluedo game.
@@ -24,24 +31,33 @@ public class Game {
 	private Application app = null;
 	/** The graphic user interface for this game. **/
 	private GUI gui;
+	/** A controller for event listening. **/
+	private Listener listener;
 	/** The game state. **/
 	private String gameState = null;
 	/** A return from an event listener**/
 	private String eventMessage = null;
+	/** A return from a mouse motion event listener**/
+	private String mousePosMessage = null;
 	/** Scanner for use in any input scanning, including use by other objects. */
 	public static Scanner scan;
-	
+	/** Card height, width for drawing.**/
+	private final int CARD_HEIGHT, CARD_WIDTH;
+	/** Bottom right corner of the GUI canvas. **/
+	private final int CARD_X_ORIGIN;
+	/** Y coordinate forr drawing cards. **/
+	private final int CARD_Y;
+
 	/** The board to be interacted with. */
 	private Board board;
 	/** Holds references to all players currently in a game. */
 	private List<Player> players;
 	/** The character card in the solution. **/
-	private Card.CHARACTER murderer;
+	private Card murderer;
 	/** The room card in the solution. **/
-	private Card.ROOM murderRoom;
+	private Card murderRoom;
 	/** The weapon card in the solution. **/
-	private Card.WEAPON murderWeapon;
-	
+	private Card murderWeapon;
 	/** The amount of players in the current game. */
 	private int numPlayers;
 	/** A reference to the player whose turn it is. */
@@ -50,90 +66,73 @@ public class Game {
 	private int diceroll = 0;
 	/** The index of the current player in the list of players. **/
 	private int currentPlayerIndex = 0;
-	
 
 	public Game(Application app){
 		this.app = app;
 		this.gameState = "PLAYING";
+		this.players = new ArrayList<>();	//prevents null pointer exception, do not remove.
 
 		scan = new Scanner(System.in);
+
 		this.board = new Board();//Set up board
-		this.gui = new GUI("CLUEDO");		//set up after objects created
-		this.gui.setGame(this);
-		this.gui.draw();
+		this.gui = new GUI("CLUEDO", this);
+		this.listener = new Listener(gui, this);		//set up after objects created
+		this.gui.setListener(this.listener);
 
-		
+
+		// Card drawing parameters defined.
+		CARD_HEIGHT = this.gui.WINDOW_HEIGHT - this.board.BOARD_HEIGHT - this.gui.BUTTON_PANEL_HEIGHT - this.gui.MENU_HEIGHT -10; //20> x <40
+		CARD_WIDTH = this.gui.WINDOW_WIDTH / 8;  // 8 = 6 cards in a hand + room for die
+		CARD_X_ORIGIN = this.gui.WINDOW_WIDTH - this.gui.BORDER_OFFSET;
+		CARD_Y = this.board.BOARD_HEIGHT;
+
 		this.numPlayers = setNumPlayers();	//Determines the number of players in the game.
-
 		this.players = setupPlayers(); //Player enters their name
-		
-		
-		//String path = JOptionPane.showInputDialog("Enter a path");
-
-		//player choose their characters
-
-
-
 		assignCards();	//Assigns all cards in the game.
+
 		int startingPlayer = 0;		//generate random number if there is time.
+
 		run(startingPlayer);
 		scan.close();				// closes the scanner after running the game.
 
 	}
 
-	
+
 	/**
 	 * Creates all player objects.
 	 * @return A list of player objects.
 	 */
 	private List<Player> setupPlayers() {
 		List<Player> players = new ArrayList<Player>();
-		List<Character> freeCharacters = new ArrayList<Character>();
-		freeCharacters.addAll(this.board.getCharacters());		//adds all characters to the list.
-		
+		Map<String, Character> nameToChar = new HashMap<>();		//maps names to characters
+		List<Object> charNames = new ArrayList<>();
+		//adds all character's names to the list.
+		for(Character c : this.board.getCharacters()){
+			nameToChar.put(c.NAME, c);
+			charNames.add(c.NAME);
+		}
+
 		Character character = null;
 		String name = null;
+		String choice = null;
 		// Each player chooses their name and character.
 		for(int i = 0; i < this.numPlayers; i++){
-			character = null;
-			while(character == null){
-				
-				gui.popUpTextQuery("Please write your name");//Player chooses their name
-				awaitResponse();
-				name = this.eventMessage;	// Retrieves the player's name
-				this.eventMessage = null;	// Resets the event message for future comms from GUI
+			gui.popUpTextQuery("Please write your name");//Player chooses their name
+			awaitResponse();
+			name = this.eventMessage;	// Retrieves the player's name
+			this.eventMessage = null;	// Resets the event message for future comms from GUI
 
-				
-				
-				
-				
-				for(int j = 0; j < freeCharacters.size(); j++){
-					System.out.printf("(%c) %s\n",'a'+j, freeCharacters.get(j).NAME); 	//e.g (a)Colonel Mustard
-				}
-				String str = scan.next();
-				char c = str.charAt(0);
-				if(c >= 97 && c <= 102){
-					int choice = c - 'a';		//the index of the player's choice in the list.
-					if(choice < freeCharacters.size()){
-						character = freeCharacters.get(choice);	//Sets the character
-						freeCharacters.remove(choice);					//Removes the character from the list, so that it cannot be chosen again.
-					}
-					else
-						System.out.println("Sorry, your choice is not valid. Please try again.");
-				}
-				else
-					System.out.println("Sorry, your choice is not valid. Please try again.");
-			}
-			if(character != null)
-				System.out.printf("Player %d chose %s\n", i, character.NAME);
+			gui.radioButtonSelection("Please choose your character.", charNames);// player chooses their character
+			awaitResponse();
+			choice = this.eventMessage;	//converts the message into an integer
+			character = nameToChar.get(choice);
+			charNames.remove(choice);		//removes the choice from the list.
+			this.eventMessage = null;	// Resets the event message for future comms from GUI
 
 			players.add(new Player(name, character));	//The player chooses which character to use from the list.
 		}
 		return players;
-		
 	}
-
-
 
 	/**
 	 * Returns the game board
@@ -151,7 +150,6 @@ public class Game {
 		return this.players;
 	}
 
-
 	/**
 	 * Returns the player whose turn it is.
 	 * @return The Player object.
@@ -164,7 +162,7 @@ public class Game {
 	 * Returns the character card from the solution.
 	 * @return The character card.
 	 */
-	public Card.CHARACTER getMurderer(){
+	public Card getMurderer(){
 		return murderer;
 	}
 
@@ -172,7 +170,7 @@ public class Game {
 	 * Returns the room card from the solution.
 	 * @return The room card.
 	 */
-	public Card.ROOM getMurderRoom() {
+	public Card getMurderRoom() {
 		return murderRoom;
 	}
 
@@ -180,7 +178,7 @@ public class Game {
 	 * Returns the weapon card from the solution.
 	 * @return The weapon card.
 	 */
-	public Card.WEAPON getMurderWeapon() {
+	public Card getMurderWeapon() {
 		return murderWeapon;
 	}
 
@@ -190,6 +188,11 @@ public class Game {
 	 */
 	public void setEventMessage(String message){
 		this.eventMessage = message;
+	}
+
+	/** Displays a message over the selected square.**/
+	public void doToolTip(int x, int y){
+
 	}
 
 
@@ -204,9 +207,7 @@ public class Game {
 		while(players.size() > 1 && this.gameState.equals("PLAYING")){
 			boolean roomEntered = false;		// Don't ask about leaving room if they have just entered:
 			this.diceroll = diceRoll();		// Roll dice and display result
-
-
-			//draws the board
+			this.gui.draw(); //draws the board
 
 
 			System.out.println("Player " +  currentPlayer.PLAYER_NAME + "'s turn ("+ currentPlayer.getCharacter().ABBREV +"): ");
@@ -301,7 +302,7 @@ public class Game {
 				} else{
 					// If the place player's character is moving to is not traversable:
 
-					//draws the board
+					this.gui.draw(); //draws the board
 
 					System.out.println("There is no square to move to in that direction, please try again.");
 					continue;		// Start loop again to receive new input.
@@ -316,7 +317,7 @@ public class Game {
 			if(this.diceroll != 0 && currentPlayer.getCharacterLocation() == null){
 
 
-				//draws the board
+				this.gui.draw(); //draws the board
 
 
 				currentPlayer.printKnownCards();
@@ -325,7 +326,7 @@ public class Game {
 			}
 			else if(currentPlayer.getCharacterLocation() != null){		// If the move resulted in player entering a room:
 
-				//draws the board //Draws the map with the character in a room.
+				this.gui.draw(); //Draws the board with the character in a room.
 
 
 				currentPlayer.printKnownCards();
@@ -333,7 +334,7 @@ public class Game {
 			}
 			else{ // Notify the player they have completed their turn if they did not reach a room:
 
-				//draws the board //Draws the map with the character in a room.
+				this.gui.draw(); //Draws the board with the character in a room.
 
 
 				System.out.println("Move Turn Complete for Player " + currentPlayer.PLAYER_NAME);
@@ -397,7 +398,7 @@ public class Game {
 				return doRoomEntry();		//asks usual room entry questions.
 			}
 
-			//draws the board
+			this.gui.draw(); //draws the board
 
 
 			board.changeCharacterRoom(character, null);	// Set players room to null
@@ -487,12 +488,12 @@ public class Game {
 		board.changeWeaponRoom(weapon, room);
 
 
-		//draws the board
+		this.gui.draw(); //draws the board
 
 
-		Card roomCard = Card.ROOM.values()[roomChoice];
-		Card characterCard = Card.CHARACTER.values()[characterChoice];
-		Card weaponCard = Card.WEAPON.values()[weaponChoice];
+		RoomCard roomCard = this.board.getRoomCards().get(roomChoice);
+		CharacterCard characterCard = this.board.getCharacterCards().get(characterChoice);
+		WeaponCard weaponCard = this.board.getWeaponCards().get(weaponChoice);
 
 
 		//Check for a player to refute this suggestion.
@@ -575,9 +576,9 @@ public class Game {
 		Card.ROOM room = Card.ROOM.values()[roomChoice];
 		Card.WEAPON weapon = Card.WEAPON.values()[weaponChoice];
 
-		if(character != this.murderer
-				|| room != this.murderRoom
-				|| weapon != this.murderWeapon){
+		if(character.equals(this.murderer)
+				|| !room.equals(this.murderRoom)
+				|| !weapon.equals(this.murderWeapon)){
 			this.players.remove(p);	//removes the current player from the game.
 			System.out.printf("Player %d has guessed incorrectly, and is out of the game!\n", p.PLAYER_NAME);
 			awaitResponse();
@@ -598,23 +599,23 @@ public class Game {
 			}
 		}
 	}
-	
+
 	/**
 	 * Determines the number of players in the game
 	 * @return The number of players in the game.
 	 */
 	private int setNumPlayers() {
 		// Sets up player number choosing.
-				List<Object> playerNumSelection = new ArrayList<>();
-				playerNumSelection.add((Integer)3);
-				playerNumSelection.add((Integer)4);
-				playerNumSelection.add((Integer)5);
-				playerNumSelection.add((Integer)6);
-				this.gui.radioButtonSelection("How many characters are playing?", playerNumSelection);	//User(s) choose number of players
-				awaitResponse();
-				Integer i = Integer.valueOf(this.eventMessage);
-				this.eventMessage = null;						//resets the event message for future communications from GUI.
-				return i;
+		List<Object> playerNumSelection = new ArrayList<>();
+		playerNumSelection.add((Integer)3);
+		playerNumSelection.add((Integer)4);
+		playerNumSelection.add((Integer)5);
+		playerNumSelection.add((Integer)6);
+		this.gui.radioButtonSelection("How many characters are playing?", playerNumSelection);	//User(s) choose number of players
+		awaitResponse();
+		Integer i = Integer.valueOf(this.eventMessage);
+		this.eventMessage = null;						//resets the event message for future communications from GUI.
+		return i;
 	}
 
 	/**
@@ -622,16 +623,13 @@ public class Game {
 	 * @return The index of the player to start the game.
 	 */
 	private int assignCards(){
-		List<Card> allCards = new ArrayList<Card>();	// a list for all cards to distribute
-		List<Card> characters =  new ArrayList<>(Arrays.asList((Card.CHARACTER.values()))); 	// a list for all character cards to distribute.
-		List<Card> weapons =  new ArrayList<>(Arrays.asList((Card.WEAPON.values())));	// a list for all weapon cards to distribute.
-		List<Card> rooms =  new ArrayList<>(Arrays.asList((Card.ROOM.values())));	// a list for all room cards to distribute.
+		List<Card> allCards = new ArrayList<>();	// a list for all cards to distribute
 
 		//Chooses character, weapon, and room for murderer, murder weapon and murder room.
 		// Remaining cards are added to  allCards in method.
-		this.murderer = (Card.CHARACTER) assignMurderCard(characters, allCards);
-		this.murderRoom = (Card.ROOM) assignMurderCard(rooms, allCards);
-		this.murderWeapon = (Card.WEAPON) assignMurderCard(weapons, allCards);
+		this.murderer = assignMurderCard(this.board.getCharacterCards(), allCards);
+		this.murderRoom = assignMurderCard(this.board.getRoomCards(), allCards);
+		this.murderWeapon = assignMurderCard(this.board.getWeaponCards(), allCards);
 		if(murderer == null || murderRoom == null|| murderWeapon == null)
 			throw new Error("Card could not be assigned for solution");
 		Card[][] hands = new Card[this.numPlayers][18 / this.numPlayers +1];	//player hands
@@ -674,7 +672,7 @@ public class Game {
 	 * @param A master list of cards
 	 * @return The chosen card
 	 */
-	private Card assignMurderCard(List<Card> selection, List<Card> master){
+	private Card assignMurderCard(List<? extends Card> selection, List<Card> master){
 		Card chosen = null;
 		int index = 0;
 		index = (int)(Math.random() * selection.size());
@@ -726,10 +724,22 @@ public class Game {
 		}
 	}
 
-
-
 	public void draw(Graphics g) {
 		this.board.draw(g);
+
+
+		int x = 0;
+		Card[] hand = null;
+		//draws the players'cards
+		for(Player p : this.players){
+			hand = p.getHand(); //player hand
+			for(int i = 0; i < hand.length; i++){
+				if(hand[i] != null){
+					x = CARD_X_ORIGIN - ((i + 1) * CARD_WIDTH);
+					hand[i].draw(g, x, CARD_Y, CARD_WIDTH, CARD_HEIGHT);
+				}
+			}
+		}
 	}
 
 

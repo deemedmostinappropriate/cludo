@@ -14,11 +14,15 @@ import java.util.Scanner;
 
 import javax.imageio.ImageIO;
 
-import cluedo.Card;
-import cluedo.Card.WEAPON;
 import cluedo.Game;
+import cluedo.pieces.Card;
 import cluedo.pieces.Character;
+import cluedo.pieces.CharacterCard;
+import cluedo.pieces.RoomCard;
 import cluedo.pieces.Weapon;
+import cluedo.pieces.WeaponCard;
+import cluedo.pieces.Card.WEAPON;
+
 
 /**
  * The game board: Holds the character and weapon pieces.
@@ -58,6 +62,13 @@ public class Board {
 	private Map<String, Room> roomFromCharacter;
 	/** A list of the game's weapon pieces**/
 	private List<Weapon> weapons;
+	/** A list of the game's weapon cards**/
+	private List<WeaponCard> weaponCards;
+	/** A list of the game's room cards**/
+	private List<RoomCard> roomCards;
+	/** A list of the game's character cards**/
+	private List<CharacterCard> characterCards;
+
 
 	public Board(){
 		// Items, characters and their locations if/when in rooms:
@@ -65,6 +76,9 @@ public class Board {
 		this.characters = new ArrayList<>();
 		this.roomsFromWeapons = new HashMap<>();
 		this.roomFromCharacter = new HashMap<>();
+		this.weaponCards = new ArrayList<>();
+		this.roomCards = new ArrayList<>();
+		this.characterCards = new ArrayList<>();
 
 		// Locations relative to the game board itself:
 		this.board = new int[SIZE][SIZE];
@@ -117,6 +131,40 @@ public class Board {
 			changeWeaponRoom(w, this.rooms.get(rand)); //adds a weapon to the room
 		}
 
+		//Sets up cards
+		loadWeaponCards(new String[]{"ROPE", "KNIFE","CANDLESTICK","REVOLVER", "LEADPIPE", "WRENCH"});
+		loadRoomCards(new String[]{"LOUNGE", "DINING_ROOM", "KITCHEN", "BALL_ROOM", "CONSERVATORY", "BILLIARD_ROOM", "LIBRARY", "STUDY", "HALL"});
+		loadCharacterCards(new String[]{"MISS_SCARLETT", "COL_MUSTARD", "MRS_WHITE", "MR_GREEN", "MRS_PEACOCK", "PROF_PLUM"});
+	}
+
+	/**
+	 * Loads weapon cards from a list of strings.
+	 * @param The names of the cards.
+	 */
+	private void loadWeaponCards(String[] names){
+		for(int i = 0; i < names.length; i++){
+			this.weaponCards.add(new WeaponCard(names[i], loadImage("./Images/"+names[i]+"_CARD.png")));
+		}
+	}
+
+	/**
+	 * Loads character cards from a list of strings.
+	 * @param The names of the cards.
+	 */
+	private void loadCharacterCards(String[] names){
+		for(int i = 0; i < names.length; i++){
+			this.characterCards.add(new CharacterCard(names[i], loadImage("./Images/"+names[i]+"_CARD.png")));
+		}
+	}
+
+	/**
+	 * Loads room cards from a list of strings.
+	 * @param The names of the cards.
+	 */
+	private void loadRoomCards(String[] names){
+		for(int i = 0; i < names.length; i++){
+			this.roomCards.add(new RoomCard(names[i], loadImage("./Images/"+names[i]+"_CARD.png")));
+		}
 	}
 
 	/**
@@ -193,6 +241,30 @@ public class Board {
 	}
 
 	/**
+	 * Returns the list of weapon cards.
+	 * @return The list of cards.
+	 */
+	public List<WeaponCard> getWeaponCards() {
+		return weaponCards;
+	}
+
+	/**
+	 * Returns the list of room cards.
+	 * @return The list of cards.
+	 */
+	public List<RoomCard> getRoomCards() {
+		return roomCards;
+	}
+
+	/**
+	 * Returns the list of character cards.
+	 * @return The list of cards.
+	 */
+	public List<CharacterCard> getCharacterCards() {
+		return characterCards;
+	}
+
+	/**
 	 * Maps a character name to the room, in which they reside.
 	 * @param The character's name.
 	 * @param The room.
@@ -220,21 +292,10 @@ public class Board {
 		for(Weapon w : this.weapons){
 			w.draw(g);
 		}
-
+		//draws the characters
 		for(Character c : this.characters)
 			c.draw(g);
 
-
-		/*
-		//Prints the array
-		for(int i = map.length-1; i >= 0; --i){
-			for(int j = 0; j < map[i].length; ++j){
-				System.out.printf("%s",map[i][j]);
-			}
-			System.out.println();
-		}
-		System.out.println();
-		 */
 	}
 
 

@@ -1,8 +1,7 @@
 package cluedo.locations;
 import java.util.List;
 
-
-import cluedo.Card;
+import cluedo.pieces.Card;
 import cluedo.pieces.Character;
 import cluedo.pieces.Weapon;
 

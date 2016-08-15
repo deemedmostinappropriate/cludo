@@ -20,12 +20,16 @@ public class Canvas extends JPanel{
 	/** The Game object. **/
 	private Game game = null;
 
+	public Canvas(Game game){
+		super();
+		this.game = game;
+	}
 
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		this.game.draw(g);	// all other drawing follows from this call.
-	}
+	}		// Adds all cards to the list.
 
 	public void paint (Graphics g){
 		dbImage = createImage(getWidth(), getHeight());	// our screen image
@@ -33,14 +37,5 @@ public class Canvas extends JPanel{
 		paintComponent(dbg);		//force call to paintComponent.
 		g.drawImage(dbImage, 0, 0, this);
 	}
-
-	/**
-	 * Provides the Panel the only reference it should need to draw the game.
-	 * @param The game object.
-	 */
-	public void setGame(Game game){
-		this.game = game;
-	}
-
 
 }

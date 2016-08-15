@@ -5,8 +5,12 @@ import java.util.List;
 import cluedo.locations.Board;
 import cluedo.locations.Door;
 import cluedo.locations.Room;
+import cluedo.pieces.Card;
 import cluedo.pieces.Character;
+import cluedo.pieces.CharacterCard;
+import cluedo.pieces.RoomCard;
 import cluedo.pieces.Weapon;
+import cluedo.pieces.WeaponCard;
 
 /**
  * Stores all player data, including the cards they know about, their character, and their player number.
@@ -22,13 +26,13 @@ public class Player {
 	private Card[] hand = null;
 
 	/** Room cards which the player has seen. **/
-	private List<Card.ROOM> knownRooms;
+	private List<RoomCard> knownRooms;
 
 	/** Character cards which the player has seen. **/
-	private List<Card.CHARACTER> knownCharacters;
+	private List<CharacterCard> knownCharacters;
 
 	/** Weapon cards which the player has seen. **/
-	private List<Card.WEAPON> knownWeapons;
+	private List<WeaponCard> knownWeapons;
 
 	/** The player's name. */
 	public final String PLAYER_NAME;
@@ -49,9 +53,9 @@ public class Player {
 
 	/**
 	 * Returns the list of known room cards
-	 * @return The list of room cards
+	 * @return The list of room cardse
 	 */
-	public List<Card.ROOM> getKnownRooms() {
+	public List<RoomCard> getKnownRooms() {
 		return knownRooms;
 	}
 
@@ -59,7 +63,7 @@ public class Player {
 	 * Returns the list of known character cards
 	 * @return The list of character cards
 	 */
-	public List<Card.CHARACTER> getKnownCharacters() {
+	public List<CharacterCard> getKnownCharacters() {
 		return knownCharacters;
 	}
 
@@ -67,10 +71,10 @@ public class Player {
 	 * Returns the list of known weapon cards
 	 * @return The list of weapon cards
 	 */
-	public List<Card.WEAPON> getKnownWeapons() {
+	public List<WeaponCard> getKnownWeapons() {
 		return knownWeapons;
 	}
-	
+
 	/**
 	 * Returns the Room location of this players character, or null if
 	 * not in a Room currently.
@@ -118,14 +122,14 @@ public class Player {
 	 * @param An object that must be of type Room, Character, or Room.WEAPON.
 	 */
 	public void learn(Card card){
-		if(card instanceof Card.ROOM){
-			this.knownRooms.add((Card.ROOM)card);
+		if(card instanceof RoomCard){
+			this.knownRooms.add((RoomCard)card);
 		}
-		else if(card instanceof Card.CHARACTER){
-			this.knownCharacters.add((Card.CHARACTER)card);
+		else if(card instanceof CharacterCard){
+			this.knownCharacters.add((CharacterCard)card);
 		}
-		else if(card instanceof Card.WEAPON){
-			this.knownWeapons.add((Card.WEAPON)card);
+		else if(card instanceof WeaponCard){
+			this.knownWeapons.add((WeaponCard)card);
 		}
 		else{
 			throw new IllegalArgumentException("Argument cannot be learnt by Player: Type incorrect");
@@ -194,7 +198,8 @@ public class Player {
 		}
 
 		// Otherwise, players character is allowed to move:
-		character.setPosition(newX, newY);
+		character.setX(newX);
+		character.setY(newY);
 		return true;
 	}
 
@@ -216,6 +221,6 @@ public class Player {
 			System.out.printf("%s\t", c.toString());
 		System.out.printf("\n\n");
 	}
-	
+
 
 }
