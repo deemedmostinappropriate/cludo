@@ -353,6 +353,9 @@ public class Game {
 						break outer;
 					}
 					this.eventMessage = null;		//resets event message.  Is needed here, do not remove.
+
+
+					this.gui.canvas.setFocusable(true);		//experimental to fix keys not reading
 				}
 			}
 

@@ -220,8 +220,9 @@ public class GUI extends JFrame{
 
 		this.dialog.add(panel, BorderLayout.CENTER);
 		this.dialog.add(this.continueButton, BorderLayout.SOUTH);	//adds the continue button at the bottom of the dialog.
-		this.dialog.pack();
 		fitDialogToTitle();	//fits the dialog width to fit its title.
+		this.dialog.pack();
+
 	}
 
 	/**
@@ -233,8 +234,8 @@ public class GUI extends JFrame{
 		JTextField tf = new JTextField();			// text field
 		this.dialog.add(tf, BorderLayout.NORTH);	//adds the text field to the window
 		this.dialog.add(this.continueButton, BorderLayout.SOUTH);	//adds the continue button to the window
-		this.dialog.pack();
 		fitDialogToTitle();	//fits the dialog width to fit its title.
+		this.dialog.pack();
 	}
 
 	/**
