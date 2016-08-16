@@ -3,6 +3,8 @@ package cluedo;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -19,7 +21,7 @@ import javax.swing.JTextField;
  *
  */
 
-public class Listener implements ActionListener, MouseMotionListener, MouseListener{
+public class Listener implements ActionListener, MouseMotionListener, MouseListener, KeyListener{
 	/** The cluedo game**/
 	private Game game;
 	/** The application interface**/
@@ -91,9 +93,8 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-
 		Component c = e.getComponent();
-		if(c == null){
+		if(c != null){
 			int x = e.getX(), y = e.getY();
 			// Is the click in the bounds of the die image?
 			if(x > game.DIE_X && x < game.DIE_X + game.DIE_WIDTH
@@ -103,9 +104,7 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 			else
 				return;
 		}
-
-
-		if(c.equals(this.gui.fileItem)){
+		else if(c.equals(this.gui.fileItem)){
 			((JMenuItem)c).setEnabled(true);	//makes the menu item be pressed.
 		}
 
@@ -141,6 +140,35 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 	 */
 	public void changeLabel(String i){
 		this.gui.instruction.setText(i);
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		System.out.println("key pressed detected");
+
+		char c = e.getKeyChar();
+		//
+		switch(c){
+		case 'w':
+		case 'a':
+		case 's':
+		case 'd':
+			this.game.setKeyMessage(c);	//if key is a movement key, send to game.
+			return;
+		default:
+			return;
+		}
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

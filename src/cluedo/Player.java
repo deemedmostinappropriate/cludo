@@ -145,9 +145,7 @@ public class Player {
 	 * @return Whether or not the player is able to make the move.
 	 * @throws IOException
 	 */
-	public boolean move(char direction, Board board) throws IOException{
-		if(board == null)
-			throw new IllegalArgumentException("Argument is null.");
+	public boolean move(char direction, Board board){
 		// Get current x,y of the players Character:
 		int newX = character.getX();
 		int newY = character.getY();

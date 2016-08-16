@@ -44,9 +44,10 @@ public class Game {
 	private String mouseClickMessage = null;
 	/** A return from a mouse motion event listener **/
 	private String mousePosMessage = null;
-	/**
-	 * Scanner for use in any input scanning, including use by other objects.
-	 */
+	/** A return from a key press event. **/
+	private char keyMessage = '\0';
+
+	/**Scanner for use in any input scanning, including use by other objects. **/
 	public static Scanner scan;
 
 	/** Card height, width for drawing. **/
@@ -79,23 +80,20 @@ public class Game {
 	/** The index of the current player in the list of players. **/
 	private int currentPlayerIndex = 0;
 
+
 	public Game(Application app) {
 		this.app = app;
 		this.gameState = "PLAYING";
 		this.scan = new Scanner(System.in);
-		this.players = new ArrayList<>(); // prevents null pointer exception, do
-											// not remove.
-
+		this.players = new ArrayList<>(); // prevents null pointer exception, do not remove.
 		this.board = new Board();// Set up board
 		this.gui = new GUI("CLUEDO", this);
 		this.listener = new Listener(gui, this); // set up after objects created
-		this.gui.setListener(this.listener);
+		this.gui.setListener(this.listener);	//passes the listener to the gui.
 
 		// Card drawing parameters defined.
-		CARD_HEIGHT = this.gui.WINDOW_HEIGHT - this.board.BOARD_HEIGHT - this.gui.BUTTON_PANEL_HEIGHT
-				- this.gui.MENU_HEIGHT - 10; // 20> x <40
-		CARD_WIDTH = this.gui.WINDOW_WIDTH / 8; // 8 = 6 cards in a hand + room
-												// for die
+		CARD_HEIGHT = this.gui.WINDOW_HEIGHT - this.board.BOARD_HEIGHT - this.gui.BUTTON_PANEL_HEIGHT - this.gui.MENU_HEIGHT - 10; // 20> x <40
+		CARD_WIDTH = this.gui.WINDOW_WIDTH / 8; // 8 = 6 cards in a hand + room  for die
 		CARD_X_ORIGIN = this.gui.WINDOW_WIDTH - this.gui.BORDER_OFFSET;
 		CARD_Y = this.board.BOARD_HEIGHT;
 		// Die drawing parameters defined.
@@ -104,8 +102,7 @@ public class Game {
 		DIE_X = 5;
 		DIE_Y = this.board.BOARD_HEIGHT + 5;
 
-		this.numPlayers = setNumPlayers(); // Determines the number of players
-											// in the game.
+		this.numPlayers = setNumPlayers(); // Determines the number of players in the game.
 		this.players = setupPlayers(); // Player enters their name
 		assignCards(); // Assigns all cards in the game.
 
@@ -222,12 +219,14 @@ public class Game {
 
 		// The game loop.
 		while (players.size() > 1 && this.gameState.equals("PLAYING")) {
+			this.gui.draw(); // draws the board so that player's hand is displayed
 			boolean roomEntered = false; // Don't ask about leaving room if they have just entered:
 
 			this.mouseClickMessage = null; //resets the mouse click event message.
 			this.listener.changeLabel("\t\t" + this.currentPlayer.PLAYER_NAME + ", roll the die to start your turn!"); // requests  user roll the die.
 			this.diceroll = diceRoll(); // Roll dice and display result
-			this.gui.draw(); // draws the board
+			this.gui.draw(); // draws the game so that dice is drawn
+			this.listener.changeLabel("\t" + this.currentPlayer.PLAYER_NAME + ", move with WASD. You have "+this.diceroll+"moves left.");
 
 			System.out.println("Player " + currentPlayer.PLAYER_NAME + "'s turn (" + currentPlayer.getCharacter().ABBREV + "): ");
 			currentPlayer.printKnownCards();// print out list of cards player knows about
@@ -303,56 +302,26 @@ public class Game {
 	 */
 	private boolean doMovement() {
 		char dir; // Players direction choice goes here (w a s d).
-
-		System.out.printf("Your Dice Roll is:  %d\n ", diceroll);
-		System.out.println("Use W A S D to move, press enter to apply: ");
-
 		while (this.diceroll > 0) {
-			dir = scan.next().charAt(0);
+			System.out.println("Player " + currentPlayer.PLAYER_NAME + "'s turn (" + currentPlayer.getCharacter().ABBREV + "): ");
+			awaitResponse("key");		//awaits a key press from the player
+
 			Character character = currentPlayer.getCharacter(); // the character piece being moved.
 			// Move this players character based on the input char:
-			try {
-
-				if (currentPlayer.move(dir, board)) {
-					--this.diceroll; // Take away from remaining moves:
-					System.out.printf("%s  is now at (%d, %d) on the board.\n", character.NAME, character.getX(),
-							character.getY());
-				} else {
-					// If the place player's character is moving to is not
-					// traversable:
-
-					this.gui.draw(); // draws the board
-
-					System.out.println("There is no square to move to in that direction, please try again.");
-					continue; // Start loop again to receive new input.
-				}
-			} catch (IOException e) {
-				// Catch an exception if the input char from player is not w a s
-				// d
-				System.out.println(e.getMessage() + "Please use W A S D.");
-				scan.next();
-				continue; // Start loop again to receive new input.
+			if (currentPlayer.move(this.keyMessage, board)){
+				--this.diceroll; // Take away from remaining moves:
+				this.gui.draw(); // draws the board with the character moved to new location.
+			}else{
+				this.listener.changeLabel("/t/tYou cannot walk in that direction");//notify player that they cannot walk in the specified direction
 			}
 
-			if (this.diceroll != 0 && currentPlayer.getCharacterLocation() == null) {
-
-				this.gui.draw(); // draws the board
-
-				currentPlayer.printKnownCards();
-				System.out.println("    Moves remaining: " + this.diceroll); // Show moves remaining only after a successful move.
-
-
-			} else if (currentPlayer.getCharacterLocation() != null) { // If the move resulted in player entering a room:
-
-				this.gui.draw(); // Draws the board with the character in a room.
-				currentPlayer.printKnownCards();
+			if(this.diceroll == 0 || currentPlayer.getCharacterLocation() != null) { // If the move resulted in player entering a room:
 				return true;
-			} else { // Notify the player they have completed their turn if they did not reach a room:
-				this.gui.draw(); // Draws the board with the character in a room.
-				System.out.println("Move Turn Complete for Player " + currentPlayer.PLAYER_NAME);
-
 			}
+
+			this.keyMessage = '\0';		//resets the key press message.
 		}
+		this.listener.changeLabel(this.currentPlayer.PLAYER_NAME + " your turn is now over. ");// Notify the player they have completed their turn. They have not reached a room.
 		return false;
 	}
 
@@ -623,6 +592,15 @@ public class Game {
 				}
 			}
 		}
+		else if(type.equals("key")){
+			while (this.keyMessage != '\0') {
+				try {
+					TimeUnit.MILLISECONDS.sleep(500);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 		else if(type.equals("click")){
 			while (this.mouseClickMessage == null) {
 				try {
@@ -632,6 +610,7 @@ public class Game {
 				}
 			}
 		}
+
 
 	}
 
@@ -650,8 +629,6 @@ public class Game {
 		this.gui.radioButtonSelection("How many characters are playing?", playerNumSelection); // User(s) choose number of players
 		awaitResponse("event");
 		Integer i = Integer.valueOf(this.eventMessage);
-		System.out.println(eventMessage);
-		System.out.println(""+i);
 		this.eventMessage = null; // resets the event message for future
 									// communications from GUI.
 		return i;
@@ -823,6 +800,14 @@ public class Game {
 	 */
 	public void setMouseClickMessage(String message){
 		this.mouseClickMessage = message;
+	}
+
+	/**
+	 * Sets the key message character to the given argument.
+	 * @param The character returned from a key press.
+	 */
+	public void setKeyMessage(char c) {
+		this.keyMessage = c;
 	}
 
 }
