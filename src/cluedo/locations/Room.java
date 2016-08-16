@@ -168,7 +168,7 @@ public class Room {
 	 * Returns the name of the room.
 	 * @return The name of the room
 	 */
-	public String ToString(){
+	public String toString(){
 		return NAME;
 	}
 }

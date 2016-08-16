@@ -83,7 +83,7 @@ public class Game {
 	private int currentPlayerIndex = 0;
 
 
-	public Game(Application app) {
+	public <T> Game(Application app) {
 		this.app = app;
 		this.gameState = "PLAYING";
 		this.scan = new Scanner(System.in);
@@ -92,6 +92,9 @@ public class Game {
 		this.gui = new GUI("CLUEDO", this);
 		this.listener = new Listener(gui, this); // set up after objects created
 		this.gui.setListener(this.listener);	//passes the listener to the gui.
+		// updates the gui's comboboxes with object lists and titles
+		this.gui.setComboBoxItems((List<T>)this.board.getCharacters(), (List<T>)this.board.getRooms(), (List<T>)this.board.getWeapons(),
+				"Characters", "Rooms", "Weapons");
 
 		// Card drawing parameters defined.
 		CARD_HEIGHT = this.gui.WINDOW_HEIGHT - this.board.BOARD_HEIGHT - this.gui.BUTTON_PANEL_HEIGHT - this.gui.MENU_HEIGHT - 10; // 20> x <40
@@ -332,9 +335,8 @@ public class Game {
 				}
 			}
 			else{
-				this.gui.comboBoxSelection("Make your accusation from the choices below.", (List<T>)this.board.getCharacterCards(), (List<T>)this.board.getRoomCards(), (List<T>)this.board.getWeaponCards());
-				//ask player if they want to make an accusation
-				//accusation
+				//accusation dialog is made
+				this.gui.comboBoxSelection("Make your accusation from the choices below.");
 				accusation(currentPlayer);
 				break;
 			}

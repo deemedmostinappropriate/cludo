@@ -95,7 +95,7 @@ public class Weapon implements Piece{
 	 * Returns the name of the weapon.
 	 * @return The name of the weapon
 	 */
-	public String ToString(){
+	public String toString(){
 		return this.name.toString();
 	}
 

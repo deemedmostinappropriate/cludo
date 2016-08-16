@@ -104,7 +104,7 @@ public class Character implements Piece{
 	 * Returns the name of the character.
 	 * @return The name of the character
 	 */
-	public String ToString(){
+	public String toString(){
 		return NAME;
 	}
 }

@@ -55,16 +55,13 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 			}
 			// for combo box dialog
 			else if(comps.length > 1 && comps[0] instanceof JToolBar){
-				System.out.println("Jtoolbar found");
-				comps = ((JToolBar)comps[1]).getComponents();
-
-				this.game.setCharacterSuggestionMesssage(((JComboBox)comps[0]).getSelectedItem().toString());
-				this.game.setRoomSuggestionMesssage(((JComboBox)comps[1]).getSelectedItem().toString());
-				this.game.setWeaponSuggestionMesssage(((JComboBox)comps[2]).getSelectedItem().toString());
+				this.game.setCharacterSuggestionMesssage(gui.box1.getSelectedItem().toString());
+				this.game.setRoomSuggestionMesssage(gui.box2.getSelectedItem().toString());
+				this.game.setWeaponSuggestionMesssage(gui.box3.getSelectedItem().toString());
 				return;
 			}
 			else
-				return;
+				return;	//for unnecessary action in the game.
 			Component chosen = null;
 			String event = null;
 
@@ -72,6 +69,7 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 				if(comps[index] instanceof JButton)
 					continue;
 				else if(comps[index] instanceof JRadioButtonMenuItem){
+					//For radio button selection
 					JRadioButtonMenuItem i = (JRadioButtonMenuItem) comps[index];
 					if(i.isSelected()){
 						chosen = i;		// this is the chosen button.
@@ -80,6 +78,7 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 					}
 				}
 				else if(comps[index] instanceof JTextField){
+					//For text field event.
 					chosen = comps[index];	//pacifies return condition
 					event = ((JTextField)comps[index]).getText();
 				}
@@ -124,7 +123,7 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 			else{
 				int x = e.getX(), y = e.getY();
 
-				// Is the click in the bounds of the die image?
+				// Checks that the click is in the bounds of the die image.
 				if(x > game.DIE_X && x < game.DIE_X + game.DIE_WIDTH
 						&& y > game.DIE_Y && y < game.DIE_Y + game.DIE_HEIGHT){
 					game.setMouseClickMessage("DIE");
