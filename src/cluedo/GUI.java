@@ -164,28 +164,23 @@ public class GUI extends JFrame{
 	 * @param The title of the dialog.
 	 * @param A varying number of lists of objects.
 	 */
-	public <T> void comboBoxSelection(String label, List<T>... elements){
+	public <T> void comboBoxSelection(String label, List<T> list1, List<T> list2, List<T> list3 ){
 		//this.popupMenu.setLabel(label);		//Sets a new label for the menu
 		this.dialog = basicDialog(label);
 		this.dialog.setLayout(new BorderLayout());
-		// To hold labels.
-		JToolBar labelToolBar = new JToolBar();
-		labelToolBar.setLayout(new FlowLayout());
-		labelToolBar.add(new JLabel("Characters"),FlowLayout.LEFT);
-		labelToolBar.add(new JLabel("Rooms"),FlowLayout.RIGHT);
-		labelToolBar.add(new JLabel("Weapons", FlowLayout.CENTER));
-
-		JToolBar boxToolbar = new JToolBar();
-		this.dialog.add(labelToolBar, BorderLayout.NORTH);
-		this.dialog.add(boxToolbar, BorderLayout.CENTER);		//adds button to the panel.
-
-		// Adds buttons to the panel and to the ButtonGroup
-		for(List<T> list : elements){
-			JComboBox combo = new JComboBox(list.toArray());
-			boxToolbar.add(combo);
-		}
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridLayout(2,3));	//panel to hold labels and combo boxes.
+		// adds labels and boxes to panel.
+		panel.add(new JLabel("Characters"));
+		panel.add(new JLabel("Rooms"));
+		panel.add(new JLabel("Weapons"));
+		panel.add(new JComboBox(list1.toArray()));
+		panel.add(new JComboBox(list2.toArray()));
+		panel.add(new JComboBox(list3.toArray()));
+		// A "continue" button.
 		JButton ok = new JButton("Continue");
 		ok.addActionListener(listener);
+		this.dialog.add(panel, BorderLayout.CENTER);
 		this.dialog.add(ok, BorderLayout.SOUTH);	//adds the continue button at the bottom of the dialog.
 		this.dialog.pack();
 	}
