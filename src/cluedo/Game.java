@@ -339,6 +339,7 @@ public class Game {
 					actionMade = true;
 				}
 				else{ // accusation path
+					this.eventMessage = null;		//resets event message after accusation button selection.
 					List<Object> list = new ArrayList<>();
 					list.add("Yes");
 					list.add("No");
@@ -616,7 +617,6 @@ public class Game {
 	 * Pauses gameplay while waiting for a player response.
 	 */
 	public void awaitResponse(String type) {
-		;
 		if(type.equals("event")){
 			while (this.eventMessage == null) {
 				try {

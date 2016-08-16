@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.Image;
@@ -196,7 +197,9 @@ public class GUI extends JFrame{
 			panel.add(but);		//adds button to the panel.
 		}
 		this.dialog.add(this.continueButton, BorderLayout.SOUTH);	//adds the continue button at the bottom of the dialog.
+		fitDialogToTitle();	//fits the dialog width to fit its title.
 		this.dialog.pack();
+
 	}
 
 	/**
@@ -218,6 +221,7 @@ public class GUI extends JFrame{
 		this.dialog.add(panel, BorderLayout.CENTER);
 		this.dialog.add(this.continueButton, BorderLayout.SOUTH);	//adds the continue button at the bottom of the dialog.
 		this.dialog.pack();
+		fitDialogToTitle();	//fits the dialog width to fit its title.
 	}
 
 	/**
@@ -230,6 +234,23 @@ public class GUI extends JFrame{
 		this.dialog.add(tf, BorderLayout.NORTH);	//adds the text field to the window
 		this.dialog.add(this.continueButton, BorderLayout.SOUTH);	//adds the continue button to the window
 		this.dialog.pack();
+		fitDialogToTitle();	//fits the dialog width to fit its title.
+	}
+
+	/**
+	 * Sets the dialog's width to fit it title.
+	 */
+	private void fitDialogToTitle(){
+		Font defaultFont = UIManager.getDefaults().getFont("Label.font");	//finds the default label font
+		int titleStringWidth = SwingUtilities.computeStringWidth(new JLabel().getFontMetrics(defaultFont),
+		            this.dialog.getTitle());  //calculates the width of the title.
+		int width = this.dialog.getPreferredSize().width;
+		int height = this.dialog.getPreferredSize().height;
+		int bestWidth = titleStringWidth + 200;
+		if(width < bestWidth){
+			this.dialog.setPreferredSize(new Dimension(bestWidth, height));
+		}
+		this.dialog.repaint();
 	}
 
 	/**

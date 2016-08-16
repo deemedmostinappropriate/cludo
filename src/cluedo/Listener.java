@@ -46,19 +46,26 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 			// gets the components that may have been used
 			if(comps[0] instanceof JPanel){
 				comps = ((JPanel)comps[0]).getComponents();
+				// for combo box dialog
+				if(comps[0] instanceof JComboBox){
+					//sends messages to game.
+					this.game.setCharacterSuggestionMesssage(gui.box1.getSelectedItem().toString());
+					this.game.setRoomSuggestionMesssage(gui.box2.getSelectedItem().toString());
+					this.game.setWeaponSuggestionMesssage(gui.box3.getSelectedItem().toString());
+					//resets boxes' selected items
+					gui.box1.setSelectedItem(-1);
+					gui.box2.setSelectedItem(-1);
+					gui.box3.setSelectedItem(-1);
+					// we can close the window now that it has no use.
+					this.gui.getDialog().dispose();
+					return;
+				}
 			}
 			else if(comps[0] instanceof JTextField){
 				//do nothing. this is Character name input.
 			}
 			else if(comps.length > 1 && comps[1] instanceof JPanel){
 				comps = ((JPanel)comps[1]).getComponents();
-			}
-			// for combo box dialog
-			else if(comps.length > 1 && comps[0] instanceof JToolBar){
-				this.game.setCharacterSuggestionMesssage(gui.box1.getSelectedItem().toString());
-				this.game.setRoomSuggestionMesssage(gui.box2.getSelectedItem().toString());
-				this.game.setWeaponSuggestionMesssage(gui.box3.getSelectedItem().toString());
-				return;
 			}
 			else
 				return;	//for unnecessary action in the game.
