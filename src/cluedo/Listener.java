@@ -10,10 +10,12 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JTextField;
+import javax.swing.JToolBar;
 
 /**
  * The interface between the game model and GUI
@@ -43,36 +45,57 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 			Component[] comps = this.gui.getDialog().getContentPane().getComponents();
 			// gets the components that may have been used
 			if(comps[0] instanceof JPanel){
-				p = (JPanel)comps[0];
-				comps = p.getComponents();
+				comps = ((JPanel)comps[0]).getComponents();
+			}
+			else if(comps[0] instanceof JTextField){
+				//do nothing. this is Character name input.
 			}
 			else if(comps.length > 1 && comps[1] instanceof JPanel){
-				p = (JPanel)comps[1];
-				comps = p.getComponents();
+				comps = ((JPanel)comps[1]).getComponents();
 			}
+			// for combo box dialog
+			else if(comps.length > 1 && comps[0] instanceof JToolBar){
+				System.out.println("Jtoolbar found");
+				comps = ((JToolBar)comps[1]).getComponents();
+
+				this.game.setCharacterSuggestionMesssage(((JComboBox)comps[0]).getSelectedItem().toString());
+				this.game.setRoomSuggestionMesssage(((JComboBox)comps[1]).getSelectedItem().toString());
+				this.game.setWeaponSuggestionMesssage(((JComboBox)comps[2]).getSelectedItem().toString());
+				return;
+			}
+			else
+				return;
 			Component chosen = null;
 			String event = null;
 
-			for(Component b : comps){
-				if(b instanceof JButton)
+			for(int index = 0; index < comps.length; index ++){
+				if(comps[index] instanceof JButton)
 					continue;
-				else if(b instanceof JRadioButtonMenuItem){
-					JRadioButtonMenuItem i = (JRadioButtonMenuItem) b;
+				else if(comps[index] instanceof JRadioButtonMenuItem){
+					JRadioButtonMenuItem i = (JRadioButtonMenuItem) comps[index];
 					if(i.isSelected()){
 						chosen = i;		// this is the chosen button.
 						event = i.getText();	// the text from the button.
 						break;
 					}
 				}
-				else if(b instanceof JTextField){
-					chosen = b;	//pacifies return condition
-					event = ((JTextField)b).getText();
+				else if(comps[index] instanceof JTextField){
+					chosen = comps[index];	//pacifies return condition
+					event = ((JTextField)comps[index]).getText();
+				}
+				else{
+					throw new RuntimeException("This shoud not happen");
 				}
 			}
 			if(chosen == null)
 				return;						// prevents exit without selection
 			this.gui.getDialog().dispose();		// we can close the window now that it has no use.
 			this.game.setEventMessage(event);		//passes a message to the game.
+		}
+		else if(e.getActionCommand().equals("accusation")){
+			System.out.println("acc button found");
+			this.game.setEventMessage(((JButton)e.getSource()).getText());
+			return;
 		}
 	}
 
@@ -95,14 +118,20 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 	public void mouseClicked(MouseEvent e) {
 		Component c = e.getComponent();
 		if(c != null){
-			int x = e.getX(), y = e.getY();
-			// Is the click in the bounds of the die image?
-			if(x > game.DIE_X && x < game.DIE_X + game.DIE_WIDTH
-					&& y > game.DIE_Y && y < game.DIE_Y + game.DIE_HEIGHT){
-				game.setMouseClickMessage("DIE");
+			if(c.equals(this.gui.accusation)){
+				this.game.setEventMessage("accusation");
 			}
-			else
-				return;
+			else{
+				int x = e.getX(), y = e.getY();
+
+				// Is the click in the bounds of the die image?
+				if(x > game.DIE_X && x < game.DIE_X + game.DIE_WIDTH
+						&& y > game.DIE_Y && y < game.DIE_Y + game.DIE_HEIGHT){
+					game.setMouseClickMessage("DIE");
+				}
+				else
+					return;
+			}
 		}
 		else if(c.equals(this.gui.fileItem)){
 			((JMenuItem)c).setEnabled(true);	//makes the menu item be pressed.

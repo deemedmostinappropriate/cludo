@@ -99,4 +99,12 @@ public class Character implements Piece{
 	public void draw(Graphics g){
 		g.drawImage(this.image, realX, realY, Board.SQ_WIDTH, Board.SQ_HEIGHT, null);
 	}
+
+	/**
+	 * Returns the name of the character.
+	 * @return The name of the character
+	 */
+	public String ToString(){
+		return NAME;
+	}
 }

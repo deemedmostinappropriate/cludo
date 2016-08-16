@@ -45,7 +45,9 @@ public class Game {
 	/** A return from a mouse motion event listener **/
 	private String mousePosMessage = null;
 	/** A return from a key press event. **/
-	private char keyMessage = '\0';
+	private char keyMessage = 'p';
+	/** Special messages only used in the case of an accusation or suggestion. **/
+	private String charSuggestionMessage = null, roomSuggestionMessage = null, weaponSuggestionMessage = null;
 
 	/**Scanner for use in any input scanning, including use by other objects. **/
 	public static Scanner scan;
@@ -120,7 +122,7 @@ public class Game {
 	private List<Player> setupPlayers() {
 		List<Player> players = new ArrayList<Player>();
 		Map<String, Character> nameToChar = new HashMap<>(); // maps names to
-																// characters
+		// characters
 		List<Object> charNames = new ArrayList<>();
 		// adds all character's names to the list.
 		for (Character c : this.board.getCharacters()) {
@@ -134,7 +136,7 @@ public class Game {
 		// Each player chooses their name and character.
 		for (int i = 0; i < this.numPlayers; i++) {
 			gui.popUpTextQuery("Please write your name");// Player chooses their
-															// name
+			// name
 			awaitResponse("event");
 			name = this.eventMessage; // Retrieves the player's name
 			this.eventMessage = null; // Resets the event message for future comms from GUI
@@ -206,6 +208,55 @@ public class Game {
 		return murderWeapon;
 	}
 
+	/**
+	 * Sets the most recent message from an event listener
+	 * @param The  message
+	 */
+	public void setEventMessage(String message) {
+		this.eventMessage = message;
+	}
+
+	/**
+	 * Sets the value of teh mouse click event message, detailing where the mouse was clicked.
+	 * @param message
+	 */
+	public void setMouseClickMessage(String message){
+		this.mouseClickMessage = message;
+	}
+
+	/**
+	 * Sets the key message character to the given argument.
+	 * @param The character returned from a key press.
+	 */
+	public void setKeyMessage(char c) {
+		this.keyMessage = c;
+	}
+
+	/**
+	 * Sets the charSuggestionMessage field.
+	 * @param The new message value.
+	 */
+	public void setCharacterSuggestionMesssage(String s){
+		this.charSuggestionMessage = s;
+	}
+
+	/**
+	 * Sets the weaponSuggestionMessage field.
+	 * @param The new message value.
+	 */
+	public void setWeaponSuggestionMesssage(String s){
+		this.weaponSuggestionMessage = s;
+	}
+
+	/**
+	 * Sets the roomSuggestionMessage field.
+	 * @param The new message value.
+	 */
+	public void setRoomSuggestionMesssage(String s){
+		this.roomSuggestionMessage = s;
+	}
+
+
 
 	/**
 	 * Runs the game loop.
@@ -229,61 +280,24 @@ public class Game {
 
 			System.out.println("Player " + currentPlayer.PLAYER_NAME + "'s turn (" + currentPlayer.getCharacter().ABBREV + "): ");
 			currentPlayer.printKnownCards();// print out list of cards player knows about
+
 			// Display and process move options if on a traversable board square:
 			if (currentPlayer.getCharacterLocation() == null) {
-				System.out.printf("Your Dice Roll is:  %d\n ", diceroll);
-				System.out.println("Would you like to move or make an accusation?Choose (1)move, or (0)accusation");
-				System.out.println("Caution: an accusation may end the game!");
-				int choice = 99;
-
-				while (choice != 0 && choice != 1) {
-					try {
-						choice = scan.nextInt();
-					} catch (Exception e) {
-						System.out.println("Your choice was invalid. Please try again.");
-						scan.next();
-						continue;
-					}
-				}
-
-				if (choice == 1) {
-					roomEntered = doMovement();
-					if (!roomEntered) {
-						System.out.println("Would you like to make an accusation?Choose (1)no, or (0)yes");
-						choice = 99;
-						while (choice != 0 && choice != 1) {
-							try {
-								choice = scan.nextInt();
-							} catch (Exception e) {
-								System.out.println("Your choice was invalid. Please try again.");
-								scan.next();
-								continue;
-							}
-						}
-						if (choice == 0) {
-							accusation(currentPlayer);
-							break;
-						}
-					}
-				} else {
-					accusation(currentPlayer);
-					break;
+				roomEntered = doMovement();
+				if (!roomEntered) {
+					this.listener.changeLabel("You may make an accusation before finishing your turn.");//tells player that they can make an accusation before ending their turn.
 				}
 			}
 
 			// Check if in a room, show leave options or
 			if (currentPlayer.getCharacterLocation() != null) {
 				Room currentRoom = currentPlayer.getCharacterLocation();
-				if (doRoomTurn(currentRoom, roomEntered))
+				doRoomTurn(currentRoom, roomEntered);
+				if(this.players.size() == 1)
 					break;
-				else
-					doMovement();
+				doMovement();
 			}
 			updateCurrentPlayer();
-
-			// Prevents players from viewing eachother's hands
-			String securityGap = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
-			System.out.printf("\nDon't look at another player's hand!!!%s", securityGap);
 		}
 		if (this.gameState.equals("NewGAME"))
 			Application.newGame(this.app); // starts a new game.
@@ -294,32 +308,46 @@ public class Game {
 
 	/**
 	 * Processes basic movement interactions via the console.
+	 * @param <T>
 	 *
 	 * @param The
 	 *            player's dice roll
 	 * @return True if the player's character is in a room.
 	 */
-	private boolean doMovement() {
-		char dir; // Players direction choice goes here (w a s d).
-		while (this.diceroll > 0) {
-			System.out.println("Player " + currentPlayer.PLAYER_NAME + "'s turn (" + currentPlayer.getCharacter().ABBREV + "): ");
-			awaitResponse("key");		//awaits a key press from the player
+	private <T> boolean doMovement() {
 
+		while (this.diceroll > 0) {
 			Character character = currentPlayer.getCharacter(); // the character piece being moved.
-			// Move this players character based on the input char:
-			if (currentPlayer.move(this.keyMessage, board)){
-				--this.diceroll; // Take away from remaining moves:
-				this.gui.draw(); // draws the board with the character moved to new location.
-			}else{
-				this.listener.changeLabel("        You cannot walk in that direction");//notify player that they cannot walk in the specified direction
+
+			System.out.println("Player " + currentPlayer.PLAYER_NAME + "'s turn (" + currentPlayer.getCharacter().ABBREV + "): ");
+
+			awaitResponse("movement");		//awaits a key press from the player. Can also result in an accusation
+			if(this.keyMessage != 'p'){
+				// Move this players character based on the input char:
+				if (currentPlayer.move(this.keyMessage, board)){
+					--this.diceroll; // Take away from remaining moves:
+					this.gui.draw(); // draws the board with the character moved to new location.
+				}else{
+					this.listener.changeLabel("        You cannot walk in that direction");//notify player that they cannot walk in the specified direction
+				}
+			}
+			else{
+				this.gui.comboBoxSelection("Make your accusation from the choices below.", (List<T>)this.board.getCharacterCards(), (List<T>)this.board.getRoomCards(), (List<T>)this.board.getWeaponCards());
+				//ask player if they want to make an accusation
+				//accusation
+				accusation(currentPlayer);
+				break;
 			}
 
 			if(this.diceroll == 0 || currentPlayer.getCharacterLocation() != null) { // If the move resulted in player entering a room:
 				return true;
 			}
-
-			this.keyMessage = '\0';		//resets the key press message.
+			this.keyMessage = 'p';		//resets the key press message.
+			this.eventMessage = null;	//resets the event message to null. Useful when an accusation is made.
 		}
+		this.keyMessage = 'p';		//resets the key press message.
+		this.eventMessage = null;	//resets the event message to null. Useful when an accusation is made.
+
 		this.diceroll = 0; //keeps die image at zero until next player rolls
 		this.listener.changeLabel(this.currentPlayer.PLAYER_NAME + " your turn is now over. ");// Notify the player they have completed their turn. They have not reached a room.
 		return false;
@@ -327,25 +355,21 @@ public class Game {
 
 	/**
 	 * Processes a turn which starts in a room.
-	 *
-	 * @param The
-	 *            current room of the character piece.
+	 * @param The current room of the character piece.
 	 * @param True
-	 *            if the player entered the room during this turn.
-	 * @return True if the game is over.
 	 */
-	private boolean doRoomTurn(Room currentRoom, boolean roomEntered) {
+	private void doRoomTurn(Room currentRoom, boolean roomEntered) {
 		Character character = currentPlayer.getCharacter();
 		// Only ask the player if they want to leave when they haven't entered
 		// in the same turn:
 		if (!roomEntered) {
 			Door exit = null; // Pull coordinates from the door player is
-								// leaving from.
+			// leaving from.
 
 			System.out.println("Do you want to leave the current room? (" + currentRoom.NAME + ") y/n: ");
 			char input = scan.next().charAt(0);
 			if (input != 'y' && input != 'Y') {
-				return false;
+				return;
 			}
 			// Print the choices of door when there's more than one, and the
 			// staircase's room:
@@ -354,7 +378,7 @@ public class Game {
 			while (exit == null) {
 				if (currentRoom.getDoors().size() == 1 && currentRoom.getStairs() == null)
 					exit = currentRoom.getDoors().get(0); // only one exit
-															// available.
+				// available.
 				for (i = 0; i < currentRoom.getDoors().size(); ++i)
 					System.out.printf("%d: %s\t", i, reverseDir(currentRoom.getDoors().get(i).ROOM_DIRECTION));
 
@@ -381,37 +405,27 @@ public class Game {
 			} else {
 				board.changeCharacterRoom(character, currentRoom.getStairs()); // Moves the character to the room at the other end of the stairs.
 				this.diceroll = 0;
-				return doRoomEntry(); // asks usual room entry questions.
+				return;
 			}
 
 			this.gui.draw(); // draws the board
 
 			board.changeCharacterRoom(character, null); // Set players room to
-														// null
+			// null
 			--this.diceroll;
-			return false; // continue with turn from the beginning
+			return ; // continue with turn from the beginning
 		}
-		// If just entered into the room, give player options for suggestion,
-		// accusation
-		// if room has them. All make diceroll 0;
-		else if (roomEntered && doRoomEntry())
-			return true;
-		return false;
 	}
 
 	/**
 	 * Processes the part of the turn where a player enters a room.
-	 *
-	 * @return Returns true if the game is over
 	 */
-	private boolean doRoomEntry() {
-		boolean gameOver = false;
+	private void doRoomEntry() {
 		String choice = "";
 		this.diceroll = 0;
 		try {
 			do {
 				System.out.println("Would you like to make a (s)uggestion or an (a)ccusation?");
-				System.out.println("Caution: an accusation may end the game!");
 				choice = scan.next(); // takes player's choice
 			} while (!choice.equals("a") && !choice.equals("s"));
 		} catch (Exception e) {
@@ -421,11 +435,7 @@ public class Game {
 		if (choice.equals("s"))
 			suggestion(currentPlayer); // processes player suggestion
 		else
-			gameOver = accusation(currentPlayer); // calls accusation method
-
-		return gameOver || players.size() == 1; // Game is over because the
-												// accusation was correct, or
-												// theres only one player left,
+			accusation(currentPlayer); // calls accusation method
 	}
 
 	/**
@@ -443,7 +453,7 @@ public class Game {
 		// give player options for suggestion, accusation
 		int characterChoice = 0, weaponChoice = 0;
 		Room location = p.getCharacterLocation(); // Suggest from the current
-													// room only:
+		// room only:
 		int roomChoice = Card.ROOM.valueOf(location.NAME).ordinal();
 
 		try {
@@ -517,10 +527,8 @@ public class Game {
 	 * they guess correctly they win the game, otherwise they lose and the game
 	 * continues without them.
 	 *
-	 * @param The
-	 *            player making the accusation
-	 * @return A string message telling the player the result of their
-	 *         accusation.
+	 * @param The player making the accusation
+	 * @return True if the player's accusation was correct
 	 */
 	public boolean accusation(Player p) {
 		if (p == null)
@@ -561,6 +569,9 @@ public class Game {
 		} catch (Exception e) {
 			throw new Error(e);
 		}
+
+		// this needs to remove player and end turn
+
 		System.out.printf("Player %d states: It was %s in the %s with the %s!\n", currentPlayer.PLAYER_NAME,
 				Card.CHARACTER.values()[characterChoice], Card.ROOM.values()[roomChoice],
 				Card.WEAPON.values()[weaponChoice]);
@@ -569,20 +580,26 @@ public class Game {
 		Card.ROOM room = Card.ROOM.values()[roomChoice];
 		Card.WEAPON weapon = Card.WEAPON.values()[weaponChoice];
 
-		if (character.equals(this.murderer) || !room.equals(this.murderRoom) || !weapon.equals(this.murderWeapon)) {
+		if (!character.equals(this.murderer) || !room.equals(this.murderRoom) || !weapon.equals(this.murderWeapon)) {
 			this.players.remove(p); // removes the current player from the game.
 			System.out.printf("Player %d has guessed incorrectly, and is out of the game!\n", p.PLAYER_NAME);
 			awaitResponse("event");
 			return false;
-		} else
+		} else{
+			// removes all players except for the current player from the game.
+			for(Player other : this.players){
+				if(!other.equals(this.currentPlayer))
+					this.players.remove(p);
+			}
 			return true;
+		}
 	}
 
 	/**
 	 * Pauses gameplay while waiting for a player response.
 	 */
 	public void awaitResponse(String type) {
-;
+		;
 		if(type.equals("event")){
 			while (this.eventMessage == null) {
 				try {
@@ -593,7 +610,7 @@ public class Game {
 			}
 		}
 		else if(type.equals("movement")){
-			while(this.keyMessage == '\0' && this.eventMessage == null) {
+			while(this.keyMessage == 'p' && this.eventMessage == null) {
 				try {
 					TimeUnit.MILLISECONDS.sleep(500);
 				} catch (InterruptedException e) {
@@ -630,7 +647,7 @@ public class Game {
 		awaitResponse("event");
 		Integer i = Integer.valueOf(this.eventMessage);
 		this.eventMessage = null; // resets the event message for future
-									// communications from GUI.
+		// communications from GUI.
 		return i;
 	}
 
@@ -642,7 +659,7 @@ public class Game {
 	 */
 	private int assignCards() {
 		List<Card> allCards = new ArrayList<>(); // a list for all cards to
-													// distribute
+		// distribute
 		// Chooses character, weapon, and room for murderer, murder weapon and  murder room.
 		// Remaining cards are added to allCards in method.
 		this.murderer = assignMurderCard(this.board.getCharacterCards(), allCards);
@@ -651,7 +668,7 @@ public class Game {
 		if (murderer == null || murderRoom == null || murderWeapon == null)
 			throw new Error("Card could not be assigned for solution");
 		Card[][] hands = new Card[this.numPlayers][18 / this.numPlayers + 1]; // player
-																				// hands
+		// hands
 
 		int startingPlayer = fillHands(hands, allCards);
 		// Passes the hands to their respective players.
@@ -678,10 +695,10 @@ public class Game {
 			for (index = 0; index < hands.length; index++) {
 				mIndex = (int) (Math.random() * master.size());
 				hands[index][handIndex] = master.get(mIndex); // adds a random
-																// card to hand
-																// i.
+				// card to hand
+				// i.
 				master.remove(mIndex); // prevents the same card being dealt
-										// twice
+				// twice
 			}
 			handIndex++;
 		}
@@ -753,7 +770,7 @@ public class Game {
 			currentPlayerIndex = 0;
 			currentPlayer = players.get(currentPlayerIndex);
 		} else { // Otherwise increment the index and find the next player with
-					// it
+			// it
 			currentPlayer = players.get(++currentPlayerIndex);
 		}
 	}
@@ -778,36 +795,12 @@ public class Game {
 	}
 
 	/**
-	 * Sets the most recent message from an event listener
-	 * @param The  message
-	 */
-	public void setEventMessage(String message) {
-		this.eventMessage = message;
-	}
-
-	/**
 	 * /** Displays a message over the selected square.
 	 * @param The position of mouse click
 	 * @param The y position of the mouse click.
 	 */
 	public void doToolTip(int x, int y) {
 		//TODO
-	}
-
-	/**
-	 * Sets the value of teh mouse click event message, detailing where the mouse was clicked.
-	 * @param message
-	 */
-	public void setMouseClickMessage(String message){
-		this.mouseClickMessage = message;
-	}
-
-	/**
-	 * Sets the key message character to the given argument.
-	 * @param The character returned from a key press.
-	 */
-	public void setKeyMessage(char c) {
-		this.keyMessage = c;
 	}
 
 }

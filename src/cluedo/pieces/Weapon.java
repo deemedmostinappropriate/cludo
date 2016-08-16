@@ -91,5 +91,13 @@ public class Weapon implements Piece{
 		g.drawImage(this.image, realX, realY, Board.SQ_WIDTH, Board.SQ_HEIGHT, null);
 	}
 
+	/**
+	 * Returns the name of the weapon.
+	 * @return The name of the weapon
+	 */
+	public String ToString(){
+		return this.name.toString();
+	}
+
 
 }

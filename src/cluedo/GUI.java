@@ -19,6 +19,8 @@ import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
+import cluedo.pieces.Card;
+
 /**
  * A graphical user interface.
  * This example uses JMenuBar, JPanel, JButton, JTextField, JRadioButton, and JDialog components.
@@ -57,14 +59,14 @@ public class GUI extends JFrame{
 	/** Button to switch to next turn.**/
 	public final JButton nextTurn;
 	/** Button to roll dice.**/
-	public final JButton rollDie;
+	public final JButton accusation;
 	/** A label to give instructions to the player.**/
 	public final JLabel instruction;
 	/** A panel to organise the buttons**/
 	public final JPanel buttonPanel;
 
-			/** The size of text drawn.**/
-			private final float TEXT_SIZE = 20;
+	/** The size of text drawn.**/
+	private final float TEXT_SIZE = 20;
 
 	public GUI(String appName, Game game){
 		super(appName);
@@ -84,12 +86,12 @@ public class GUI extends JFrame{
 		this.menu.add(this.gameItem);
 		//Jbuttons
 		this.nextTurn = new JButton("Next Turn");
-		this.rollDie = new JButton("Roll Die");
+		this.accusation = new JButton("Make Accusation");
 		this.instruction = new JLabel("Loading Game");
 		this.buttonPanel = new JPanel();			//holds our buttons
 		this.buttonPanel.setPreferredSize(new Dimension(WINDOW_WIDTH, BUTTON_PANEL_HEIGHT));
 		this.buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-		this.buttonPanel.add(this.rollDie);
+		this.buttonPanel.add(this.accusation);
 		this.buttonPanel.add(this.nextTurn);
 		this.buttonPanel.add(this.instruction);
 
@@ -125,6 +127,8 @@ public class GUI extends JFrame{
 		this.canvas.addMouseListener(l);	//adds the listener to the canvas
 		this.canvas.setFocusable(true);		//adds focus to canvas
 		this.canvas.addKeyListener(l);
+		this.nextTurn.addMouseListener(this.listener); 	//adds a mouse listener to the button
+		this.accusation.addMouseListener(this.listener);	//adds a mouse listener to the button
 	}
 
 	/**
@@ -148,6 +152,37 @@ public class GUI extends JFrame{
 			but.addActionListener(listener);
 			bg.add(but);		//adds button to the group.
 			panel.add(but);		//adds button to the panel.
+		}
+		JButton ok = new JButton("Continue");
+		ok.addActionListener(listener);
+		this.dialog.add(ok, BorderLayout.SOUTH);	//adds the continue button at the bottom of the dialog.
+		this.dialog.pack();
+	}
+
+	/**
+	 * Displays a dialog with a number of comboboxes equal to the number of lists passed in. Labels are also added to mark the boxes.
+	 * @param The title of the dialog.
+	 * @param A varying number of lists of objects.
+	 */
+	public <T> void comboBoxSelection(String label, List<T>... elements){
+		//this.popupMenu.setLabel(label);		//Sets a new label for the menu
+		this.dialog = basicDialog(label);
+		this.dialog.setLayout(new BorderLayout());
+		// To hold labels.
+		JToolBar labelToolBar = new JToolBar();
+		labelToolBar.setLayout(new FlowLayout());
+		labelToolBar.add(new JLabel("Characters"),FlowLayout.LEFT);
+		labelToolBar.add(new JLabel("Rooms"),FlowLayout.RIGHT);
+		labelToolBar.add(new JLabel("Weapons", FlowLayout.CENTER));
+
+		JToolBar boxToolbar = new JToolBar();
+		this.dialog.add(labelToolBar, BorderLayout.NORTH);
+		this.dialog.add(boxToolbar, BorderLayout.CENTER);		//adds button to the panel.
+
+		// Adds buttons to the panel and to the ButtonGroup
+		for(List<T> list : elements){
+			JComboBox combo = new JComboBox(list.toArray());
+			boxToolbar.add(combo);
 		}
 		JButton ok = new JButton("Continue");
 		ok.addActionListener(listener);
