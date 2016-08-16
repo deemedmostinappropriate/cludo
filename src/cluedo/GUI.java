@@ -224,7 +224,7 @@ public class GUI extends JFrame{
 	 * Creates a JDialog window with a text field.
 	 * @param string
 	 */
-	public void popUpTextQuery(String string) {
+	public void textQuery(String string) {
 		this.dialog = basicDialog(string);			// dialog window for text field
 		JTextField tf = new JTextField();			// text field
 		this.dialog.add(tf, BorderLayout.NORTH);	//adds the text field to the window

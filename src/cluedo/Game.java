@@ -138,7 +138,7 @@ public class Game {
 		String choice = null;
 		// Each player chooses their name and character.
 		for (int i = 0; i < this.numPlayers; i++) {
-			gui.popUpTextQuery("Please write your name");// Player chooses their
+			gui.textQuery("Please write your name");// Player chooses their
 			// name
 			awaitResponse("event");
 			name = this.eventMessage; // Retrieves the player's name
@@ -318,27 +318,41 @@ public class Game {
 	 * @return True if the player's character is in a room.
 	 */
 	private <T> boolean doMovement() {
+		boolean actionMade = false;
 
 		while (this.diceroll > 0) {
 			Character character = currentPlayer.getCharacter(); // the character piece being moved.
 
 			System.out.println("Player " + currentPlayer.PLAYER_NAME + "'s turn (" + currentPlayer.getCharacter().ABBREV + "): ");
-
-			awaitResponse("movement");		//awaits a key press from the player. Can also result in an accusation
-			if(this.keyMessage != 'p'){
-				// Move this players character based on the input char:
-				if (currentPlayer.move(this.keyMessage, board)){
-					--this.diceroll; // Take away from remaining moves:
-					this.gui.draw(); // draws the board with the character moved to new location.
-				}else{
-					this.listener.changeLabel("        You cannot walk in that direction");//notify player that they cannot walk in the specified direction
+			outer:
+			// loops until the player has made a move or an accusation
+			while(!actionMade){
+				awaitResponse("movementOrAccusation");		//awaits a key press from the player. Can also result in an accusation
+				if(this.keyMessage != 'p'){
+					// Move this players character based on the input char:
+					if (currentPlayer.move(this.keyMessage, board)){
+						--this.diceroll; // Take away from remaining moves:
+						this.gui.draw(); // draws the board with the character moved to new location.
+					}else{
+						this.listener.changeLabel("        You cannot walk in that direction");//notify player that they cannot walk in the specified direction
+					}
+					actionMade = true;
 				}
-			}
-			else{
-				//accusation dialog is made
-				this.gui.comboBoxSelection("Make your accusation from the choices below.");
-				accusation(currentPlayer);
-				break;
+				else{ // accusation path
+					List<Object> list = new ArrayList<>();
+					list.add("Yes");
+					list.add("No");
+					//Gives player option not to accuse.
+					this.gui.radioButtonSelection("An accusation can make you win or lose the game. Do you want to continue?", list);
+					awaitResponse("event");
+					if(this.eventMessage.equals("Yes")){
+						//accusation dialog is made
+						this.gui.comboBoxSelection("Make your accusation from the choices below.");
+						accusation(currentPlayer);
+						break outer;
+					}
+					this.eventMessage = null;		//resets event message.  Is needed here, do not remove.
+				}
 			}
 
 			if(this.diceroll == 0 || currentPlayer.getCharacterLocation() != null) { // If the move resulted in player entering a room:
@@ -346,6 +360,7 @@ public class Game {
 			}
 			this.keyMessage = 'p';		//resets the key press message.
 			this.eventMessage = null;	//resets the event message to null. Useful when an accusation is made.
+			actionMade = false;			//allows for choice between movement and accusation.
 		}
 		this.keyMessage = 'p';		//resets the key press message.
 		this.eventMessage = null;	//resets the event message to null. Useful when an accusation is made.
@@ -611,7 +626,7 @@ public class Game {
 				}
 			}
 		}
-		else if(type.equals("movement")){
+		else if(type.equals("movementOrAccusation")){
 			while(this.keyMessage == 'p' && this.eventMessage == null) {
 				try {
 					TimeUnit.MILLISECONDS.sleep(500);

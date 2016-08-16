@@ -1,0 +1,6 @@
+things to fix:
+
+
+scaling dialogs by title size
+weapon sometimes drawn at 0,24 which is out of bounds
+better rope image
