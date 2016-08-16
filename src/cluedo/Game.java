@@ -144,8 +144,7 @@ public class Game {
 			choice = this.eventMessage; // converts the message into an integer
 			character = nameToChar.get(choice);
 			charNames.remove(choice); // removes the choice from the list.
-			this.eventMessage = null; // Resets the event message for future
-										// comms from GUI
+			this.eventMessage = null; // Resets the event message for future comms from GUI
 
 			players.add(new Player(name, character)); // The player chooses which character to use from the list
 
@@ -312,7 +311,7 @@ public class Game {
 				--this.diceroll; // Take away from remaining moves:
 				this.gui.draw(); // draws the board with the character moved to new location.
 			}else{
-				this.listener.changeLabel("/t/tYou cannot walk in that direction");//notify player that they cannot walk in the specified direction
+				this.listener.changeLabel("        You cannot walk in that direction");//notify player that they cannot walk in the specified direction
 			}
 
 			if(this.diceroll == 0 || currentPlayer.getCharacterLocation() != null) { // If the move resulted in player entering a room:
@@ -321,6 +320,7 @@ public class Game {
 
 			this.keyMessage = '\0';		//resets the key press message.
 		}
+		this.diceroll = 0; //keeps die image at zero until next player rolls
 		this.listener.changeLabel(this.currentPlayer.PLAYER_NAME + " your turn is now over. ");// Notify the player they have completed their turn. They have not reached a room.
 		return false;
 	}
@@ -592,8 +592,8 @@ public class Game {
 				}
 			}
 		}
-		else if(type.equals("key")){
-			while (this.keyMessage != '\0') {
+		else if(type.equals("movement")){
+			while(this.keyMessage == '\0' && this.eventMessage == null) {
 				try {
 					TimeUnit.MILLISECONDS.sleep(500);
 				} catch (InterruptedException e) {

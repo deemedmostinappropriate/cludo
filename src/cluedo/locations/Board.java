@@ -81,7 +81,7 @@ public class Board {
 		this.weaponCards = new ArrayList<>();
 		this.roomCards = new ArrayList<>();
 		this.characterCards = new ArrayList<>();
-		this.die = new BufferedImage[6];
+		this.die = new BufferedImage[7];	//0 left empty, as no die roll equals 0
 
 		// Locations relative to the game board itself:
 		this.board = new int[SIZE][SIZE];
@@ -148,10 +148,9 @@ public class Board {
 	 */
 	private void loadDieImages(){
 		int num = 0;
-		for(int i = 0; i < 6; i++){
-			num = i+1;
-			String s = "./Images/"+num+".png";
-			this.die[i] = loadImage("./Images/"+num+".png");
+		//starts at 0 to load "roll die" image
+		for(int i = 0; i < 7; i++){
+			this.die[i] = loadImage("./Images/"+i+".png");
 		}
 	}
 
@@ -275,7 +274,7 @@ public class Board {
 	 * @return The image.
 	 */
 	public BufferedImage getDieImage(int roll){
-		return this.die[roll-1];
+		return this.die[roll];
 	}
 
 	/**

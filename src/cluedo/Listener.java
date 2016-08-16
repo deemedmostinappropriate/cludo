@@ -144,8 +144,6 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 
 	@Override
 	public void keyTyped(KeyEvent e) {
-		System.out.println("key pressed detected");
-
 		char c = e.getKeyChar();
 		//
 		switch(c){
@@ -153,6 +151,7 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 		case 'a':
 		case 's':
 		case 'd':
+			System.out.printf("key message %c\n", c);
 			this.game.setKeyMessage(c);	//if key is a movement key, send to game.
 			return;
 		default:

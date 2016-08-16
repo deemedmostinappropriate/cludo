@@ -123,8 +123,8 @@ public class GUI extends JFrame{
 			return;
 		this.listener = l;
 		this.canvas.addMouseListener(l);	//adds the listener to the canvas
+		this.canvas.setFocusable(true);		//adds focus to canvas
 		this.canvas.addKeyListener(l);
-		//this.addKeyListener(l);
 	}
 
 	/**
