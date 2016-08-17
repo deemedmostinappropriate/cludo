@@ -18,6 +18,8 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 
+import cluedo.locations.Board;
+
 /**
  * The interface between the game model and GUI
  * @author anastadani
@@ -138,9 +140,22 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 				if(x > game.DIE_X && x < game.DIE_X + game.DIE_WIDTH
 						&& y > game.DIE_Y && y < game.DIE_Y + game.DIE_HEIGHT){
 					game.setMouseClickMessage("DIE");
-				}
-				else
 					return;
+				}
+				
+				else{
+					Board b = this.game.getBoard();
+					// checks that it is in the bounds of a door in the game's door array
+					if(//if in the range of the board itself
+						x >= 0 && x < b.BOARD_WIDTH
+						&& y >= 0 && y < b.BOARD_HEIGHT
+						//if relative to a door on the board
+						&& b.getDoor(x/(b.SQ_WIDTH + 3)+1, gui.canvas.getY()-(y/(b.SQ_HEIGHT + 3)+1)) != null
+						){
+						System.out.println("found a door");
+					}
+					return;
+				}
 			}
 		}
 		else if(c.equals(this.gui.fileItem)){

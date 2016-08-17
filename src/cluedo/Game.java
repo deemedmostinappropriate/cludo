@@ -502,7 +502,6 @@ public class Game {
 			this.eventMessage = null;	//resets event message.
 			accusation();		//accusation path
 		}
-
 		this.eventMessage = null;
 	}
 
