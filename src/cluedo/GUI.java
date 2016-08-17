@@ -80,20 +80,23 @@ public class GUI extends JFrame{
 		setLayout(new BorderLayout());
 		//Sets up menu
 		this.menu = new JMenuBar();
+		this.menu.setFocusable(false);
 		this.menu.setLayout(new FlowLayout(FlowLayout.LEFT));	//aligns the items to the left
 		this.fileItem = new JMenuItem("File");
-		this.fileItem.addMouseListener(this.listener);
-
+		this.fileItem.setFocusable(false);
 		this.gameItem = new JMenuItem("Game");
-		this.gameItem.addMouseListener(this.listener);
-
+		this.gameItem.setFocusable(false);
 		this.menu.add(this.fileItem);
 		this.menu.add(this.gameItem);
 		//Jbuttons
 		this.nextTurn = new JButton("Next Turn");
+		this.nextTurn.setFocusable(false);
 		this.accusation = new JButton("Make Accusation");
+		this.accusation.setFocusable(false);
 		this.instruction = new JLabel("Loading Game");
+		this.instruction.setFocusable(false);
 		this.buttonPanel = new JPanel();			//holds our buttons
+		this.buttonPanel.setFocusable(false);
 		this.buttonPanel.setPreferredSize(new Dimension(WINDOW_WIDTH, BUTTON_PANEL_HEIGHT));
 		this.buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 		this.buttonPanel.add(this.accusation);
@@ -101,6 +104,7 @@ public class GUI extends JFrame{
 		this.buttonPanel.add(this.instruction);
 
 		this.canvas = new Canvas(game);
+		this.canvas.setFocusable(false);
 		this.canvas.setBackground(Color.BLACK);	//provides a black background
 		this.canvas.setPreferredSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
 		this.menu.setPreferredSize(new Dimension(WINDOW_WIDTH, MENU_HEIGHT));
@@ -110,9 +114,13 @@ public class GUI extends JFrame{
 
 		//additional components for dialogs
 		this.continueButton = new JButton("Continue");
+		this.continueButton.setFocusable(false);
 		this.box1 = new JComboBox();
+		this.box1.setFocusable(false);
 		this.box2 = new JComboBox();
+		this.box2.setFocusable(false);
 		this.box3 = new JComboBox();
+		this.box3.setFocusable(false);
 
 		setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 		setLocationRelativeTo(null);
@@ -136,11 +144,12 @@ public class GUI extends JFrame{
 			return;
 		this.listener = l;
 		this.canvas.addMouseListener(l);	//adds the listener to the canvas
-		this.canvas.setFocusable(true);		//adds focus to canvas
-		this.canvas.addKeyListener(l);
+		this.addKeyListener(l);
 		this.nextTurn.addMouseListener(this.listener); 	//adds a mouse listener to the button
 		this.accusation.addMouseListener(this.listener);	//adds a mouse listener to the button
 		this.continueButton.addActionListener(listener);
+		this.fileItem.addMouseListener(this.listener);
+		this.gameItem.addMouseListener(this.listener);
 	}
 
 	/**

@@ -179,6 +179,7 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 
 	@Override
 	public void keyTyped(KeyEvent e) {
+		System.out.println("key typed");
 		char c = e.getKeyChar();
 		//
 		switch(c){
@@ -196,7 +197,7 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-
+		System.out.println("key pressed");
 	}
 
 	@Override
