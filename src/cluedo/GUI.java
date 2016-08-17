@@ -59,8 +59,6 @@ public class GUI extends JFrame{
 	public final JMenuItem fileItem;
 	/** Game button for the menu**/
 	public final JMenuItem gameItem;
-	/** Button to switch to next turn.**/
-	public final JButton nextTurn;
 	/** Button to roll dice.**/
 	public final JButton accusation;
 	/** A button to close a jdialog. **/
@@ -89,8 +87,6 @@ public class GUI extends JFrame{
 		this.menu.add(this.fileItem);
 		this.menu.add(this.gameItem);
 		//Jbuttons
-		this.nextTurn = new JButton("Next Turn");
-		this.nextTurn.setFocusable(false);
 		this.accusation = new JButton("Make Accusation");
 		this.accusation.setFocusable(false);
 		this.instruction = new JLabel("Loading Game");
@@ -100,7 +96,6 @@ public class GUI extends JFrame{
 		this.buttonPanel.setPreferredSize(new Dimension(WINDOW_WIDTH, BUTTON_PANEL_HEIGHT));
 		this.buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 		this.buttonPanel.add(this.accusation);
-		this.buttonPanel.add(this.nextTurn);
 		this.buttonPanel.add(this.instruction);
 
 		this.canvas = new Canvas(game);
@@ -145,7 +140,6 @@ public class GUI extends JFrame{
 		this.listener = l;
 		this.canvas.addMouseListener(l);	//adds the listener to the canvas
 		this.addKeyListener(l);
-		this.nextTurn.addMouseListener(this.listener); 	//adds a mouse listener to the button
 		this.accusation.addMouseListener(this.listener);	//adds a mouse listener to the button
 		this.continueButton.addActionListener(listener);
 		this.fileItem.addMouseListener(this.listener);
@@ -248,6 +242,28 @@ public class GUI extends JFrame{
 	}
 
 	/**
+	 * A basic dialog with n number of labels, where n is the number of vararg Strings
+	 * @param The String title
+	 * @param Any number of Strings
+	 */
+	public void basicAlert(String title, String...strings){
+		this.dialog = basicDialog(title);
+		this.dialog.setLayout(new BorderLayout());
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridLayout( strings.length +1 ,1)); // one column
+		// adds strings as labels to the dialog
+		for(int i = 0; i < strings.length; i++){
+			panel.add(new JLabel(strings[i], SwingConstants.CENTER)); // alligns text to the center
+		}
+		this.dialog.add(panel, BorderLayout.NORTH);
+		//adds a continue button to the dialog.
+		this.dialog.add(this.continueButton, BorderLayout.SOUTH);
+
+		fitDialogToTitle();	//fits the dialog width to fit its title.
+		this.dialog.pack();
+	}
+
+	/**
 	 * Sets the dialog's width to fit it title.
 	 */
 	private void fitDialogToTitle(){
@@ -278,6 +294,7 @@ public class GUI extends JFrame{
 		d.setTitle(title);				//The title in the border of the window
 		return d;
 	}
+
 
 	/**
 	 * Used to repaint JPanel component.

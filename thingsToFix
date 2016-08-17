@@ -1,8 +1,5 @@
 things to fix:
 
-
-after cancelling acc. player cannot move
-wrench duplication in hand bug
-player number needed in title of textquery dialog
+player number needed in title of text query dialog
 weapon sometimes drawn at 0,24 which is out of bounds
 better rope image

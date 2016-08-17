@@ -78,7 +78,7 @@ public class Game {
 	/** A reference to the player whose turn it is. */
 	private Player currentPlayer = null;
 	/** For a the result from a player's roll of the dice. **/
-	private int diceroll = 1;
+	private int diceroll = 0;
 	/** The index of the current player in the list of players. **/
 	private int currentPlayerIndex = 0;
 
@@ -259,8 +259,6 @@ public class Game {
 		this.roomSuggestionMessage = s;
 	}
 
-
-
 	/**
 	 * Runs the game loop.
 	 *
@@ -279,7 +277,6 @@ public class Game {
 			this.listener.changeLabel("\t\t" + this.currentPlayer.PLAYER_NAME + ", roll the die to start your turn!"); // requests  user roll the die.
 			this.diceroll = diceRoll(); // Roll dice and display result
 			this.gui.draw(); // draws the game so that dice is drawn
-			this.listener.changeLabel("\t" + this.currentPlayer.PLAYER_NAME + ", move with WASD. You have "+this.diceroll+"moves left.");
 
 			System.out.println("Player " + currentPlayer.PLAYER_NAME + "'s turn (" + currentPlayer.getCharacter().ABBREV + "): ");
 			currentPlayer.printKnownCards();// print out list of cards player knows about
@@ -322,6 +319,7 @@ public class Game {
 
 		while (this.diceroll > 0) {
 			Character character = currentPlayer.getCharacter(); // the character piece being moved.
+			this.listener.changeLabel("\t" + this.currentPlayer.PLAYER_NAME + "("+ character.ABBREV +"), move with WASD. You have "+this.diceroll+"moves left.");
 
 			System.out.println("Player " + currentPlayer.PLAYER_NAME + "'s turn (" + currentPlayer.getCharacter().ABBREV + "): ");
 			outer:
@@ -347,9 +345,9 @@ public class Game {
 					this.gui.radioButtonSelection("An accusation can make you win or lose the game. Do you want to continue?", list);
 					awaitResponse("event");
 					if(this.eventMessage.equals("Yes")){
+						this.eventMessage = null;
 						//accusation dialog is made
-						this.gui.comboBoxSelection("Make your accusation from the choices below.");
-						accusation(currentPlayer);
+						this.accusation(currentPlayer);
 						break outer;
 					}
 					this.eventMessage = null;		//resets event message.  Is needed here, do not remove.
@@ -442,21 +440,21 @@ public class Game {
 	 * Processes the part of the turn where a player enters a room.
 	 */
 	private void doRoomEntry() {
-		String choice = "";
-		this.diceroll = 0;
-		try {
-			do {
-				System.out.println("Would you like to make a (s)uggestion or an (a)ccusation?");
-				choice = scan.next(); // takes player's choice
-			} while (!choice.equals("a") && !choice.equals("s"));
-		} catch (Exception e) {
-			throw new Error(e);
+		List<Object> list = new ArrayList<>();
+		list.add("Suggestion");
+		list.add("Accusation");
+		this.gui.radioButtonSelection("Would you like to make a suggestion or an accusation? Caution: Accusation will make you win or lose the game", list);//requests choice from user
+		awaitResponse("event");//awaits choice from user
+
+		if(this.eventMessage.equals("Suggestion")){
+			suggestion(currentPlayer);
+		}
+		else{
+			accusation(currentPlayer);		//accusation path
 		}
 
-		if (choice.equals("s"))
-			suggestion(currentPlayer); // processes player suggestion
-		else
-			accusation(currentPlayer); // calls accusation method
+
+		this.eventMessage = null;
 	}
 
 	/**
@@ -557,61 +555,68 @@ public class Game {
 		if (!p.equals(currentPlayer))
 			throw new RuntimeException("Only the current player can make suggestions.");
 
-		int characterChoice = 0, roomChoice = 0, weaponChoice = 0;
+		this.gui.comboBoxSelection("Make your accusation from the choices below.");		//requests choices from player
+		awaitResponse("event");
 
-		try {
-			do {
-				System.out.printf("Which character do you want to accuse of murder?\n");
-				// gives choices for character
-				for (int c = 0; c < Card.CHARACTER.values().length; c++)
-					System.out.printf("  (%d) %s\n", c, Card.CHARACTER.values()[c]);
-				characterChoice = scan.nextInt(); // takes user choice
 
-				// Ask from room only if player is making an accusation
-				System.out.println("Which room do you say that the murder took place?");
-				for (int c = 0; c < Card.ROOM.values().length; c++)
-					System.out.printf("  (%d) %s\n", c, Card.ROOM.values()[c]);
-				roomChoice = scan.nextInt();
 
-				System.out.printf("Which weapon do you accuse the muderer of using?\n");
-				// gives choices for weapon
-				for (int c = 0; c < Card.WEAPON.values().length; c++)
-					System.out.printf("  (%d) %s\n", c, Card.WEAPON.values()[c]);
-				weaponChoice = scan.nextInt(); // takes user choice
 
-				if (characterChoice < 0 || characterChoice >= Card.CHARACTER.values().length)
-					System.out.println("Character could not be found, please try again.");
-				else if (weaponChoice < 0 || characterChoice >= Card.WEAPON.values().length)
-					System.out.println("Weapon could not be found, please try again.");
-				else
-					break;
-			} while (true);
-
-		} catch (Exception e) {
-			throw new Error(e);
-		}
-
-		// this needs to remove player and end turn
-
-		System.out.printf("Player %d states: It was %s in the %s with the %s!\n", currentPlayer.PLAYER_NAME,
-				Card.CHARACTER.values()[characterChoice], Card.ROOM.values()[roomChoice],
-				Card.WEAPON.values()[weaponChoice]);
-
-		Card.CHARACTER character = Card.CHARACTER.values()[characterChoice];
-		Card.ROOM room = Card.ROOM.values()[roomChoice];
-		Card.WEAPON weapon = Card.WEAPON.values()[weaponChoice];
-
-		if (!character.equals(this.murderer) || !room.equals(this.murderRoom) || !weapon.equals(this.murderWeapon)) {
+		if (!this.charSuggestionMessage.equals(this.murderer.toString())
+				|| !this.roomSuggestionMessage.equals(this.murderRoom.toString())
+				|| !this.weaponSuggestionMessage.equals(this.murderWeapon.toString())) {
 			this.players.remove(p); // removes the current player from the game.
-			System.out.printf("Player %d has guessed incorrectly, and is out of the game!\n", p.PLAYER_NAME);
+
+			System.out.printf("Player %s has guessed incorrectly, and is out of the game!\n", p.PLAYER_NAME);
 			awaitResponse("event");
+
+			this.gui.basicAlert("Accusation Results!",
+					"",
+					this.currentPlayer.PLAYER_NAME +" has guessed:",
+					"",
+					"It was",
+					this.charSuggestionMessage,
+					"",
+					"in the",
+					this.roomSuggestionMessage,
+					"",
+					"with the ",
+					this.weaponSuggestionMessage + ".",
+					"",
+					"",
+					"",
+					this.currentPlayer.PLAYER_NAME,
+					"You have guessed incorrectly",
+					"and are out of the game.");	//display choices and result in jdialog
+
+			//resets variables for later date.
+			this.charSuggestionMessage = null;
+			this.weaponSuggestionMessage = null;
+			this.roomSuggestionMessage = null;
+			this.eventMessage = null;
 			return false;
+
 		} else{
 			// removes all players except for the current player from the game.
 			for(Player other : this.players){
 				if(!other.equals(this.currentPlayer))
 					this.players.remove(p);
 			}
+			//display choices and result in jdialog
+			this.gui.basicAlert("Accusation Results!",
+					this.currentPlayer.PLAYER_NAME +" has guessed:",
+					"It was " +this.charSuggestionMessage,
+					"\n\nin the "+this.roomSuggestionMessage,
+					"\n\nwith the "+this.weaponSuggestionMessage + "\n\n\n\n\n",
+					this.currentPlayer.PLAYER_NAME,
+					"you have guessed correctly.\n",
+					"Congratulations! You have won the game");	//display choices and result in jdialog
+
+
+			//resets variables for later date.
+			this.charSuggestionMessage = null;
+			this.weaponSuggestionMessage = null;
+			this.roomSuggestionMessage = null;
+			this.eventMessage = null;
 			return true;
 		}
 	}
@@ -647,7 +652,6 @@ public class Game {
 				}
 			}
 		}
-
 
 	}
 
@@ -714,11 +718,11 @@ public class Game {
 
 			for (index = 0; index < hands.length; index++) {
 				mIndex = (int) (Math.random() * master.size());
-				hands[index][handIndex] = master.get(mIndex); // adds a random
-				// card to hand
-				// i.
-				master.remove(mIndex); // prevents the same card being dealt
-				// twice
+
+				System.out.println(master.get(mIndex));
+
+				hands[index][handIndex] = master.get(mIndex); // adds a random card to hand i.
+				master.remove(mIndex); // prevents the same card being dealt twice
 			}
 			handIndex++;
 		}

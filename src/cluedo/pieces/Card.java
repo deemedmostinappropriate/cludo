@@ -42,6 +42,11 @@ public class Card{
 		g.drawImage(this.image, x, y, width, height, null);
 	}
 
+	/** Returns the name of the card. **/
+	public String toString(){
+		return this.name;
+	}
+
 	public enum WEAPON{
 		ROPE, KNIFE, CANDLESTICK, REVOLVER, LEADPIPE, WRENCH;
 	}

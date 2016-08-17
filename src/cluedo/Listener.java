@@ -56,6 +56,7 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 					gui.box1.setSelectedItem(-1);
 					gui.box2.setSelectedItem(-1);
 					gui.box3.setSelectedItem(-1);
+					this.game.setEventMessage("selectionDone");
 					// we can close the window now that it has no use.
 					this.gui.getDialog().dispose();
 					return;
