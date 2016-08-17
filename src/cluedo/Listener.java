@@ -93,10 +93,11 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 					event = ((JTextField)comps[index]).getText();
 				}
 			}
+			if(chosen == null)
+				return;		// prevents closing of window until option has been chosen by user.
 							// prevents exit without selection
 			this.gui.getDialog().dispose();		// we can close the window now that it has no use.
-			if(chosen == null)
-				return;
+			
 			this.game.setEventMessage(event);		//passes a message to the game.
 		}
 		else if(e.getActionCommand().equals("accusation")){

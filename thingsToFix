@@ -1,6 +1,7 @@
 things to fix:
 
 
+runs out of turns, accusation: null pointer
 on suggestion continue: weapon cards out of bound at index 5. size should be 6
 player number needed in title of text query dialog
 weapon sometimes drawn at 0,24 which is out of bounds

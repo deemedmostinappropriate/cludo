@@ -17,7 +17,7 @@ public class Weapon implements Piece{
 	 * @author Daniel Anastasi
 	 */
 	public enum Name{
-		ROPE, DAGGER, CANDLESTICK, REVOLVER, LEADPIPE, SPANNER;
+		ROPE, KNIFE, CANDLESTICK, REVOLVER, LEADPIPE, WRENCH;
 	}
 
 	/** The image for the board. **/
@@ -39,7 +39,7 @@ public class Weapon implements Piece{
 
 
 	/**
-	 * Returns the x coordinate of this piece on the board.
+	 * Returns the x coordinate of this piece on the board.w
 	 * @return The x value
 	 */
 	public int getX() {

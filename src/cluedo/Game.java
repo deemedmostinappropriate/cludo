@@ -48,6 +48,8 @@ public class Game {
 	private char keyMessage = 'p';
 	/** Special messages only used in the case of an accusation or suggestion. **/
 	private String charSuggestionMessage = null, roomSuggestionMessage = null, weaponSuggestionMessage = null;
+	/** Lets game know that a button was pushed. Only to be used within awaitResponse.**/
+	private boolean buttonRegistered = false;
 
 	/**Scanner for use in any input scanning, including use by other objects. **/
 	public static Scanner scan;
@@ -138,21 +140,29 @@ public class Game {
 		String choice = null;
 		// Each player chooses their name and character.
 		for (int i = 0; i < this.numPlayers; i++) {
+
 			gui.textQuery("Please write your name");// Player chooses their
 			// name
 			awaitResponse("event");
 			name = this.eventMessage; // Retrieves the player's name
 			this.eventMessage = null; // Resets the event message for future comms from GUI
-			gui.radioButtonSelection("Please choose your character.", charNames);// player chooses their character
+			
+			// loops while waiting for character selection. Character cannot be null.
+			while(character == null){
+				gui.radioButtonSelection("Please choose your character.", charNames);// player chooses their character
+				awaitResponse("event");
+				choice = this.eventMessage; // converts the message into an integer
+				character = nameToChar.get(choice);
+				charNames.remove(choice); // removes the choice from the list.
+				
 
-			awaitResponse("event");
-			choice = this.eventMessage; // converts the message into an integer
-			character = nameToChar.get(choice);
-			charNames.remove(choice); // removes the choice from the list.
-			this.eventMessage = null; // Resets the event message for future comms from GUI
-
-			players.add(new Player(name, character)); // The player chooses which character to use from the list
-
+				players.add(new Player(name, character)); // The player chooses which character to use from the list
+				
+				this.eventMessage = null; // Resets the event message for future comms from GUI
+				
+			}
+			character = null;	//resets for another loop.
+			
 		}
 		return players;
 	}
@@ -298,7 +308,8 @@ public class Game {
 					this.gui.radioButtonSelection("Would you like to end your turn or make an accusation? Caution accusations may make you lose the game.", list);
 					awaitResponse("event");	//await player response
 					if(this.eventMessage.equals("Accusation"))
-						accusation();	//player makes an accusation
+						this.eventMessage = null;
+					accusation();	//player makes an accusation
 					this.eventMessage = null; //resets the event message
 				}
 				else{
@@ -536,6 +547,7 @@ public class Game {
 		for(int i = 0; i < weapons.size(); i++){
 			if(weapons.get(i).toString().equals(this.weaponSuggestionMessage)){
 				weapon = weapons.get(i);
+
 				weaponCard = this.board.getWeaponCards().get(i);
 			}
 		}
@@ -673,6 +685,8 @@ public class Game {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
+				if(buttonRegistered)
+					return;
 			}
 		}
 		else if(type.equals("movementOrAccusation")){
@@ -723,13 +737,19 @@ public class Game {
 	 * @return The index of the player to start the game.
 	 */
 	private int assignCards() {
-		List<Card> allCards = new ArrayList<>(); // a list for all cards to
-		// distribute
+		List<Card> allCards = new ArrayList<>(); // a list for all cards to distribute
+		// Copies lists of cards.
+		List<Card> chars = new ArrayList<>();
+		chars.addAll(this.board.getCharacterCards());
+		List<Card> rooms = new ArrayList<>();
+		rooms.addAll(this.board.getRoomCards());
+		List<Card> weapons = new ArrayList<>();
+		weapons.addAll(this.board.getWeaponCards());
 		// Chooses character, weapon, and room for murderer, murder weapon and  murder room.
 		// Remaining cards are added to allCards in method.
-		this.murderer = assignMurderCard(this.board.getCharacterCards(), allCards);
-		this.murderRoom = assignMurderCard(this.board.getRoomCards(), allCards);
-		this.murderWeapon = assignMurderCard(this.board.getWeaponCards(), allCards);
+		this.murderer = assignMurderCard(chars, allCards);	
+		this.murderRoom = assignMurderCard(rooms, allCards);
+		this.murderWeapon = assignMurderCard(weapons, allCards);
 		if (murderer == null || murderRoom == null || murderWeapon == null)
 			throw new Error("Card could not be assigned for solution");
 		Card[][] hands = new Card[this.numPlayers][18 / this.numPlayers + 1]; // player
@@ -776,10 +796,8 @@ public class Game {
 	 * list are added to the master list.
 	 *
 	 * @param <T>
-	 * @param A
-	 *            list of cards to select from
-	 * @param A
-	 *            master list of cards
+	 * @param A list of cards to select from
+	 * @param A master list of cards
 	 * @return The chosen card
 	 */
 	private Card assignMurderCard(List<? extends Card> selection, List<Card> master) {
