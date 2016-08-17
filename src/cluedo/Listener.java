@@ -101,7 +101,7 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 				return;		// prevents closing of window until option has been chosen by user.
 							// prevents exit without selection
 			this.gui.getDialog().dispose();		// we can close the window now that it has no use.
-			
+
 			this.game.setEventMessage(event);		//passes a message to the game.
 		}
 		else if(e.getActionCommand().equals("accusation")){
@@ -142,7 +142,7 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 					game.setMouseClickMessage("DIE");
 					return;
 				}
-				
+
 				else{
 					Board b = this.game.getBoard();
 					// checks that it is in the bounds of a door in the game's door array
@@ -150,18 +150,19 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 						x >= 0 && x < b.BOARD_WIDTH
 						&& y >= 0 && y < b.BOARD_HEIGHT
 						//if relative to a door on the board
-						&& b.getDoor(x/(b.SQ_WIDTH + 3)+1, gui.canvas.getY()-(y/(b.SQ_HEIGHT + 3)+1)) != null
+						&& b.getDoor(x/(Board.SQ_WIDTH + 3), 25 -(y - gui.canvas.getY())/(Board.SQ_HEIGHT + 3)) != null
 						){
-						System.out.println("found a door");
+						System.out.printf("found a door: %d, %d\n", x/(b.SQ_WIDTH + 3)+1, 25 -(y - gui.canvas.getY())/(b.SQ_HEIGHT + 3));
+						System.out.printf("mouse x: %d, y: %d\n", x,y);
+						System.out.printf("canvas edges, x: %d, y: %d\n",gui.canvas.getX(),gui.canvas.getY());
 					}
 					return;
 				}
 			}
+			if(c.equals(this.gui.fileItem)){
+				((JMenuItem)c).setEnabled(true);	//makes the menu item be pressed.
+			}
 		}
-		else if(c.equals(this.gui.fileItem)){
-			((JMenuItem)c).setEnabled(true);	//makes the menu item be pressed.
-		}
-
 	}
 
 	@Override

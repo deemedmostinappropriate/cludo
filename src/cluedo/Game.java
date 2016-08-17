@@ -526,7 +526,6 @@ public class Game {
 		List<Character> chars = this.board.getCharacters();
 		String refutingPlayerName = "noone.", refute = null;
 
-
 		this.gui.suggestionSelection("Make your suggestion from the choices below.");		//requests choices from player
 		awaitResponse("event");		//awaits the player's choice
 
@@ -564,7 +563,7 @@ public class Game {
 				if (!otherPlayer.equals(p)) {
 					for (Card c : otherPlayer.getHand()) {
 						if(c == null)
-							continue;	//prevents null pointer exception	
+							continue;	//prevents null pointer exception
 						if (c.equals(roomCard)) {
 							refutingPlayerName = otherPlayer.PLAYER_NAME;
 							refute = otherPlayer.PLAYER_NAME + "who has the"+c.toString()+" card";
@@ -749,7 +748,7 @@ public class Game {
 		weapons.addAll(this.board.getWeaponCards());
 		// Chooses character, weapon, and room for murderer, murder weapon and  murder room.
 		// Remaining cards are added to allCards in method.
-		this.murderer = assignMurderCard(chars, allCards);	
+		this.murderer = assignMurderCard(chars, allCards);
 		this.murderRoom = assignMurderCard(rooms, allCards);
 		this.murderWeapon = assignMurderCard(weapons, allCards);
 		if (murderer == null || murderRoom == null || murderWeapon == null)
