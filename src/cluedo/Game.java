@@ -146,7 +146,7 @@ public class Game {
 			awaitResponse("event");
 			name = this.eventMessage; // Retrieves the player's name
 			this.eventMessage = null; // Resets the event message for future comms from GUI
-			
+
 			// loops while waiting for character selection. Character cannot be null.
 			while(character == null){
 				gui.radioButtonSelection("Please choose your character.", charNames);// player chooses their character
@@ -154,15 +154,15 @@ public class Game {
 				choice = this.eventMessage; // converts the message into an integer
 				character = nameToChar.get(choice);
 				charNames.remove(choice); // removes the choice from the list.
-				
+
 
 				players.add(new Player(name, character)); // The player chooses which character to use from the list
-				
+
 				this.eventMessage = null; // Resets the event message for future comms from GUI
-				
+
 			}
 			character = null;	//resets for another loop.
-			
+
 		}
 		return players;
 	}
@@ -307,9 +307,10 @@ public class Game {
 					// tells player that they can make an accusation before ending their turn.
 					this.gui.radioButtonSelection("Would you like to end your turn or make an accusation? Caution accusations may make you lose the game.", list);
 					awaitResponse("event");	//await player response
-					if(this.eventMessage.equals("Accusation"))
+					if(this.eventMessage.equals("Accusation")){
 						this.eventMessage = null;
-					accusation();	//player makes an accusation
+						accusation();	//player makes an accusation
+					}
 					this.eventMessage = null; //resets the event message
 				}
 				else{
@@ -556,13 +557,15 @@ public class Game {
 		board.changeWeaponRoom(weapon, room);
 
 		this.gui.draw(); // draws the board to show character and weapon in new room
-
+		String s = null;
 		// Check for a player to refute this suggestion.
 		outside:
 			for (int i = 0; i < this.players.size(); i++) {
 				Player otherPlayer = this.players.get(i);
 				if (!otherPlayer.equals(p)) {
 					for (Card c : otherPlayer.getHand()) {
+						if(c == null)
+							continue;	//prevents null pointer exception	
 						if (c.equals(roomCard)) {
 							refutingPlayerName = otherPlayer.PLAYER_NAME;
 							refute = otherPlayer.PLAYER_NAME + "who has the"+c.toString()+" card";

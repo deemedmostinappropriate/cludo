@@ -11,6 +11,7 @@ import java.awt.event.MouseMotionListener;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
@@ -55,9 +56,9 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 						this.game.setRoomSuggestionMesssage(gui.box2.getSelectedItem().toString());
 					this.game.setWeaponSuggestionMesssage(gui.box3.getSelectedItem().toString());
 					//resets boxes' selected items
-					gui.box1.setSelectedItem(-1);
-					gui.box2.setSelectedItem(-1);
-					gui.box3.setSelectedItem(-1);
+					gui.box1.setSelectedIndex(-1);
+					gui.box2.setSelectedIndex(-1);
+					gui.box3.setSelectedIndex(-1);
 					this.game.setEventMessage("selectionDone");
 					// we can close the window now that it has no use.
 					this.gui.getDialog().dispose();
@@ -93,7 +94,8 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 					event = ((JTextField)comps[index]).getText();
 				}
 			}
-			if(chosen == null)
+			// jlabels are the first component when working with dialogs without choices
+			if(chosen == null && !(comps[0] instanceof JLabel))
 				return;		// prevents closing of window until option has been chosen by user.
 							// prevents exit without selection
 			this.gui.getDialog().dispose();		// we can close the window now that it has no use.
