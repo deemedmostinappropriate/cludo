@@ -1,5 +1,18 @@
 things to fix:
 
+
+on suggestion continue: weapon cards out of bound at index 5. size should be 6
 player number needed in title of text query dialog
 weapon sometimes drawn at 0,24 which is out of bounds
 better rope image
+
+
+goals:
+message to choose accusation or suggestion not coming up
+finish turns
+jmenu
+next turn button: much better than a dialog
+tool tips
+hide cards except when hovering over
+click to exit room
+

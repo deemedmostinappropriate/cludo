@@ -210,7 +210,7 @@ public class GUI extends JFrame{
 	 * @param The title of the dialog.
 	 * @param A varying number of lists of objects.
 	 */
-	public <T> void comboBoxSelection(String label ){
+	public <T> void accusationSelection(String label ){
 		//this.popupMenu.setLabel(label);		//Sets a new label for the menu
 		this.dialog = basicDialog(label);
 		this.dialog.setLayout(new BorderLayout());
@@ -220,6 +220,28 @@ public class GUI extends JFrame{
 		panel.add(this.box1);
 		panel.add(this.box2);
 		panel.add(this.box3);
+
+		this.dialog.add(panel, BorderLayout.CENTER);
+		this.dialog.add(this.continueButton, BorderLayout.SOUTH);	//adds the continue button at the bottom of the dialog.
+		fitDialogToTitle();	//fits the dialog width to fit its title.
+		this.dialog.pack();
+
+	}
+
+	/**
+	 * Displays a dialog with a number of comboboxes equal to the number of lists passed in. Labels are also added to mark the boxes.
+	 * @param The title of the dialog.
+	 * @param A varying number of lists of objects.
+	 */
+	public <T> void suggestionSelection(String label ){
+		//this.popupMenu.setLabel(label);		//Sets a new label for the menu
+		this.dialog = basicDialog(label);
+		this.dialog.setLayout(new BorderLayout());
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridLayout(1,3));	//panel to hold labels and combo boxes.
+		// adds boxes to panel.
+		panel.add(this.box1);	//characters
+		panel.add(this.box3);	//weapons
 
 		this.dialog.add(panel, BorderLayout.CENTER);
 		this.dialog.add(this.continueButton, BorderLayout.SOUTH);	//adds the continue button at the bottom of the dialog.
@@ -312,13 +334,12 @@ public class GUI extends JFrame{
 
 		private String title;
 
-        public ComboBoxRenderer(String title)
-        {
+        public ComboBoxRenderer(String title){
             this.title = title;
         }
 
         /**
-         * Sets the component to
+         * Sets the component
          */
 		@Override
 		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,

@@ -87,7 +87,7 @@ public class Board {
 		this.board = new int[SIZE][SIZE];
 		this.visualBoard = new char [SIZE][SIZE*2];
 		this.doors = new Door[SIZE][SIZE];
-		this.boardImage = loadImage("./Images/cluedoBoard.jpeg");		//loads board image
+		this.boardImage = loadImage("./Images/cluedoBoard.png");		//loads board image
 
 		//Adds rooms to the board.
 		Room lounge = new Room("LOUNGE", new int[]{0,1,2,3,4,5}, new int[]{0,0,0,0,0,0}, new int[]{0,1,2,3,4,5},  new int[]{4,4,4,4,4,4});

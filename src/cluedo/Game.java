@@ -270,32 +270,54 @@ public class Game {
 
 		// The game loop.
 		while (players.size() > 1 && this.gameState.equals("PLAYING")) {
-			this.gui.draw(); // draws the board so that player's hand is displayed
-			boolean roomEntered = false; // Don't ask about leaving room if they have just entered:
+			this.gui.draw(); 				// draws the board so that player's hand is displayed
+			boolean roomEntered = false; 	// Don't ask about leaving room if they have just entered:
 
-			this.mouseClickMessage = null; //resets the mouse click event message.
+			this.mouseClickMessage = null; 	//resets the mouse click event message.
 			this.listener.changeLabel("\t\t" + this.currentPlayer.PLAYER_NAME + ", roll the die to start your turn!"); // requests  user roll the die.
-			this.diceroll = diceRoll(); // Roll dice and display result
-			this.gui.draw(); // draws the game so that dice is drawn
+			this.diceroll = diceRoll(); 	// Roll dice and display result
+			this.gui.draw(); 				// draws the game so that dice is drawn
 
 			System.out.println("Player " + currentPlayer.PLAYER_NAME + "'s turn (" + currentPlayer.getCharacter().ABBREV + "): ");
 			currentPlayer.printKnownCards();// print out list of cards player knows about
 
 			// Display and process move options if on a traversable board square:
 			if (currentPlayer.getCharacterLocation() == null) {
-				roomEntered = doMovement();
+				roomEntered = doMovementTurn();
+
+				// handles player losing game
+				if(this.currentPlayer == null){
+					updateCurrentPlayer();
+					continue; //player's turn has ended.
+				}
 				if (!roomEntered) {
-					this.listener.changeLabel("You may make an accusation before finishing your turn.");//tells player that they can make an accusation before ending their turn.
+					List<Object> list = new ArrayList<>();
+					list.add("End turn");
+					list.add("Accusation");
+					// tells player that they can make an accusation before ending their turn.
+					this.gui.radioButtonSelection("Would you like to end your turn or make an accusation? Caution accusations may make you lose the game.", list);
+					awaitResponse("event");	//await player response
+					if(this.eventMessage.equals("Accusation"))
+						accusation();	//player makes an accusation
+					this.eventMessage = null; //resets the event message
+				}
+				else{
+					// player entered a room
+					doRoomEntry();
+					// handles player losing game
+					if(this.currentPlayer == null){
+						updateCurrentPlayer();
+						continue; //player's turn has ended.
+					}
 				}
 			}
-
-			// Check if in a room, show leave options or
-			if (currentPlayer.getCharacterLocation() != null) {
+			else{
+				//player started turn in a room
 				Room currentRoom = currentPlayer.getCharacterLocation();
 				doRoomTurn(currentRoom, roomEntered);
 				if(this.players.size() == 1)
 					break;
-				doMovement();
+				doMovementTurn();
 			}
 			updateCurrentPlayer();
 		}
@@ -309,55 +331,34 @@ public class Game {
 	/**
 	 * Processes basic movement interactions via the console.
 	 * @param <T>
-	 *
-	 * @param The
-	 *            player's dice roll
+	 * @param The player's dice roll
 	 * @return True if the player's character is in a room.
 	 */
-	private <T> boolean doMovement() {
+	private <T> boolean doMovementTurn() {
 		boolean actionMade = false;
 
 		while (this.diceroll > 0) {
 			Character character = currentPlayer.getCharacter(); // the character piece being moved.
 			this.listener.changeLabel("\t" + this.currentPlayer.PLAYER_NAME + "("+ character.ABBREV +"), move with WASD. You have "+this.diceroll+"moves left.");
 
-			System.out.println("Player " + currentPlayer.PLAYER_NAME + "'s turn (" + currentPlayer.getCharacter().ABBREV + "): ");
-			outer:
 			// loops until the player has made a move or an accusation
 			while(!actionMade){
 				awaitResponse("movementOrAccusation");		//awaits a key press from the player. Can also result in an accusation
 				if(this.keyMessage != 'p'){
-					// Move this players character based on the input char:
-					if (currentPlayer.move(this.keyMessage, board)){
-						--this.diceroll; // Take away from remaining moves:
-						this.gui.draw(); // draws the board with the character moved to new location.
-					}else{
-						this.listener.changeLabel("        You cannot walk in that direction");//notify player that they cannot walk in the specified direction
-					}
+					doStep();
 					actionMade = true;
 				}
-				else{ // accusation path
+				else{
+					// accusation path
 					this.eventMessage = null;		//resets event message after accusation button selection.
-					List<Object> list = new ArrayList<>();
-					list.add("Yes");
-					list.add("No");
-					//Gives player option not to accuse.
-					this.gui.radioButtonSelection("An accusation can make you win or lose the game. Do you want to continue?", list);
-					awaitResponse("event");
-					if(this.eventMessage.equals("Yes")){
-						this.eventMessage = null;
-						//accusation dialog is made
-						this.accusation(currentPlayer);
-						break outer;
-					}
-					this.eventMessage = null;		//resets event message.  Is needed here, do not remove.
-
-
-					this.gui.canvas.setFocusable(true);		//experimental to fix keys not reading
+					// asks the player if they mean to make an accusation, and processes it if they do.
+					if(preAccusation())
+						break;
 				}
 			}
-
-			if(this.diceroll == 0 || currentPlayer.getCharacterLocation() != null) { // If the move resulted in player entering a room:
+			if(currentPlayer == null)
+				return false;
+			if(currentPlayer.getCharacterLocation() != null) { // If the move resulted in player entering a room:
 				return true;
 			}
 			this.keyMessage = 'p';		//resets the key press message.
@@ -369,6 +370,40 @@ public class Game {
 
 		this.diceroll = 0; //keeps die image at zero until next player rolls
 		this.listener.changeLabel(this.currentPlayer.PLAYER_NAME + " your turn is now over. ");// Notify the player they have completed their turn. They have not reached a room.
+		return false;
+	}
+
+	/**
+	 * Moves the player's character one step if able.
+	 */
+	private void doStep(){
+		// Move this players character based on the input char:
+		if (currentPlayer.move(this.keyMessage, board)){
+			--this.diceroll; // Take away from remaining moves:
+			this.gui.draw(); // draws the board with the character moved to new location.
+		}else{
+			this.listener.changeLabel("        You cannot walk in that direction");//notify player that they cannot walk in the specified direction
+		}
+	}
+
+	/**
+	 * Asks the player if they mean to make an accusation, and processes it if they do.
+	 * @return Returns true if the player made an accusation
+	 */
+	private boolean preAccusation(){
+		List<Object> list = new ArrayList<>();
+		list.add("Yes");
+		list.add("No");
+		//Gives player option not to accuse.
+		this.gui.radioButtonSelection("An accusation can make you win or lose the game. Do you want to continue?", list);
+		awaitResponse("event");
+		if(this.eventMessage.equals("Yes")){
+			this.eventMessage = null;
+			//accusation dialog is made
+			this.accusation();
+			return true;
+		}
+		this.eventMessage = null;		//resets event message.  Is needed here, do not remove.
 		return false;
 	}
 
@@ -443,16 +478,18 @@ public class Game {
 		List<Object> list = new ArrayList<>();
 		list.add("Suggestion");
 		list.add("Accusation");
-		this.gui.radioButtonSelection("Would you like to make a suggestion or an accusation? Caution: Accusation will make you win or lose the game", list);//requests choice from user
+		//requests choice from user
+		this.gui.radioButtonSelection("Would you like to make a suggestion or an accusation? Caution: Accusation will make you win or lose the game", list);
 		awaitResponse("event");//awaits choice from user
 
 		if(this.eventMessage.equals("Suggestion")){
+			this.eventMessage = null;	//resets event message.
 			suggestion(currentPlayer);
 		}
 		else{
-			accusation(currentPlayer);		//accusation path
+			this.eventMessage = null;	//resets event message.
+			accusation();		//accusation path
 		}
-
 
 		this.eventMessage = null;
 	}
@@ -469,106 +506,111 @@ public class Game {
 		if (!p.equals(currentPlayer))
 			throw new RuntimeException("Only the current player can make suggestions.");
 
-		// give player options for suggestion, accusation
-		int characterChoice = 0, weaponChoice = 0;
-		Room location = p.getCharacterLocation(); // Suggest from the current
-		// room only:
-		int roomChoice = Card.ROOM.valueOf(location.NAME).ordinal();
+		RoomCard roomCard = null;
+		CharacterCard characterCard = null;
+		WeaponCard weaponCard = null;
+		Character character = null;
+		Weapon weapon = null;
+		List<Weapon> weapons = this.board.getWeapons();
+		List<Character> chars = this.board.getCharacters();
+		String refutingPlayerName = "noone.", refute = null;
 
-		try {
-			do {
-				System.out.printf("Which character do you wish to suggest was the murderer?\n");
-				// gives choices for character
-				for (int c = 0; c < Card.CHARACTER.values().length; c++)
-					System.out.printf("  (%d) %s\n", c, Card.CHARACTER.values()[c]);
-				characterChoice = scan.nextInt(); // takes user choice
 
-				System.out.printf("Which weapon do you suggest was the murder weapon?\n");
-				// gives choices for weapon
-				for (int c = 0; c < Card.WEAPON.values().length; c++)
-					System.out.printf("  (%d) %s\n", c, Card.WEAPON.values()[c]);
-				weaponChoice = scan.nextInt(); // takes user choice
+		this.gui.suggestionSelection("Make your suggestion from the choices below.");		//requests choices from player
+		awaitResponse("event");		//awaits the player's choice
 
-				if (characterChoice < 0 || characterChoice >= Card.CHARACTER.values().length)
-					System.out.println("Character could not be found, please try again.");
-				else if (weaponChoice < 0 || characterChoice >= Card.WEAPON.values().length)
-					System.out.println("Weapon could not be found, please try again.");
-				else
-					break;
-			} while (true);
+		//Gets the room which the player is in, and finds the relative card.
+		Room room = this.currentPlayer.getCharacterLocation();
+		int roomIndex = Card.ROOM.valueOf(p.getCharacterLocation().NAME).ordinal();	//uses ordering of Card.ROOM enum to find the current roo
+		roomCard = this.board.getRoomCards().get(roomIndex);
 
-			System.out.printf("You suggest it was %s in the %s with the %s!\n",
-					Card.CHARACTER.values()[characterChoice], Card.ROOM.values()[roomChoice],
-					Card.WEAPON.values()[weaponChoice]);
-		} catch (Exception e) {
-			throw new Error(e);
+		//gets the character from the suggestion using its name. Character card found using resulting index.
+		for(int i = 0; i < chars.size(); i++){
+			if(chars.get(i).NAME.equals(this.charSuggestionMessage)){
+				character = chars.get(i);
+				characterCard = this.board.getCharacterCards().get(i);
+			}
 		}
 
-		Character character = this.board.getCharacters().get(characterChoice);
-		Room room = this.board.getRooms().get(roomChoice);
-		Weapon weapon = this.board.findWeaponFromName(Weapon.Name.values()[weaponChoice]);
-
+		//gets the weapon from the suggestion using its name. Weapon card found using resulting index.
+		for(int i = 0; i < weapons.size(); i++){
+			if(weapons.get(i).toString().equals(this.weaponSuggestionMessage)){
+				weapon = weapons.get(i);
+				weaponCard = this.board.getWeaponCards().get(i);
+			}
+		}
+		// moves the pieces to the new room
 		board.changeCharacterRoom(character, room);
 		board.changeWeaponRoom(weapon, room);
 
-		this.gui.draw(); // draws the board
-
-		RoomCard roomCard = this.board.getRoomCards().get(roomChoice);
-		CharacterCard characterCard = this.board.getCharacterCards().get(characterChoice);
-		WeaponCard weaponCard = this.board.getWeaponCards().get(weaponChoice);
+		this.gui.draw(); // draws the board to show character and weapon in new room
 
 		// Check for a player to refute this suggestion.
-		outside: for (int i = 0; i < this.players.size(); i++) {
-			Player otherPlayer = this.players.get(i);
-			if (!otherPlayer.equals(p)) {
-				for (Card c : otherPlayer.getHand()) {
-					if (c == roomCard) {
-						System.out.printf("Player %d refutes this suggestion with %s\n", i, c.toString());
-						p.learn(c);
-						break outside;
-					} else if (c == characterCard) {
-						System.out.printf("Player %d refutes this suggestion with %s\n", i, c.toString());
-						p.learn(c);
-						break outside;
-					} else if (c == weaponCard) {
-						System.out.printf("Player %d refutes this suggestion with %s\n", i, c.toString());
-						p.learn(c);
-						break outside;
+		outside:
+			for (int i = 0; i < this.players.size(); i++) {
+				Player otherPlayer = this.players.get(i);
+				if (!otherPlayer.equals(p)) {
+					for (Card c : otherPlayer.getHand()) {
+						if (c.equals(roomCard)) {
+							refutingPlayerName = otherPlayer.PLAYER_NAME;
+							refute = otherPlayer.PLAYER_NAME + "who has the"+c.toString()+" card";
+							p.learn(c);
+							break outside;
+						} else if (c.equals(characterCard)) {
+							refutingPlayerName = otherPlayer.PLAYER_NAME;
+							refute = otherPlayer.PLAYER_NAME + "who has the"+c.toString()+" card";
+							p.learn(c);
+							break outside;
+						} else if (c.equals(weaponCard)){
+							refutingPlayerName = otherPlayer.PLAYER_NAME;
+							refute = otherPlayer.PLAYER_NAME + "who has the"+c.toString()+" card";
+							p.learn(c);
+							break outside;
+						}
 					}
 				}
 			}
-		}
-		awaitResponse("event");
+
+		this.gui.basicAlert("Suggestion Results!",
+				"",
+				this.currentPlayer.PLAYER_NAME + "suggests:",
+				"", "",
+				"It was "+ this.charSuggestionMessage,
+				"",
+				"in the "+ room.toString(),
+				"",
+				"with the "+this.weaponSuggestionMessage+".",
+				"",
+				"This has been refuted by "+ refutingPlayerName,
+				refute);
 	}
 
 	/**
-	 * Called when a player chooses to make an accusation about the murder. If
-	 * they guess correctly they win the game, otherwise they lose and the game
+	 * Called when a player chooses to make an accusation about the murder.
+	 * If they guess correctly they win the game, otherwise they lose and the game
 	 * continues without them.
 	 *
-	 * @param The player making the accusation
 	 * @return True if the player's accusation was correct
 	 */
-	public boolean accusation(Player p) {
-		if (p == null)
+	public boolean accusation() {
+		if (this.currentPlayer == null)
 			throw new IllegalArgumentException("Null argument received.");
-		if (!p.equals(currentPlayer))
-			throw new RuntimeException("Only the current player can make suggestions.");
 
-		this.gui.comboBoxSelection("Make your accusation from the choices below.");		//requests choices from player
+		boolean gameWon = false;
+
+		this.gui.accusationSelection("Make your accusation from the choices below.");		//requests choices from player
 		awaitResponse("event");
-
-
-
 
 		if (!this.charSuggestionMessage.equals(this.murderer.toString())
 				|| !this.roomSuggestionMessage.equals(this.murderRoom.toString())
 				|| !this.weaponSuggestionMessage.equals(this.murderWeapon.toString())) {
-			this.players.remove(p); // removes the current player from the game.
 
-			System.out.printf("Player %s has guessed incorrectly, and is out of the game!\n", p.PLAYER_NAME);
+			this.players.remove(this.currentPlayer); // removes the current player from the game.
+
+
+			System.out.printf("Player %s has guessed incorrectly, and is out of the game!\n", this.currentPlayer.PLAYER_NAME);
 			awaitResponse("event");
-
+			// displays results to player
 			this.gui.basicAlert("Accusation Results!",
 					"",
 					this.currentPlayer.PLAYER_NAME +" has guessed:",
@@ -581,44 +623,43 @@ public class Game {
 					"",
 					"with the ",
 					this.weaponSuggestionMessage + ".",
-					"",
-					"",
-					"",
+					"","","",
 					this.currentPlayer.PLAYER_NAME,
 					"You have guessed incorrectly",
 					"and are out of the game.");	//display choices and result in jdialog
-
-			//resets variables for later date.
-			this.charSuggestionMessage = null;
-			this.weaponSuggestionMessage = null;
-			this.roomSuggestionMessage = null;
-			this.eventMessage = null;
-			return false;
-
+			gameWon = false;
+			this.currentPlayer = null;				//sets the current player to null, to remove all reference to this losing player
 		} else{
 			// removes all players except for the current player from the game.
 			for(Player other : this.players){
 				if(!other.equals(this.currentPlayer))
-					this.players.remove(p);
+					this.players.remove(this.currentPlayer);
 			}
 			//display choices and result in jdialog
 			this.gui.basicAlert("Accusation Results!",
+					"",
 					this.currentPlayer.PLAYER_NAME +" has guessed:",
-					"It was " +this.charSuggestionMessage,
-					"\n\nin the "+this.roomSuggestionMessage,
-					"\n\nwith the "+this.weaponSuggestionMessage + "\n\n\n\n\n",
+					"",
+					"It was",
+					this.charSuggestionMessage,
+					"",
+					"in the",
+					this.roomSuggestionMessage,
+					"",
+					"with the ",
+					this.weaponSuggestionMessage + ".",
+					"","","",
 					this.currentPlayer.PLAYER_NAME,
-					"you have guessed correctly.\n",
-					"Congratulations! You have won the game");	//display choices and result in jdialog
-
-
-			//resets variables for later date.
-			this.charSuggestionMessage = null;
-			this.weaponSuggestionMessage = null;
-			this.roomSuggestionMessage = null;
-			this.eventMessage = null;
-			return true;
+					"You have guessed correctly!",
+					"Congratulations! You have won the game!");	//display choices and result in jdialog
+			gameWon = true;
 		}
+		//resets variables for later date.
+		this.charSuggestionMessage = null;
+		this.weaponSuggestionMessage = null;
+		this.roomSuggestionMessage = null;
+		this.eventMessage = null;
+		return gameWon;
 	}
 
 	/**
@@ -789,13 +830,23 @@ public class Game {
 	 * Iterates over the list of players to find the player whose turn is next.
 	 */
 	public void updateCurrentPlayer() {
-		// Check if the next player is the beginning of the list of players:
-		if (currentPlayerIndex + 1 == players.size()) {
-			currentPlayerIndex = 0;
-			currentPlayer = players.get(currentPlayerIndex);
-		} else { // Otherwise increment the index and find the next player with
-			// it
-			currentPlayer = players.get(++currentPlayerIndex);
+		// Has there been a turn end without the last player losing the game?
+		if(currentPlayer != null){
+			// Check if the next player is the beginning of the list of players:
+			if (currentPlayerIndex + 1 >= players.size()) {
+				currentPlayerIndex = 0;
+				currentPlayer = players.get(currentPlayerIndex);
+			} else { // Otherwise increment the index and find the next player with
+				// it
+				currentPlayer = players.get(++currentPlayerIndex);
+			}
+		}
+		else{
+			//The last player lost the game
+			if(this.players.get(currentPlayerIndex)!= null)
+				this.currentPlayer = this.players.get(currentPlayerIndex);
+			else
+				this.currentPlayer = this.players.get(0);
 		}
 	}
 

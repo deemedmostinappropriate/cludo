@@ -50,7 +50,9 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 				if(comps[0] instanceof JComboBox){
 					//sends messages to game.
 					this.game.setCharacterSuggestionMesssage(gui.box1.getSelectedItem().toString());
-					this.game.setRoomSuggestionMesssage(gui.box2.getSelectedItem().toString());
+					//not used in game.suggestion
+					if(gui.box2.getSelectedItem()!= null)
+						this.game.setRoomSuggestionMesssage(gui.box2.getSelectedItem().toString());
 					this.game.setWeaponSuggestionMesssage(gui.box3.getSelectedItem().toString());
 					//resets boxes' selected items
 					gui.box1.setSelectedItem(-1);
@@ -90,13 +92,11 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 					chosen = comps[index];	//pacifies return condition
 					event = ((JTextField)comps[index]).getText();
 				}
-				else{
-					throw new RuntimeException("This shoud not happen");
-				}
 			}
-			if(chosen == null)
-				return;						// prevents exit without selection
+							// prevents exit without selection
 			this.gui.getDialog().dispose();		// we can close the window now that it has no use.
+			if(chosen == null)
+				return;
 			this.game.setEventMessage(event);		//passes a message to the game.
 		}
 		else if(e.getActionCommand().equals("accusation")){
