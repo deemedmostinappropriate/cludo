@@ -61,6 +61,8 @@ public class GUI extends JFrame{
 	public final JMenuItem gameItem;
 	/** Button to roll dice.**/
 	public final JButton accusation;
+	/** Button to end a turn.**/
+	public final JButton nextTurn;
 	/** A button to close a jdialog. **/
 	public final JButton continueButton;
 	/** A label to give instructions to the player.**/
@@ -89,6 +91,8 @@ public class GUI extends JFrame{
 		//Jbuttons
 		this.accusation = new JButton("Make Accusation");
 		this.accusation.setFocusable(false);
+		this.nextTurn = new JButton("Next Turn");
+		this.nextTurn.setFocusable(false);
 		this.instruction = new JLabel("Loading Game");
 		this.instruction.setFocusable(false);
 		this.buttonPanel = new JPanel();			//holds our buttons
@@ -96,6 +100,7 @@ public class GUI extends JFrame{
 		this.buttonPanel.setPreferredSize(new Dimension(WINDOW_WIDTH, BUTTON_PANEL_HEIGHT));
 		this.buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 		this.buttonPanel.add(this.accusation);
+		this.buttonPanel.add(this.nextTurn);
 		this.buttonPanel.add(this.instruction);
 
 		this.canvas = new Canvas(game);
@@ -131,7 +136,7 @@ public class GUI extends JFrame{
 	}
 
 	/**
-	 * Sets the event listener.
+	 * Sets the event listener, and adds it to multiple components.
 	 * @param An event listener.
 	 */
 	public void setListener(Listener l){
@@ -140,7 +145,8 @@ public class GUI extends JFrame{
 		this.listener = l;
 		this.canvas.addMouseListener(l);	//adds the listener to the canvas
 		this.addKeyListener(l);
-		this.accusation.addMouseListener(this.listener);	//adds a mouse listener to the button
+		this.accusation.addMouseListener(this.listener);
+		this.nextTurn.addMouseListener(this.listener);
 		this.continueButton.addActionListener(listener);
 		this.fileItem.addMouseListener(this.listener);
 		this.gameItem.addMouseListener(this.listener);

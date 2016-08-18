@@ -1,6 +1,8 @@
 things to fix:
 
 
+on roomturn, exit then entry to another room does not suggest suggestion
+
 Test
 tell player to click on door or make accusation when relevant
 the whole roomTurn method

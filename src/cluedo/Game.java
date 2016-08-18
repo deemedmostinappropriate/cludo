@@ -305,35 +305,8 @@ public class Game {
 
 			// Display and process move options if on a traversable board square:
 			if (currentPlayer.getCharacterLocation() == null) {
-				roomEntered = doMovementTurn();
-
-				// handles player losing game
-				if(this.currentPlayer == null){
-					updateCurrentPlayer();
-					continue; //player's turn has ended.
-				}
-				if (!roomEntered) {
-					List<Object> list = new ArrayList<>();
-					list.add("End turn");
-					list.add("Accusation");
-					// tells player that they can make an accusation before ending their turn.
-					this.gui.radioButtonSelection("Would you like to end your turn or make an accusation? Caution accusations may make you lose the game.", list);
-					awaitResponse("event");	//await player response
-					if(this.eventMessage.equals("Accusation")){
-						this.eventMessage = null;
-						accusation();	//player makes an accusation
-					}
-					this.eventMessage = null; //resets the event message
-				}
-				else{
-					// player entered a room
-					doRoomEntry();
-					// handles player losing game
-					if(this.currentPlayer == null){
-						updateCurrentPlayer();
-						continue; //player's turn has ended.
-					}
-				}
+				roomEntered = doMovementTurn();	// process player character movement
+				afterMovement(roomEntered);	// processes after effects of movement.
 			}
 			else{
 				//player started turn in a room
@@ -351,6 +324,7 @@ public class Game {
 		// Display the winner and close game elements
 		System.out.printf("Congratulations Player %s, you have won the game!\n", this.players.get(0).PLAYER_NAME);
 	}
+
 
 	/**
 	 * Processes basic movement interactions via the console.
@@ -395,6 +369,30 @@ public class Game {
 		this.diceroll = 0; //keeps die image at zero until next player rolls
 		this.listener.changeLabel(this.currentPlayer.PLAYER_NAME + " your turn is now over. ");// Notify the player they have completed their turn. They have not reached a room.
 		return false;
+	}
+
+	/**
+	 * Processes the part of the turn following player movement.
+	 * @param True if the player has entered a room.
+	 */
+	private void afterMovement(boolean roomEntered){
+		if(this.currentPlayer == null){
+			return;
+		}
+		if (!roomEntered) {
+			this.listener.changeLabel("You may now end your turn, or make an accusation."); // tells player that they can make an accusation before ending their turn.
+			awaitResponse("event");	//await player response
+			if(this.eventMessage.equals("Make Accusation")){
+				this.eventMessage = null;	//resets the event message
+				accusation();				//player makes an accusation
+			}
+			this.eventMessage = null; 	//resets the event message
+			//end of turn.
+		}
+		else{
+			// player entered a room
+			doRoomEntry();
+		}
 	}
 
 	/**
@@ -445,14 +443,14 @@ public class Game {
 		this.listener.changeLabel(currentPlayer.PLAYER_NAME +"("+character.ABBREV+"), exit the room via a door or staircase.");//tells player to click a door or staircase to exit
 
 		outer:
-		while(exitGood){
+		while(!exitGood){
 			awaitResponse("eventObject");	// awaits a response from the player
 
 			chosenX = (this.event.getX())/(Board.SQ_WIDTH + 3);
 			chosenY = 24 -(this.event.getY() - gui.canvas.getY())/(Board.SQ_HEIGHT + 3)-1;
 
 
-			switch(board.getBoard()[chosenX][chosenY]){
+			switch(board.getBoard()[chosenY][chosenX]){
 			case 1:				// if the selected square is traversable --> loop
 				this.event = null;
 				continue;
@@ -498,13 +496,14 @@ public class Game {
 				}
 
 				//check the door belongs to the current room.
-				if(!currentRoom.getDoors().contains(board.getDoor(chosenX, chosenY))){
+				if(!currentRoom.getDoors().contains(exit)){
 					exit = null;
 					continue;
 				}
 				// Move the player character to the coordinates of the chosen door:
 				board.changeCharacterRoom(character, null);
-				character.setPosition(exit.getX(), exit.getY());
+				character.setX(exit.getX());
+				character.setY(exit.getY());
 				--this.diceroll;
 				exitGood = true;
 			}
@@ -597,17 +596,17 @@ public class Game {
 							continue;	//prevents null pointer exception
 						if (c.equals(roomCard)) {
 							refutingPlayerName = otherPlayer.PLAYER_NAME;
-							refute = otherPlayer.PLAYER_NAME + "who has the"+c.toString()+" card";
+							refute = otherPlayer.PLAYER_NAME + "who has the "+c.toString()+" card";
 							p.learn(c);
 							break outside;
 						} else if (c.equals(characterCard)) {
 							refutingPlayerName = otherPlayer.PLAYER_NAME;
-							refute = otherPlayer.PLAYER_NAME + "who has the"+c.toString()+" card";
+							refute = otherPlayer.PLAYER_NAME + "who has the "+c.toString()+" card";
 							p.learn(c);
 							break outside;
 						} else if (c.equals(weaponCard)){
 							refutingPlayerName = otherPlayer.PLAYER_NAME;
-							refute = otherPlayer.PLAYER_NAME + "who has the"+c.toString()+" card";
+							refute = otherPlayer.PLAYER_NAME + "who has the "+c.toString()+" card";
 							p.learn(c);
 							break outside;
 						}

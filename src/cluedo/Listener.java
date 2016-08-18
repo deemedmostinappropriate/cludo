@@ -104,11 +104,11 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 
 			this.game.setEventMessage(event);		//passes a message to the game.
 		}
-		else if(e.getActionCommand().equals("accusation")){
-			System.out.println("acc button found");
+		else if(e.getActionCommand().equals("Make Accusation")){
 			this.game.setEventMessage(((JButton)e.getSource()).getText());
 			return;
 		}
+
 	}
 
 	/**
@@ -132,6 +132,9 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 		if(c != null){
 			if(c.equals(this.gui.accusation)){
 				this.game.setEventMessage("accusation");
+			}
+			else if(c.equals(this.gui.nextTurn)){
+					this.game.setEventMessage("nextTurn");
 			}
 			else{
 				int x = e.getX(), y = e.getY();
