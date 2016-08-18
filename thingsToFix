@@ -1,20 +1,31 @@
 things to fix:
 
 
-on roomturn, exit then entry to another room does not suggest suggestion
 
-Test
-tell player to click on door or make accusation when relevant
-the whole roomTurn method
 
-after moving out of room, if back in new room (is possible) no suggestion asked of player
 
-player cards dont change in gui over turns
+
+watch out for
 on suggestion continue: weapon cards out of bound at index 5. size should be 6
+sometimes on door exit, player moves 2 spaces
+door exit from dining room(right) spawns char 1 square above door
+next player turn skipped after another player suggests(standard end turn or accuse message)
+char b has been moved to room by char a's suggestion: on char b's turn(which is next), they get " you may now  end your turn or make an accusation"
+
+
+helpful things to do:
 player number needed in title of text query dialog
-candlestick appearing in arrow of hall
-weapon sometimes drawn at 0,24 which is out of bounds
 better rope image
+during movement turn(at start) if player pushes next turn, they get preaccusation dialog
+draw current player's character in game.draw so it is drawn after board, and on top of any other char piece
+change die image to index 0 upon room entry
+
+
+
+
+
+
+
 
 
 goals:

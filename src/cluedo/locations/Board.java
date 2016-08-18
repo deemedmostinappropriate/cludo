@@ -102,7 +102,7 @@ public class Board {
 		this.rooms.add(new Room("LIBRARY", new int[]{18,18,18,19,19,19}, new int[]{7,8,9,7,8,9}, new int[]{21,21,21,22,22,22}, new int[]{7,8,9,7,8,9}));
 		Room study = new Room("STUDY", new int[]{18,19,20,21,22,23}, new int[]{2,2,2,2,2,2}, new int[]{18,19,20,21,22,23}, new int[]{3,3,3,3,3,3});
 		this.rooms.add(study);
-		this.rooms.add(new Room("HALL", new int[]{10,11,12,13,10,11}, new int[]{6,6,6,6,5,5}, new int[]{10,11,12,13,10,11}, new int[]{2,2,2,2,1,1}));
+		this.rooms.add(new Room("HALL", new int[]{10,11,12,13,10,11}, new int[]{5,5,5,5,4,4}, new int[]{10,11,12,13,10,11}, new int[]{2,2,2,2,1,1}));
 		//Adds stairs to the corner rooms
 		lounge.setStairs(conservatory);
 		conservatory.setStairs(lounge);
