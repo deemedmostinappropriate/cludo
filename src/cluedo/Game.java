@@ -30,7 +30,7 @@ import cluedo.pieces.WeaponCard;
  * @author Daniel Anastasi
  *
  */
-public class Game {
+public class Game extends Thread{
 	/** The greater application. **/
 	private Application app = null;
 	/** The graphic user interface for this game. **/
@@ -53,9 +53,8 @@ public class Game {
 	private boolean buttonRegistered = false;
 	/** For events where game requires more information. **/
 	private MouseEvent event;
-
-	/**Scanner for use in any input scanning, including use by other objects. **/
-	public static Scanner scan;
+	/** A message exclusively for the termination of the application. Prevent logic mixup when sharing message variables.**/
+	private String terminationMessage = null;
 
 	/** Card height, width for drawing. **/
 	public final int CARD_HEIGHT, CARD_WIDTH;
@@ -92,7 +91,6 @@ public class Game {
 	public <T> Game(Application app) {
 		this.app = app;
 		this.gameState = "PLAYING";
-		this.scan = new Scanner(System.in);
 		this.players = new ArrayList<>(); // prevents null pointer exception, do not remove.
 		this.board = new Board();// Set up board
 		this.gui = new GUI("CLUEDO", this);
@@ -117,10 +115,8 @@ public class Game {
 		this.players = setupPlayers(); // Player enters their name
 		assignCards(); // Assigns all cards in the game.
 
-		int startingPlayer = 0; // generate random number if there is time.
 
-		run(startingPlayer);
-		scan.close(); // closes the scanner after running the game.
+		this.start();	//starts this thread.
 	}
 
 	/**
@@ -283,12 +279,22 @@ public class Game {
 	}
 
 	/**
+	 * Sets the terminationMessage field.
+	 * @param The event String.
+	 */
+	public void setTerminationMessage(String s){
+		this.terminationMessage = s;
+	}
+
+	/**
 	 * Runs the game loop.
 	 *
 	 * @param The
 	 *            index of the starting player in the list of players.
 	 */
-	public void run(int startingPlayer) {
+	public void run() {
+		int startingPlayer = 0;		//make better later.
+
 		currentPlayer = players.get(startingPlayer);
 
 		// The game loop.
@@ -356,7 +362,7 @@ public class Game {
 					actionMade = true;
 					keyMessage = 'p';		//resets key message for future steps
 				}
-				else if(this.mouseClickMessage.equals("accusation")){
+				else if(this.mouseClickMessage.equals("Make Accusation")){
 					// accusation path
 					this.mouseClickMessage = null;		//resets event message after accusation button selection.
 					// asks the player if they mean to make an accusation, and processes it if they do.
@@ -387,13 +393,15 @@ public class Game {
 	 * Asks the player if they want to end their turn or make an accusation.
 	 */
 	private void turnEnd(){
+		this.gui.nextTurnSetEnabled(true); //make button visibly enabled.
 		this.listener.changeLabel("You may now end your turn, or make an accusation."); // tells player that they can make an accusation before ending their turn.
 		awaitResponse("click");	//await player response
-		if(this.mouseClickMessage.equals("accusation")){
+		if(this.mouseClickMessage.equals("Make Accusation")){
 			this.mouseClickMessage = null;	//resets the mouse click message
 			this.preAccusation();				//player makes an accusation
 		}
 		this.eventMessage = null; 	//resets the event message
+		this.gui.nextTurnSetEnabled(false);	//make button visibly disabled.
 	}
 
 	/**
@@ -726,6 +734,7 @@ public class Game {
 	 * Pauses gameplay while waiting for a player response.
 	 */
 	public void awaitResponse(String type) {
+		/*
 		if(type.equals("event")){
 			while (this.eventMessage == null) {
 				try {
@@ -759,6 +768,46 @@ public class Game {
 			while (this.event == null) {
 				try {
 					TimeUnit.MILLISECONDS.sleep(50);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		*/
+
+		if(type.equals("event")){
+			while (this.eventMessage == null) {
+				try {
+					this.sleep(50);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				if(buttonRegistered)
+					return;
+			}
+		}
+		else if(type.equals("movementOrAccusation")){
+			while(this.keyMessage == 'p' && this.mouseClickMessage == null) {
+				try {
+					this.sleep(50);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		else if(type.equals("click")){
+			while (this.mouseClickMessage == null) {
+				try {
+					this.sleep(50);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		else if(type.equals("eventObject")){
+			while (this.event == null) {
+				try {
+					this.sleep(50);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -941,19 +990,29 @@ public class Game {
 				}
 			}
 		}
-
-		/*
-		for (Player p : this.players) {
-			hand = p.getHand(); // player hand
-			for (int i = 0; i < hand.length; i++) {
-				if (hand[i] != null) {
-					x = CARD_X_ORIGIN - ((i + 1) * CARD_WIDTH);
-					hand[i].draw(g, x, CARD_Y, CARD_WIDTH, CARD_HEIGHT);
-				}
-			}
-		}*/
 		// draws the die
 		g.drawImage(this.board.getDieImage(this.diceroll), this.DIE_X, this.DIE_Y, this.DIE_WIDTH, this.DIE_HEIGHT, null);
+	}
+
+	/**
+	 * Closes the application.
+	 */
+	public void closeApplication(){
+
+		System.exit(0);
+
+		// the same with a player prompt: Requires thread management.
+		/*
+		this.gui.closeGuiDialog("Are you sure you want to exit?");
+		awaitResponse("event");
+		if(this.terminationMessage.equals("Yes")){
+			System.exit(0);	//exits application.
+
+		}
+		else{
+			this.terminationMessage = null;	//resets the message.
+		}*/
+
 	}
 
 	/**

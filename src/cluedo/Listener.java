@@ -104,6 +104,10 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 
 			this.game.setEventMessage(event);		//passes a message to the game.
 		}
+		else if(e.getSource().equals(gui.exitItem)){
+			//close application enquiry
+			this.game.closeApplication();
+		}
 		else if(e.getActionCommand().equals("Make Accusation")){
 			this.game.setEventMessage(((JButton)e.getSource()).getText());
 			return;
@@ -129,23 +133,21 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		Component c = e.getComponent();
-		if(c != null){
-			if(c.equals(this.gui.accusation)){
-				this.game.setMouseClickMessage("accusation");
-			}
-			else if(c.equals(this.gui.nextTurn)){
-					this.game.setMouseClickMessage("nextTurn");
-			}
-			else{
+		if(e.getSource() instanceof JButton){
+			this.game.setMouseClickMessage(((JButton)e.getSource()).getText());
+		}
+		else if(e.getSource() instanceof JMenuItem){
+			if(e.getSource().equals(this.gui.exitItem))
+				this.game.closeApplication();	//initiates closing of application.
+		}
+		else{
 				int x = e.getX(), y = e.getY();
-
 				// Checks that the click is in the bounds of the die image.
 				if(x > game.DIE_X && x < game.DIE_X + game.DIE_WIDTH
 						&& y > game.DIE_Y && y < game.DIE_Y + game.DIE_HEIGHT){
 					game.setMouseClickMessage("DIE");
 					return;
 				}
-
 				else{
 					//if in the range of the board itself
 					if(x >= 0 && x < Board.BOARD_WIDTH && y >= 0 && y < Board.BOARD_HEIGHT){
@@ -153,9 +155,9 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 					}
 				}
 				return;
-			}
 		}
-		if(c.equals(this.gui.gameItem)){
+
+		if(c.equals(this.gui.gameMenu)){
 			((JMenuItem)c).setEnabled(true);	//makes the menu item be pressed.
 		}
 

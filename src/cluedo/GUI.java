@@ -54,9 +54,11 @@ public class GUI extends JFrame{
 	/** The Canvas for the game**/
 	public final Canvas canvas;
 	/** The menu **/
-	public final JMenuBar menu;
+	public final JMenuBar menuBar;
 	/** Game button for the menu**/
-	public final JMenuItem gameItem;
+	public final JMenu gameMenu;
+	/** Items for the game menu. **/
+	public final JMenuItem newGameItem, exitItem;
 	/** Button to roll dice.**/
 	public final JButton accusation;
 	/** Button to end a turn.**/
@@ -77,17 +79,21 @@ public class GUI extends JFrame{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLayout(new BorderLayout());
 		//Sets up menu
-		this.menu = new JMenuBar();
-		this.menu.setFocusable(false);
-		this.menu.setLayout(new FlowLayout(FlowLayout.LEFT));	//aligns the items to the left
-		this.gameItem = new JMenu("Game");
-		this.gameItem.setFocusable(false);
-		this.menu.add(this.gameItem);
-		//this.game
+		this.menuBar = new JMenuBar();
+		this.menuBar.setFocusable(false);
+		this.menuBar.setLayout(new FlowLayout(FlowLayout.LEFT));	//aligns the items to the left
+		this.gameMenu = new JMenu("Game");
+		this.gameMenu.setFocusable(false);
+		this.menuBar.add(this.gameMenu);
+		this.newGameItem = new JMenuItem("New Game");
+		this.exitItem = new JMenuItem("Exit");
+		this.gameMenu.add(newGameItem);		//adds new game item to the game menu
+		this.gameMenu.add(exitItem);		//adds exit item to the game menu
 		//Jbuttons
 		this.accusation = new JButton("Make Accusation");
 		this.accusation.setFocusable(false);
 		this.nextTurn = new JButton("Next Turn");
+		this.nextTurn.setEnabled(false);	//starts disabled
 		this.nextTurn.setFocusable(false);
 		this.instruction = new JLabel("Loading Game");
 		this.instruction.setFocusable(false);
@@ -103,8 +109,8 @@ public class GUI extends JFrame{
 		this.canvas.setFocusable(false);
 		this.canvas.setBackground(Color.BLACK);	//provides a black background
 		this.canvas.setPreferredSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
-		this.menu.setPreferredSize(new Dimension(WINDOW_WIDTH, MENU_HEIGHT));
-		add(this.menu, BorderLayout.PAGE_START);
+		this.menuBar.setPreferredSize(new Dimension(WINDOW_WIDTH, MENU_HEIGHT));
+		add(this.menuBar, BorderLayout.PAGE_START);
 		add(this.canvas, BorderLayout.CENTER);
 		add(this.buttonPanel, BorderLayout.PAGE_END);
 
@@ -144,8 +150,19 @@ public class GUI extends JFrame{
 		this.accusation.addMouseListener(this.listener);
 		this.nextTurn.addMouseListener(this.listener);
 		this.continueButton.addActionListener(listener);
-		this.gameItem.addMouseListener(this.listener);
+		this.gameMenu.addMouseListener(this.listener);
+		this.newGameItem.addActionListener(this.listener);
+		this.exitItem.addActionListener(this.listener);
 	}
+
+	/**
+	 * Sets the nextTurn table to enabled, or not.
+	 * @param If true, enables the button.
+	 */
+	public void nextTurnSetEnabled(boolean enable){
+		this.nextTurn.setEnabled(enable);
+	}
+
 
 	/**
 	 * Adds arrays of values to the GUI's three JComboBoxes, and sets titles for the boxes.
@@ -248,6 +265,28 @@ public class GUI extends JFrame{
 		this.dialog.add(this.continueButton, BorderLayout.SOUTH);	//adds the continue button at the bottom of the dialog.
 		fitDialogToTitle();	//fits the dialog width to fit its title.
 		this.dialog.pack();
+	}
+
+	/**
+	 * Displays a dialog with a title and two JButtons
+	 * @param The String title
+	 */
+	public void closeGuiDialog(String title){
+		this.dialog= basicDialog(title);
+		JPanel panel = new JPanel();
+		panel.setLayout(new FlowLayout());
+		JButton yesButton = new JButton("Yes");
+		JButton noButton = new JButton("No");
+		yesButton.addActionListener(listener);
+		noButton.addActionListener(listener);
+		panel.add(yesButton);
+		panel.add(noButton);
+		yesButton.setVisible(true);
+		noButton.setVisible(true);
+		this.dialog.add(panel);
+		fitDialogToTitle();	//fits the dialog width to fit its title.
+		this.dialog.pack();
+
 
 	}
 
