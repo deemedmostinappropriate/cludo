@@ -99,7 +99,7 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 			// jlabels are the first component when working with dialogs without choices
 			if(chosen == null && !(comps[0] instanceof JLabel))
 				return;		// prevents closing of window until option has been chosen by user.
-							// prevents exit without selection
+			// prevents exit without selection
 			this.gui.getDialog().dispose();		// we can close the window now that it has no use.
 
 			this.game.setEventMessage(event);		//passes a message to the game.
@@ -150,19 +150,23 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 
 					// checks that it is in the bounds of a door in the game's door array
 					if(//if in the range of the board itself
-						x >= 0 && x < Board.BOARD_WIDTH
-						&& y >= 0 && y < Board.BOARD_HEIGHT
-						//is a door in the board array
-						&& b.getBoard()[yIndexBeforeDirection][xIndexBeforeDirection] == 2
-						//if relative to a door on the board
-						&&(b.getDoor(xIndexBeforeDirection, yIndexBeforeDirection +1) != null	//up
-							|| b.getDoor(xIndexBeforeDirection, yIndexBeforeDirection -1) != null	//down
-							|| b.getDoor(xIndexBeforeDirection -1, yIndexBeforeDirection) != null	//left
-							|| b.getDoor(xIndexBeforeDirection +1, yIndexBeforeDirection) != null)	//right
-						){
-						//this works
-
-
+							x >= 0 && x < Board.BOARD_WIDTH
+							&& y >= 0 && y < Board.BOARD_HEIGHT
+							//is a door in the board array
+							&& b.getBoard()[yIndexBeforeDirection][xIndexBeforeDirection] == 2){
+						if(b.getDoor(xIndexBeforeDirection, yIndexBeforeDirection +1) != null){
+							this.game.setMouseClickMessage("up");		//door is up relative to clicked square
+						}
+						else if(b.getDoor(xIndexBeforeDirection, yIndexBeforeDirection -1) != null){
+							this.game.setMouseClickMessage("down");		//door is down relative to clicked square
+						}
+						else if(b.getDoor(xIndexBeforeDirection -1, yIndexBeforeDirection) != null){
+							this.game.setMouseClickMessage("left");		//door is left relative to clicked square
+						}
+						else if(b.getDoor(xIndexBeforeDirection +1, yIndexBeforeDirection) != null){
+							this.game.setMouseClickMessage("right");		//door is right relative to clicked square
+						}
+						System.out.println("got there");
 					}
 					return;
 				}
