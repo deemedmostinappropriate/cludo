@@ -144,33 +144,10 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 				}
 
 				else{
-					Board b = this.game.getBoard();
-					int xIndexBeforeDirection = (x)/(Board.SQ_WIDTH + 3);
-					int yIndexBeforeDirection = 24 -(y - gui.canvas.getY())/(Board.SQ_HEIGHT + 3)-1;
-
-					// checks that it is in the bounds of a door in the game's door array
-					if(//if in the range of the board itself
-							x >= 0 && x < Board.BOARD_WIDTH
-							&& y >= 0 && y < Board.BOARD_HEIGHT)
-						//is a door in the board array
-						if(b.getBoard()[yIndexBeforeDirection][xIndexBeforeDirection] == 2){
-							if(b.getDoor(xIndexBeforeDirection, yIndexBeforeDirection +1) != null){
-								this.game.setMouseClickMessage("up");		//door is up relative to clicked square
-							}
-							else if(b.getDoor(xIndexBeforeDirection, yIndexBeforeDirection -1) != null){
-								this.game.setMouseClickMessage("down");		//door is down relative to clicked square
-							}
-							else if(b.getDoor(xIndexBeforeDirection -1, yIndexBeforeDirection) != null){
-								this.game.setMouseClickMessage("left");		//door is left relative to clicked square
-							}
-							else if(b.getDoor(xIndexBeforeDirection +1, yIndexBeforeDirection) != null){
-								this.game.setMouseClickMessage("right");		//door is right relative to clicked square
-							}
-						}
-						else if (b.getBoard()[yIndexBeforeDirection][xIndexBeforeDirection] == 3){
-							this.game.setMouseClickMessage("stairs");		// stairs are relative to clicked square
-						}
-					System.out.println("got there");
+					//if in the range of the board itself
+					if(x >= 0 && x < Board.BOARD_WIDTH && y >= 0 && y < Board.BOARD_HEIGHT){
+						this.game.setEvent(e);
+					}
 				}
 				return;
 			}

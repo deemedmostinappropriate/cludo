@@ -1,6 +1,7 @@
 package cluedo;
 
 import java.awt.Graphics;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,6 +51,8 @@ public class Game {
 	private String charSuggestionMessage = null, roomSuggestionMessage = null, weaponSuggestionMessage = null;
 	/** Lets game know that a button was pushed. Only to be used within awaitResponse.**/
 	private boolean buttonRegistered = false;
+	/** For events where game requires more information. **/
+	private MouseEvent event;
 
 	/**Scanner for use in any input scanning, including use by other objects. **/
 	public static Scanner scan;
@@ -83,6 +86,7 @@ public class Game {
 	private int diceroll = 0;
 	/** The index of the current player in the list of players. **/
 	private int currentPlayerIndex = 0;
+
 
 
 	public <T> Game(Application app) {
@@ -270,6 +274,14 @@ public class Game {
 	}
 
 	/**
+	 * Sets the event field.
+	 * @param A mouse event
+	 */
+	public void setEvent(MouseEvent e){
+		this.event = e;
+	}
+
+	/**
 	 * Runs the game loop.
 	 *
 	 * @param The
@@ -373,7 +385,7 @@ public class Game {
 			if(currentPlayer.getCharacterLocation() != null) { // If the move resulted in player entering a room:
 				return true;
 			}
-			this.keyMessage = 'p';		//resets the key press message.
+			this.keyMessage = 'p';
 			this.eventMessage = null;	//resets the event message to null. Useful when an accusation is made.
 			actionMade = false;			//allows for choice between movement and accusation.
 		}
@@ -422,65 +434,84 @@ public class Game {
 	/**
 	 * Processes a turn which starts in a room.
 	 * @param The current room of the character piece.
-	 * @param True
 	 */
 	private void doRoomTurn(Room currentRoom) {
 		Character character = currentPlayer.getCharacter();
-
-
+		int chosenX = 0, chosenY = 0;
+		int xDest = 0, yDest = 0;
+		boolean exitGood = false;	//true if the exit has been found valid
 		Door exit = null; // Pull coordinates from the door player is leaving from.
 
-		//tells player to click a door or staircase to exit
+		this.listener.changeLabel(currentPlayer.PLAYER_NAME +"("+character.ABBREV+"), exit the room via a door or staircase.");//tells player to click a door or staircase to exit
 
-		System.out.println("Do you want to leave the current room? (" + currentRoom.NAME + ") y/n: ");
-		char input = scan.next().charAt(0);
-		if (input != 'y' && input != 'Y') {
-			return;
-		}
-		// Print the choices of door when there's more than one, and the
-		// staircase's room:
-		System.out.println("Type the number of the door or staircase you want to leave from: ");
-		int i, r = 999;
-		while (exit == null) {
-			if (currentRoom.getDoors().size() == 1 && currentRoom.getStairs() == null)
-				exit = currentRoom.getDoors().get(0); // only one exit
-			// available.
-			for (i = 0; i < currentRoom.getDoors().size(); ++i)
-				System.out.printf("%d: %s\t", i, reverseDir(currentRoom.getDoors().get(i).ROOM_DIRECTION));
+		outer:
+		while(exitGood){
+			awaitResponse("eventObject");	// awaits a response from the player
 
-			if (currentRoom.getStairs() != null)
-				System.out.printf("%d: Stairs to %s\n", i, currentRoom.getStairs().NAME);
-			System.out.println();
-			// Catch an integer from players input:
-			try {
-				r = scan.nextInt();
+			chosenX = (this.event.getX())/(Board.SQ_WIDTH + 3);
+			chosenY = 24 -(this.event.getY() - gui.canvas.getY())/(Board.SQ_HEIGHT + 3)-1;
 
-				if (r != currentRoom.getDoors().size()) // if a door is selected, and definitely not stairs.
-					exit = currentRoom.getDoors().get(r);
-				else
-					break;
-			} catch (Exception e) {
-				System.out.println("Input Error: Please pick a number from the list of doors:");
+
+			switch(board.getBoard()[chosenX][chosenY]){
+			case 1:				// if the selected square is traversable --> loop
+				this.event = null;
 				continue;
+			case 3:				// selected square is a staircase
+				//Does the room event have a staircase
+				if(currentRoom.getStairs() == null)
+					continue;							// no staircase found
+
+				String roomName = currentRoom.NAME;
+				// Checks that staircase is in the room, based on the name of the current room, and the index of the stairs in that room.
+				if((roomName.equals("KITCHEN") && chosenX ==  5 && chosenY == 23)
+						||(roomName.equals("CONSERVATORY") && chosenX ==  23 && chosenY == 19)
+						||(roomName.equals("LOUNGE") && chosenX == 0 && chosenY == 5)
+						||(roomName.equals("STUDY") && chosenX == 23 && chosenY == 3)){
+					exitGood = true;
+				}
+				else
+					throw new RuntimeException("Stairs must lead to a corner room.");
+
+				if(exitGood){
+					board.changeCharacterRoom(character, currentRoom.getStairs()); // Moves the character to the room at the other end of the stairs.
+					this.diceroll = 0;
+
+				}
+				else{
+					this.event = null;
+					continue;
+				}
+				break;
+			default:
+				//Gets the door adjacent to the square
+				if(board.getDoor(chosenX, chosenY +1) != null){
+					exit = board.getDoor(chosenX, chosenY +1);
+				}
+				else if(board.getDoor(chosenX, chosenY -1) != null){
+					exit = board.getDoor(chosenX, chosenY -1);
+				}
+				else if(board.getDoor(chosenX -1, chosenY) != null){
+					exit = board.getDoor(chosenX -1, chosenY);
+				}
+				else if(board.getDoor(chosenX +1, chosenY) != null){
+					exit = board.getDoor(chosenX +1, chosenY);
+				}
+
+				//check the door belongs to the current room.
+				if(!currentRoom.getDoors().contains(board.getDoor(chosenX, chosenY))){
+					exit = null;
+					continue;
+				}
+				// Move the player character to the coordinates of the chosen door:
+				board.changeCharacterRoom(character, null);
+				character.setPosition(exit.getX(), exit.getY());
+				--this.diceroll;
+				exitGood = true;
 			}
 		}
-
-		if (exit != null) {
-			board.changeCharacterRoom(character, null);
-			character.setPosition(exit.getX(), exit.getY()); // Move the lpayer character to the coordinates of the chosen door:
-		} else {
-			board.changeCharacterRoom(character, currentRoom.getStairs()); // Moves the character to the room at the other end of the stairs.
-			this.diceroll = 0;
-			return;
-		}
-
+		this.mouseClickMessage = null;	//resets the mouse click message
+		this.event = null;	//resets the event object.
 		this.gui.draw(); // draws the board
-
-		board.changeCharacterRoom(character, null); // Set players room to
-		// null
-		--this.diceroll;
-		return ; // continue with turn from the beginning
-
 	}
 
 	/**
@@ -701,6 +732,15 @@ public class Game {
 		}
 		else if(type.equals("click")){
 			while (this.mouseClickMessage == null) {
+				try {
+					TimeUnit.MILLISECONDS.sleep(500);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		else if(type.equals("eventObject")){
+			while (this.event == null) {
 				try {
 					TimeUnit.MILLISECONDS.sleep(500);
 				} catch (InterruptedException e) {
