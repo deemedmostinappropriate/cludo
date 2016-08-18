@@ -335,10 +335,7 @@ public class Board {
 			for(int row = 0; (line = reader.readLine()) != null; row ++){
 				// Increments over 2 chars due to spaces.
 				for(int col = 0; col < line.length(); col += 2){
-					if(line.charAt(col) == '1')
-						this.board[row][col/2] = 1;
-					else if(line.charAt(col) == '2')
-						this.board[row][col/2] = 2;
+					this.board[row][col/2] = java.lang.Character.valueOf(line.charAt(col));
 				}
 			}
 

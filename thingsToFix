@@ -1,10 +1,12 @@
 things to fix:
 
 
-door selection with click
+
 tell player to click on door or make accusation when relevant
 the whole roomTurn method
 after moving out of room, if back in new room (is possible) no suggestion asked of player
+
+
 on suggestion continue: weapon cards out of bound at index 5. size should be 6
 player number needed in title of text query dialog
 candlestick appearing in arrow of hall

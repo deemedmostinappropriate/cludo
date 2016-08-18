@@ -326,7 +326,7 @@ public class Game {
 			else{
 				//player started turn in a room
 				Room currentRoom = currentPlayer.getCharacterLocation();
-				doRoomTurn(currentRoom, roomEntered);
+				doRoomTurn(currentRoom);
 				if(this.players.size() == 1)
 					break;
 				doMovementTurn();
@@ -424,63 +424,63 @@ public class Game {
 	 * @param The current room of the character piece.
 	 * @param True
 	 */
-	private void doRoomTurn(Room currentRoom, boolean roomEntered) {
+	private void doRoomTurn(Room currentRoom) {
 		Character character = currentPlayer.getCharacter();
-		// Only ask the player if they want to leave when they haven't entered
-		// in the same turn:
-		if (!roomEntered) {
-			Door exit = null; // Pull coordinates from the door player is
-			// leaving from.
 
-			System.out.println("Do you want to leave the current room? (" + currentRoom.NAME + ") y/n: ");
-			char input = scan.next().charAt(0);
-			if (input != 'y' && input != 'Y') {
-				return;
-			}
-			// Print the choices of door when there's more than one, and the
-			// staircase's room:
-			System.out.println("Type the number of the door or staircase you want to leave from: ");
-			int i, r = 999;
-			while (exit == null) {
-				if (currentRoom.getDoors().size() == 1 && currentRoom.getStairs() == null)
-					exit = currentRoom.getDoors().get(0); // only one exit
-				// available.
-				for (i = 0; i < currentRoom.getDoors().size(); ++i)
-					System.out.printf("%d: %s\t", i, reverseDir(currentRoom.getDoors().get(i).ROOM_DIRECTION));
 
-				if (currentRoom.getStairs() != null)
-					System.out.printf("%d: Stairs to %s\n", i, currentRoom.getStairs().NAME);
-				System.out.println();
-				// Catch an integer from players input:
-				try {
-					r = scan.nextInt();
+		Door exit = null; // Pull coordinates from the door player is leaving from.
 
-					if (r != currentRoom.getDoors().size()) // if a door is selected, and definitely not stairs.
-						exit = currentRoom.getDoors().get(r);
-					else
-						break;
-				} catch (Exception e) {
-					System.out.println("Input Error: Please pick a number from the list of doors:");
-					continue;
-				}
-			}
+		//tells player to click a door or staircase to exit
 
-			if (exit != null) {
-				board.changeCharacterRoom(character, null);
-				character.setPosition(exit.getX(), exit.getY()); // Move the lpayer character to the coordinates of the chosen door:
-			} else {
-				board.changeCharacterRoom(character, currentRoom.getStairs()); // Moves the character to the room at the other end of the stairs.
-				this.diceroll = 0;
-				return;
-			}
-
-			this.gui.draw(); // draws the board
-
-			board.changeCharacterRoom(character, null); // Set players room to
-			// null
-			--this.diceroll;
-			return ; // continue with turn from the beginning
+		System.out.println("Do you want to leave the current room? (" + currentRoom.NAME + ") y/n: ");
+		char input = scan.next().charAt(0);
+		if (input != 'y' && input != 'Y') {
+			return;
 		}
+		// Print the choices of door when there's more than one, and the
+		// staircase's room:
+		System.out.println("Type the number of the door or staircase you want to leave from: ");
+		int i, r = 999;
+		while (exit == null) {
+			if (currentRoom.getDoors().size() == 1 && currentRoom.getStairs() == null)
+				exit = currentRoom.getDoors().get(0); // only one exit
+			// available.
+			for (i = 0; i < currentRoom.getDoors().size(); ++i)
+				System.out.printf("%d: %s\t", i, reverseDir(currentRoom.getDoors().get(i).ROOM_DIRECTION));
+
+			if (currentRoom.getStairs() != null)
+				System.out.printf("%d: Stairs to %s\n", i, currentRoom.getStairs().NAME);
+			System.out.println();
+			// Catch an integer from players input:
+			try {
+				r = scan.nextInt();
+
+				if (r != currentRoom.getDoors().size()) // if a door is selected, and definitely not stairs.
+					exit = currentRoom.getDoors().get(r);
+				else
+					break;
+			} catch (Exception e) {
+				System.out.println("Input Error: Please pick a number from the list of doors:");
+				continue;
+			}
+		}
+
+		if (exit != null) {
+			board.changeCharacterRoom(character, null);
+			character.setPosition(exit.getX(), exit.getY()); // Move the lpayer character to the coordinates of the chosen door:
+		} else {
+			board.changeCharacterRoom(character, currentRoom.getStairs()); // Moves the character to the room at the other end of the stairs.
+			this.diceroll = 0;
+			return;
+		}
+
+		this.gui.draw(); // draws the board
+
+		board.changeCharacterRoom(character, null); // Set players room to
+		// null
+		--this.diceroll;
+		return ; // continue with turn from the beginning
+
 	}
 
 	/**
