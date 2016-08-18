@@ -155,7 +155,7 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 				return;
 			}
 		}
-		if(c.equals(this.gui.fileItem)){
+		if(c.equals(this.gui.gameItem)){
 			((JMenuItem)c).setEnabled(true);	//makes the menu item be pressed.
 		}
 

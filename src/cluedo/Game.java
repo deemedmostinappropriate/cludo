@@ -388,10 +388,10 @@ public class Game {
 	 */
 	private void turnEnd(){
 		this.listener.changeLabel("You may now end your turn, or make an accusation."); // tells player that they can make an accusation before ending their turn.
-		awaitResponse("event");	//await player response
-		if(this.eventMessage.equals("Make Accusation")){
-			this.eventMessage = null;	//resets the event message
-			accusation();				//player makes an accusation
+		awaitResponse("click");	//await player response
+		if(this.mouseClickMessage.equals("accusation")){
+			this.mouseClickMessage = null;	//resets the mouse click message
+			this.preAccusation();				//player makes an accusation
 		}
 		this.eventMessage = null; 	//resets the event message
 	}

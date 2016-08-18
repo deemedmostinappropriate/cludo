@@ -55,8 +55,6 @@ public class GUI extends JFrame{
 	public final Canvas canvas;
 	/** The menu **/
 	public final JMenuBar menu;
-	/** File button for the menu**/
-	public final JMenuItem fileItem;
 	/** Game button for the menu**/
 	public final JMenuItem gameItem;
 	/** Button to roll dice.**/
@@ -82,12 +80,10 @@ public class GUI extends JFrame{
 		this.menu = new JMenuBar();
 		this.menu.setFocusable(false);
 		this.menu.setLayout(new FlowLayout(FlowLayout.LEFT));	//aligns the items to the left
-		this.fileItem = new JMenuItem("File");
-		this.fileItem.setFocusable(false);
-		this.gameItem = new JMenuItem("Game");
+		this.gameItem = new JMenu("Game");
 		this.gameItem.setFocusable(false);
-		this.menu.add(this.fileItem);
 		this.menu.add(this.gameItem);
+		//this.game
 		//Jbuttons
 		this.accusation = new JButton("Make Accusation");
 		this.accusation.setFocusable(false);
@@ -148,7 +144,6 @@ public class GUI extends JFrame{
 		this.accusation.addMouseListener(this.listener);
 		this.nextTurn.addMouseListener(this.listener);
 		this.continueButton.addActionListener(listener);
-		this.fileItem.addMouseListener(this.listener);
 		this.gameItem.addMouseListener(this.listener);
 	}
 
