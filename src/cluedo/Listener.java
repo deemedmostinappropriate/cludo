@@ -144,14 +144,9 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 				}
 
 				else{
-					System.out.println("clicked");
-					System.out.printf("mouse x: %d, y: %d\n", x,y);
-
 					Board b = this.game.getBoard();
 					int xIndexBeforeDirection = (x)/(Board.SQ_WIDTH + 3);
 					int yIndexBeforeDirection = 24 -(y - gui.canvas.getY())/(Board.SQ_HEIGHT + 3)-1;
-
-
 
 					// checks that it is in the bounds of a door in the game's door array
 					if(//if in the range of the board itself
@@ -165,7 +160,7 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 							|| b.getDoor(xIndexBeforeDirection -1, yIndexBeforeDirection) != null	//left
 							|| b.getDoor(xIndexBeforeDirection +1, yIndexBeforeDirection) != null)	//right
 						){
-						System.out.printf("found a door: %d, %d\n", x/(b.SQ_WIDTH + 3), 24 -(y - gui.canvas.getY())/(b.SQ_HEIGHT + 3)-1);
+						//this works
 
 
 					}

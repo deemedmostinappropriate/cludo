@@ -200,7 +200,7 @@ public class Board {
 	 */
 	public Door getDoor(int x, int y){
 		if(!this.inRange(x, y)) return null;
-		return doors[y][x];
+		return doors[x][y];
 	}
 	/**
 	 * Returns the set of all character pieces.
