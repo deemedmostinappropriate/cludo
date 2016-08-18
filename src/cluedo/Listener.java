@@ -131,10 +131,10 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 		Component c = e.getComponent();
 		if(c != null){
 			if(c.equals(this.gui.accusation)){
-				this.game.setEventMessage("accusation");
+				this.game.setMouseClickMessage("accusation");
 			}
 			else if(c.equals(this.gui.nextTurn)){
-					this.game.setEventMessage("nextTurn");
+					this.game.setMouseClickMessage("nextTurn");
 			}
 			else{
 				int x = e.getX(), y = e.getY();

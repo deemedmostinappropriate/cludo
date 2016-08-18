@@ -14,8 +14,6 @@ char b has been moved to room by char a's suggestion: on char b's turn(which is 
 
 
 helpful things to do:
-player number needed in title of text query dialog
-better rope image
 during movement turn(at start) if player pushes next turn, they get preaccusation dialog
 draw current player's character in game.draw so it is drawn after board, and on top of any other char piece
 change die image to index 0 upon room entry

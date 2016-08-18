@@ -142,10 +142,11 @@ public class Game {
 		Character character = null;
 		String name = null;
 		String choice = null;
+		int playerNum = 0;
 		// Each player chooses their name and character.
 		for (int i = 0; i < this.numPlayers; i++) {
-
-			gui.textQuery("Please write your name");// Player chooses their
+			playerNum = i+1;
+			gui.textQuery("Player "+playerNum+", please write your name");// Player chooses their
 			// name
 			awaitResponse("event");
 			name = this.eventMessage; // Retrieves the player's name
@@ -355,13 +356,15 @@ public class Game {
 					actionMade = true;
 					keyMessage = 'p';		//resets key message for future steps
 				}
-				else{
+				else if(this.mouseClickMessage.equals("accusation")){
 					// accusation path
-					this.eventMessage = null;		//resets event message after accusation button selection.
+					this.mouseClickMessage = null;		//resets event message after accusation button selection.
 					// asks the player if they mean to make an accusation, and processes it if they do.
 					if(preAccusation())
-						break;
+						break;	//breaks if the player made an accusation.
+					actionMade = true;
 				}
+				this.mouseClickMessage = null;	// resets in case of "next turn" button pressed.
 			}
 			if(currentPlayer == null)
 				return false;
@@ -735,9 +738,9 @@ public class Game {
 			}
 		}
 		else if(type.equals("movementOrAccusation")){
-			while(this.keyMessage == 'p' && this.eventMessage == null) {
+			while(this.keyMessage == 'p' && this.mouseClickMessage == null) {
 				try {
-					TimeUnit.MILLISECONDS.sleep(100);
+					TimeUnit.MILLISECONDS.sleep(50);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -746,7 +749,7 @@ public class Game {
 		else if(type.equals("click")){
 			while (this.mouseClickMessage == null) {
 				try {
-					TimeUnit.MILLISECONDS.sleep(100);
+					TimeUnit.MILLISECONDS.sleep(50);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -755,7 +758,7 @@ public class Game {
 		else if(type.equals("eventObject")){
 			while (this.event == null) {
 				try {
-					TimeUnit.MILLISECONDS.sleep(100);
+					TimeUnit.MILLISECONDS.sleep(50);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -915,10 +918,10 @@ public class Game {
 		}
 		else{
 			//The last player lost the game
-			if(this.players.get(currentPlayerIndex)!= null)
+			if(currentPlayerIndex < this.players.size()-1)
 				this.currentPlayer = this.players.get(currentPlayerIndex);
 			else
-				this.currentPlayer = this.players.get(0);
+				this.currentPlayer = this.players.get(0);	//out of bounds, so reset to 0
 		}
 	}
 
