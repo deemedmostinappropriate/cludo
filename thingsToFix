@@ -2,7 +2,8 @@ things to fix:
 
 TODO: test all doors: in and out
 	test accessing wrong doors
-
+	pressing a move key before rolling the dice causes that move to be applied after pressing roll:
+		- FIXED: reset key message char at the beginning of doMovement.
 
 
 

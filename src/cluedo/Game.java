@@ -349,7 +349,8 @@ public class Game extends Thread{
 	 */
 	private <T> boolean doMovementTurn() {
 		boolean actionMade = false;
-
+		this.keyMessage = 'p';		// Resets the key press message.
+		
 		while (this.diceroll > 0) {
 			Character character = currentPlayer.getCharacter(); // the character piece being moved.
 			this.listener.changeLabel("\t" + this.currentPlayer.PLAYER_NAME + "("+ character.ABBREV +"), move with WASD. You have "+this.diceroll+"moves left.");
@@ -381,7 +382,6 @@ public class Game extends Thread{
 			this.eventMessage = null;	//resets the event message to null. Useful when an accusation is made.
 			actionMade = false;			//allows for choice between movement and accusation.
 		}
-		this.keyMessage = 'p';		//resets the key press message.
 		this.eventMessage = null;	//resets the event message to null. Useful when an accusation is made.
 
 		this.diceroll = 0; //keeps die image at zero until next player rolls
