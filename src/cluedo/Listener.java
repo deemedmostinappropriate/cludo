@@ -144,17 +144,30 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 				}
 
 				else{
+					System.out.println("clicked");
+					System.out.printf("mouse x: %d, y: %d\n", x,y);
+
 					Board b = this.game.getBoard();
+					int xIndexBeforeDirection = (x)/(Board.SQ_WIDTH + 3);
+					int yIndexBeforeDirection = 24 -(y - gui.canvas.getY())/(Board.SQ_HEIGHT + 3)-1;
+
+
+
 					// checks that it is in the bounds of a door in the game's door array
 					if(//if in the range of the board itself
-						x >= 0 && x < b.BOARD_WIDTH
-						&& y >= 0 && y < b.BOARD_HEIGHT
+						x >= 0 && x < Board.BOARD_WIDTH
+						&& y >= 0 && y < Board.BOARD_HEIGHT
+						//is a door in the board array
+						&& b.getBoard()[yIndexBeforeDirection][xIndexBeforeDirection] == 2
 						//if relative to a door on the board
-						&& b.getDoor(x/(Board.SQ_WIDTH + 3), 25 -(y - gui.canvas.getY())/(Board.SQ_HEIGHT + 3)) != null
+						&&(b.getDoor(xIndexBeforeDirection, yIndexBeforeDirection +1) != null	//up
+							|| b.getDoor(xIndexBeforeDirection, yIndexBeforeDirection -1) != null	//down
+							|| b.getDoor(xIndexBeforeDirection -1, yIndexBeforeDirection) != null	//left
+							|| b.getDoor(xIndexBeforeDirection +1, yIndexBeforeDirection) != null)	//right
 						){
-						System.out.printf("found a door: %d, %d\n", x/(b.SQ_WIDTH + 3)+1, 25 -(y - gui.canvas.getY())/(b.SQ_HEIGHT + 3));
-						System.out.printf("mouse x: %d, y: %d\n", x,y);
-						System.out.printf("canvas edges, x: %d, y: %d\n",gui.canvas.getX(),gui.canvas.getY());
+						System.out.printf("found a door: %d, %d\n", x/(b.SQ_WIDTH + 3), 24 -(y - gui.canvas.getY())/(b.SQ_HEIGHT + 3)-1);
+
+
 					}
 					return;
 				}

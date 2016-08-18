@@ -200,7 +200,7 @@ public class Board {
 	 */
 	public Door getDoor(int x, int y){
 		if(!this.inRange(x, y)) return null;
-		return doors[x][y];
+		return doors[y][x];
 	}
 	/**
 	 * Returns the set of all character pieces.
@@ -337,6 +337,8 @@ public class Board {
 				for(int col = 0; col < line.length(); col += 2){
 					if(line.charAt(col) == '1')
 						this.board[row][col/2] = 1;
+					else if(line.charAt(col) == '2')
+						this.board[row][col/2] = 2;
 				}
 			}
 

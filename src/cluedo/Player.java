@@ -191,7 +191,7 @@ public class Player {
 			}
 		}
 		// False if the square is non-traversable:
-		if(!board.inRange(newX, newY) || traversable[newY][newX] == 0){
+		if(!board.inRange(newX, newY) || traversable[newY][newX] != 1){
 			return false;
 		}
 
