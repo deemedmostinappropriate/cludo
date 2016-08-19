@@ -1,4 +1,4 @@
-package cluedo.tests;
+package cluedo.test.suite;
 
 import static org.junit.Assert.*;
 
