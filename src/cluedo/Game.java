@@ -56,7 +56,7 @@ public class Game{
 	public final int CARD_HEIGHT, CARD_WIDTH;
 	/** Bottom right corner of the GUI canvas. **/
 	public final int CARD_X_ORIGIN;
-	/** Y coordinate forr drawing cards. **/
+	/** Y coordinate for drawing cards. **/
 	public final int CARD_Y;
 	/** The width and height of the game die. **/
 	public final int DIE_WIDTH, DIE_HEIGHT;
@@ -905,8 +905,17 @@ public class Game{
 		// draws the die
 		g.drawImage(this.board.getDieImage(this.diceroll), this.DIE_X, this.DIE_Y, this.DIE_WIDTH, this.DIE_HEIGHT, null);
 	}
-
-
+	
+	/**
+	 * Draws a rectangle over the players hand on the gui. This is meant
+	 * to not be drawn when the mouse is over the cards.
+	 * @param g
+	 */
+	public void drawHiddenHand(Graphics g){
+		this.draw(g);
+		
+		g.drawRect(CARD_X_ORIGIN, CARD_Y, CARD_WIDTH * currentPlayer.getHand().length, CARD_HEIGHT);
+	}
 
 	/**
 	 * /** Displays a message over the selected square.
