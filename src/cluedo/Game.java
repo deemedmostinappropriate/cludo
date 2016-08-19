@@ -365,10 +365,10 @@ public class Game extends Thread{
 				}
 				else if(this.mouseClickMessage.equals("Make Accusation")){
 					// accusation path
-					this.mouseClickMessage = null;		//resets event message after accusation button selection.
+					this.mouseClickMessage = null;		// resets event message after accusation button selection.
 					// asks the player if they mean to make an accusation, and processes it if they do.
 					if(preAccusation())
-						break;	//breaks if the player made an accusation.
+						break;	// breaks if the player made an accusation.
 					actionMade = true;
 				}
 				this.mouseClickMessage = null;	// resets in case of "next turn" button pressed.
@@ -378,9 +378,9 @@ public class Game extends Thread{
 			if(currentPlayer.getCharacterLocation() != null) { // If the move resulted in player entering a room:
 				return true;
 			}
-			this.keyMessage = 'p';		//resets key message
-			this.eventMessage = null;	//resets the event message to null. Useful when an accusation is made.
-			actionMade = false;			//allows for choice between movement and accusation.
+			this.keyMessage = 'p';		// resets key message after the loop
+			this.eventMessage = null;	// resets the event message to null. Useful when an accusation is made.
+			actionMade = false;			// allows for choice between movement and accusation.
 		}
 		this.eventMessage = null;	//resets the event message to null. Useful when an accusation is made.
 
