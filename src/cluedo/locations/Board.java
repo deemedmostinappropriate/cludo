@@ -13,15 +13,11 @@ import java.util.Map;
 import java.util.Scanner;
 
 import javax.imageio.ImageIO;
-
-import cluedo.Game;
-import cluedo.pieces.Card;
 import cluedo.pieces.Character;
 import cluedo.pieces.CharacterCard;
 import cluedo.pieces.RoomCard;
 import cluedo.pieces.Weapon;
 import cluedo.pieces.WeaponCard;
-import cluedo.pieces.Card.WEAPON;
 
 
 /**
@@ -122,7 +118,7 @@ public class Board {
 		this.characters.add(new Character(23,5,"Prof Plum", "PP", loadImage("./Images/Prof Plum.png")));
 
 
-		int rand = 0, weaponIndex = 0, vertOffset = 0, horiOffset = 0;
+		int rand = 0;
 		List<Weapon.Name> weaponNames = new ArrayList<>(Arrays.asList(Weapon.Name.values()));
 		this.weapons = new ArrayList<>();
 		Weapon w = null;
@@ -147,7 +143,6 @@ public class Board {
 	 * Loads images of the game die.
 	 */
 	private void loadDieImages(){
-		int num = 0;
 		//starts at 0 to load "roll die" image
 		for(int i = 0; i < 7; i++){
 			this.die[i] = loadImage("./Images/"+i+".png");
@@ -550,8 +545,6 @@ public class Board {
 	 * @param The Board.
 	 * @param The new x position
 	 * @param The new y position
-	 * @param x TODO
-	 * @param y TODO
 	 * @return True if the intended position has already been taken.
 	 */
 	public boolean blockedByCharacter(int x, int y){

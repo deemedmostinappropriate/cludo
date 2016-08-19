@@ -2,15 +2,7 @@ package cluedo;
 
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.List;
-
-import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JRadioButtonMenuItem;
 
 public class Canvas extends JPanel{
 	/** The image for double buffering **/
@@ -29,7 +21,7 @@ public class Canvas extends JPanel{
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		this.game.draw(g);	// all other drawing follows from this call.
-	}		// Adds all cards to the list.
+	}
 
 	public void paint (Graphics g){
 		dbImage = createImage(getWidth(), getHeight());	// our screen image

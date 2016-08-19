@@ -35,21 +35,10 @@ public class Weapon implements Piece{
 		this.image = image;
 	}
 
-
-
-
-	/**
-	 * Returns the x coordinate of this piece on the board.w
-	 * @return The x value
-	 */
 	public int getX() {
 		return x;
 	}
 
-	/**
-	 * Returns the y coordinate of this piece on the board.
-	 * @return The y value
-	 */
 	public int getY() {
 		return y;
 	}
@@ -75,10 +64,6 @@ public class Weapon implements Piece{
 		this.realY = Board.BOARD_HEIGHT - ((y + 1) * Board.SQ_HEIGHT + (Board.PIECE_OFFSET * (y +1)));
 	}
 
-	/**
-	 * Sets the image for this object to draw.
-	 * @param The weapon's image
-	 */
 	public void setImage(BufferedImage image){
 		if(this.image != null)
 			this.image = image;

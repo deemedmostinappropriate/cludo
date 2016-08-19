@@ -1,12 +1,10 @@
 package cluedo.locations;
 import java.util.List;
 
-import cluedo.pieces.Card;
 import cluedo.pieces.Character;
 import cluedo.pieces.Weapon;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 /**
  * Rooms on the Cluedo board.
  * Each room has at least one door.
@@ -35,44 +33,24 @@ public class Room {
 		this.characters = new ArrayList<>();
 	}
 
-	/**
-	 * Returns a list of the weapons in this room.
-	 * @return A list of the weapons in this room.
-	 */
 	public List<Weapon> getWeapons(){
 		return this.weapons;
 	}
 
-	/**
-	 * Returns the list of this room's doors.
-	 * @return A list of this room's doors.
-	 */
 	public List<Door> getDoors(){
 		return this.doors;
 	}
 
-	/**
-	 * Returns the room associated with the stairs in this room, if there are any.
-	 * @return The room from the stairs.
-	 */
 	public Room getStairs(){
 		return this.stairs;
 	}
 
-	/**
-	 * Sets the stairs for this room.
-	 * @param stairs
-	 */
 	public void setStairs(Room stairs){
 		if(this.stairs != null)
 			return;
 		this.stairs = stairs;
 	}
 
-	/**
-	 * Returns the list of this room's characters.
-	 * @return A list of this room's characters.
-	 */
 	public List<Character> getCharacters(){
 		return this.characters;
 	}

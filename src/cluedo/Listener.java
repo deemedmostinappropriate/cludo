@@ -19,9 +19,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JTextField;
-import javax.swing.JToolBar;
-
-import cluedo.locations.Board;
 
 /**
  * The interface between the game model and GUI. Implements multiple listeners.
@@ -41,11 +38,42 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 	}
 
 	/**
+	 * Closes the application.
+	 */
+	public void closeApplication(){
+		int answer = JOptionPane.showConfirmDialog(null, "Are you sure you want to exit?", null, JOptionPane.YES_NO_OPTION);
+		if(answer == JOptionPane.YES_OPTION)
+			System.exit(0);
+	}
+	/**
+	 * Changes the text in a label in the gui.
+	 * @param The new text.
+	 */
+	public void changeLabel(String i){
+		this.gui.instruction.setText(i);
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		char c = e.getKeyChar();
+
+		switch(c){
+		case 'w':
+		case 'a':
+		case 's':
+		case 'd':
+			this.game.setKeyMessage(c);	//if key is a movement key, send to game.
+			return;
+		default:
+			return;
+		}
+	}
+
+	/**
 	 * Detects actions performed on components.
 	 */
 	@Override
-	public void actionPerformed(ActionEvent e) {
-		JPanel p = null;
+	public void actionPerformed(ActionEvent e) {;
 		// If continue button on dialog pressed
 		if(e.getActionCommand().equals("Continue")){
 			Component[] comps = this.gui.getDialog().getContentPane().getComponents();
@@ -120,24 +148,13 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 	}
 
 
-	/**
-	 * Dummy method for MouseMotionListener interface.
-	 */
 	@Override
-	public void mouseDragged(MouseEvent e) {
-
-	}
+	public void mouseDragged(MouseEvent e) {}
 
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		this.game.doToolTip(e.getX(),e.getY());
-		
-		if(e.getX() < game.CARD_X_ORIGIN && e.getY() < game.CARD_Y
-				&& e.getX() > gui.WINDOW_WIDTH && e.getY() > gui.WINDOW_HEIGHT){
-			System.err.println("here");
-			game.drawHiddenHand(gui.getGraphics());
-		}
+		//this.game.doToolTip(e.getX(),e.getY());
 	}
 
 	@Override
@@ -158,114 +175,42 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 	}
 
 	@Override
-	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
+	public void mousePressed(MouseEvent e) {}
 
 	@Override
-	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
+	public void mouseReleased(MouseEvent e) {}
 
 	@Override
-	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
+	public void mouseEntered(MouseEvent e) {}
 
 	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	/**
-	 * Changes the text in a label in the gui.
-	 * @param The new text.
-	 */
-	public void changeLabel(String i){
-		this.gui.instruction.setText(i);
-	}
+	public void mouseExited(MouseEvent e) {}
 
 	@Override
-	public void keyTyped(KeyEvent e) {
-		System.out.println("key typed");
-		char c = e.getKeyChar();
-		//
-		switch(c){
-		case 'w':
-		case 'a':
-		case 's':
-		case 'd':
-			System.out.printf("key message %c\n", c);
-			this.game.setKeyMessage(c);	//if key is a movement key, send to game.
-			return;
-		default:
-			return;
-		}
-	}
+	public void keyPressed(KeyEvent e) {}
 
 	@Override
-	public void keyPressed(KeyEvent e) {
-		System.out.println("key pressed");
-	}
+	public void keyReleased(KeyEvent e) {}
 
 	@Override
-	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
-	}
-
-	/**
-	 * Closes the application.
-	 */
-	public void closeApplication(){
-		int answer = JOptionPane.showConfirmDialog(null, "Are you sure you want to exit?", null, JOptionPane.YES_NO_OPTION);
-		if(answer == JOptionPane.YES_OPTION)
-			System.exit(0);
-	}
+	public void windowOpened(WindowEvent e) {}
 
 	@Override
-	public void windowOpened(WindowEvent e) {
-		// TODO Auto-generated method stub
-
-	}
+	public void windowClosing(WindowEvent e) {  closeApplication();}
 
 	@Override
-	public void windowClosing(WindowEvent e) {
-		closeApplication();
-
-	}
+	public void windowClosed(WindowEvent e) {}
 
 	@Override
-	public void windowClosed(WindowEvent e) {
-
-
-	}
+	public void windowIconified(WindowEvent e) {}
 
 	@Override
-	public void windowIconified(WindowEvent e) {
-		// TODO Auto-generated method stub
-
-	}
+	public void windowDeiconified(WindowEvent e) {}
 
 	@Override
-	public void windowDeiconified(WindowEvent e) {
-		// TODO Auto-generated method stub
-
-	}
+	public void windowActivated(WindowEvent e) {}
 
 	@Override
-	public void windowActivated(WindowEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void windowDeactivated(WindowEvent e) {
-		// TODO Auto-generated method stub
-
-	}
+	public void windowDeactivated(WindowEvent e) {}
 
 }

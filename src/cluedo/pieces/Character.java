@@ -32,62 +32,33 @@ public class Character implements Piece{
 		this.realY = Board.BOARD_HEIGHT - ((y + 1) * Board.SQ_HEIGHT + (Board.PIECE_OFFSET * (y +1)));
 	}
 
-	/**
-	 * Returns the room which the character is in. This can be null.
-	 * @return The room in which the player is standing.
-	 */
 	public Room getRoom() {
 		return room;
 	}
 
-	/**
-	 * Returns the x coordinate that this piece is at.
-	 * @return X coordinate as an integer.
-	 */
 	public int getX(){
 		return this.x;
 	}
 
-	/**
-	 * Returns the y coordinate that this piece is at.
-	 * @return Y coordinate as an integer.
-	 */
 	public int getY(){
 		return this.y;
 	}
 
-	/**
-	 * Sets the x coordinate of this character
-	 * @param The new x coordinate
-	 */
 	public void setX(int x) {
 		this.x = x;
 		this.realX =  x * Board.SQ_WIDTH + (Board.PIECE_OFFSET * (x + 1));
 	}
 
-	/**
-	 * Sets the y coordinate of this character
-	 * @param The new y coordinate
-	 */
 	public void setY(int y) {
 		this.y = y;
 		this.realY = Board.BOARD_HEIGHT - ((y + 1) * Board.SQ_HEIGHT + (Board.PIECE_OFFSET * (y +1)));
 	}
 
-	/**
-	 * Sets new integer values for the x and y coordinates.
-	 * @param New x coordinate.
-	 * @param New y coordinate.
-	 */
 	public void setPosition(int x, int y){
 		this.x = x;
 		this.y = y;
 	}
 
-	/**
-	 * Sets the character's room to the room provided.
-	 * @param room
-	 */
 	public void setRoom(Room room){
 		this.room = room;
 	}

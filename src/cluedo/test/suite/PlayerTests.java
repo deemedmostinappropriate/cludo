@@ -19,20 +19,12 @@ public class PlayerTests {
 	Board board = new Board();
 	Character character = board.getCharacters().get(0);
 	Player player = new Player(null , character);
-	
+
 	@Test
 	public void testIllegalHandModification(){
 		try{
 			player.setHand(null);		//null hand
 			fail();
 		}catch(Exception e){}
-	}
-	
-	@Test
-	public void testNullCardLearnt(){
-		try{
-			player.learn(null);
-			fail();
-		}catch(IllegalArgumentException e){}
 	}
 }
