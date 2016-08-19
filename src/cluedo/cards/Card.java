@@ -1,4 +1,4 @@
-package cluedo.pieces;
+package cluedo.cards;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;

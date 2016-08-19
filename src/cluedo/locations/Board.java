@@ -13,11 +13,12 @@ import java.util.Map;
 import java.util.Scanner;
 
 import javax.imageio.ImageIO;
+
+import cluedo.cards.CharacterCard;
+import cluedo.cards.RoomCard;
+import cluedo.cards.WeaponCard;
 import cluedo.pieces.Character;
-import cluedo.pieces.CharacterCard;
-import cluedo.pieces.RoomCard;
 import cluedo.pieces.Weapon;
-import cluedo.pieces.WeaponCard;
 
 
 /**

@@ -1,9 +1,10 @@
 package cluedo;
 import java.io.IOException;
+
+import cluedo.cards.Card;
 import cluedo.locations.Board;
 import cluedo.locations.Door;
 import cluedo.locations.Room;
-import cluedo.pieces.Card;
 import cluedo.pieces.Character;
 
 /**

@@ -1,4 +1,4 @@
-package cluedo;
+package cluedo.ui;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -19,6 +19,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JTextField;
+
+import cluedo.Game;
 
 /**
  * The interface between the game model and GUI. Implements multiple listeners.

@@ -1,4 +1,7 @@
-package cluedo;
+package cluedo.ui;
+
+import cluedo.Game;
+
 /**
  * Where the application starts.
  * @author anastadani

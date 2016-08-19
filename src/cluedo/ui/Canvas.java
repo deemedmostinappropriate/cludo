@@ -1,8 +1,10 @@
-package cluedo;
+package cluedo.ui;
 
 import java.awt.Graphics;
 import java.awt.Image;
 import javax.swing.JPanel;
+
+import cluedo.Game;
 
 public class Canvas extends JPanel{
 	/** The image for double buffering **/

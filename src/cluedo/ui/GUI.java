@@ -1,4 +1,4 @@
-package cluedo;
+package cluedo.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -11,8 +11,8 @@ import java.util.List;
 
 import javax.swing.*;
 
-
-import cluedo.pieces.Card;
+import cluedo.Game;
+import cluedo.cards.Card;
 
 /**
  * A graphical user interface.
