@@ -312,7 +312,7 @@ public class Board {
 	 * @param y
 	 * @return
 	 */
-	public boolean inRange(int x, int y){
+	public static boolean inRange(int x, int y){
 		return x >= 0 && y >= 0
 				&& x < SIZE && y < SIZE;
 	}
@@ -565,7 +565,7 @@ public class Board {
 	public boolean freeSquare(int x, int y){
 		//works out which squares are traversable
 		if(inRange(x, y)
-				&&  board[y][x] == 1
+				&&  (board[y][x] == 1 || board[y][x] == 2)
 				&& !blockedByCharacter(x,y)){	//left square
 			return true;
 		}

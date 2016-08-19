@@ -55,6 +55,8 @@ public class Character implements Piece{
 	}
 
 	public void setPosition(int x, int y){
+		if(!Board.inRange(x,y))
+			throw new IllegalArgumentException("Position out of range of the board.");
 		this.x = x;
 		this.y = y;
 	}

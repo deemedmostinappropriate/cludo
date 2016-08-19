@@ -20,7 +20,7 @@ public class CharacterTests {
 
 	Board board = new Board();
 	Character character = board.getCharacters().get(0);
-	
+
 	@Test
 	public void testOutOfBounds_1(){
 		try{
@@ -28,7 +28,7 @@ public class CharacterTests {
 			fail();
 		}catch(IllegalArgumentException e){}
 	}
-	
+
 	@Test
 	public void testOutOfBounds_2(){
 		try{
@@ -36,7 +36,7 @@ public class CharacterTests {
 			fail();
 		}catch(IllegalArgumentException e){}
 	}
-	
+
 	@Test
 	public void testOutOfBounds_3(){
 		try{
@@ -44,7 +44,7 @@ public class CharacterTests {
 			fail();
 		}catch(IllegalArgumentException e){}
 	}
-	
+
 	@Test
 	public void testOutOfBounds_4(){
 		try{
@@ -52,15 +52,15 @@ public class CharacterTests {
 			fail();
 		}catch(IllegalArgumentException e){}
 	}
-	
+
 	@Test
 	public void testNullName(){
 		try{
-			new Character(5, 25, null, "",null);		// name is null
+			new Character(5, 22, null, "",null);		// name is null
 			fail();
 		}catch(IllegalArgumentException e){}
 	}
-	
+
 	@Test
 	public void testSetPosOutOfBounds_1(){
 		try{
@@ -68,7 +68,7 @@ public class CharacterTests {
 			fail();
 		}catch(IllegalArgumentException e){}
 	}
-	
+
 	@Test
 	public void testSetPosOutOfBounds_2(){
 		try{
@@ -76,7 +76,7 @@ public class CharacterTests {
 			fail();
 		}catch(IllegalArgumentException e){}
 	}
-	
+
 	@Test
 	public void testSetPosOutOfBounds_3(){
 		try{
@@ -84,7 +84,7 @@ public class CharacterTests {
 			fail();
 		}catch(IllegalArgumentException e){}
 	}
-	
+
 	@Test
 	public void testSetPosOutOfBounds_4(){
 		try{
