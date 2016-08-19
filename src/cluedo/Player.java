@@ -191,11 +191,8 @@ public class Player {
 			}
 		}
 
-		//Checks whether another character is at the destination. If so, return false.
-			for(Character c : board.getCharacters()){
-				if(c.getY() == newY && c.getX() == newX)		// if player is moving
-					return false;
-			}
+		if(blockedBYPlayer(board, newX, newY))
+			return false;
 
 		// False if the square is non-traversable:
 		if(!board.inRange(newX, newY)
@@ -207,6 +204,22 @@ public class Player {
 		character.setX(newX);
 		character.setY(newY);
 		return true;
+	}
+
+	/**
+	 * Checks whether a piece is blocked by another when moving to a particular position.
+	 * @param The Board.
+	 * @param The new x position
+	 * @param The new y position
+	 * @return True if the intended position has already been taken.
+	 */
+	public boolean blockedBYPlayer(Board board, int x, int y){
+		//Checks whether another character is at the destination. If so, return false.
+		for(Character c : board.getCharacters()){
+			if(c.getY() == y && c.getX() == x)		// if player is moving
+				return true;
+		}
+		return false;
 	}
 
 
