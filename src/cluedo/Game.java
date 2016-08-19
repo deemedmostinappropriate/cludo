@@ -362,7 +362,11 @@ public class Game{
 					if(preAccusation())
 						break;	// breaks if the player made an accusation.
 					actionMade = true;
+				}else if(this.event != null){
+					//for mouse click on adjacent square
+
 				}
+				this.event = null;			//resets the mouse event field.
 				this.mouseClickMessage = null;	// resets in case of "next turn" button pressed.
 				traversableSquares = null;	// resets the traversable squares.
 			}
@@ -711,7 +715,7 @@ public class Game{
 			}
 		}
 		else if(type.equals("movementOrAccusation")){
-			while(this.keyMessage == 'p' && this.mouseClickMessage == null) {
+			while(this.keyMessage == 'p' && this.mouseClickMessage == null && this.event == null) {
 				try {
 					TimeUnit.MILLISECONDS.sleep(50);
 				} catch (InterruptedException e) {
