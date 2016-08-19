@@ -142,20 +142,8 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 			this.game.setMouseClickMessage(((JButton)e.getSource()).getText());
 		}
 		else{
-				int x = e.getX(), y = e.getY();
-				// Checks that the click is in the bounds of the die image.
-				if(x > game.DIE_X && x < game.DIE_X + game.DIE_WIDTH
-						&& y > game.DIE_Y && y < game.DIE_Y + game.DIE_HEIGHT){
-					game.setMouseClickMessage("DIE");
-					return;
-				}
-				else{
-					//if in the range of the board itself
-					if(x >= 0 && x < Board.BOARD_WIDTH && y >= 0 && y < Board.BOARD_HEIGHT){
-						this.game.setEvent(e);
-					}
-				}
-				return;
+			this.game.setEvent(e);
+			return;
 		}
 
 		if(c.equals(this.gui.gameMenu)){

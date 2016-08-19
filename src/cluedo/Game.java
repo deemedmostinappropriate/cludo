@@ -1,6 +1,8 @@
 package cluedo;
 
+import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -81,6 +83,8 @@ public class Game{
 	private int diceroll = 0;
 	/** The index of the current player in the list of players. **/
 	private int currentPlayerIndex = 0;
+	/** A list of points containing drawing positions of squares the player can walk to.**/
+	private List<Point> traversableSquares;
 
 
 
@@ -341,7 +345,7 @@ public class Game{
 			Character character = currentPlayer.getCharacter(); // the character piece being moved.
 			this.listener.changeLabel("\t" + this.currentPlayer.PLAYER_NAME + "("+ character.ABBREV +"), move with WASD. You have "+this.diceroll+"moves left.");
 
-			showTraversableSquares();
+			findTraversableSquares();	//finds squares which the player can move the character to.
 
 			// loops until the player has made a move or an accusation
 			while(!actionMade){
@@ -360,6 +364,7 @@ public class Game{
 					actionMade = true;
 				}
 				this.mouseClickMessage = null;	// resets in case of "next turn" button pressed.
+				traversableSquares = null;	// resets the traversable squares.
 			}
 			if(currentPlayer == null)
 				return false;
@@ -458,11 +463,17 @@ public class Game{
 		//Player attempts to exit room.
 		outer:
 			while(!exitGood){
+
+
 				awaitResponse("eventObject");	// awaits a response from the player
-
-				chosenX = (this.event.getX())/(Board.SQ_WIDTH + 3);
-				chosenY = 24 -(this.event.getY() - gui.canvas.getY())/(Board.SQ_HEIGHT + 3)-1;
-
+				int x = event.getX();
+				int y = event.getY();
+				if(x < 0 || event.getX() >= Board.BOARD_WIDTH || y < 0 && y >= Board.BOARD_HEIGHT){
+					this.event = null;	//resets the event to await a new choice by the user.
+					continue;
+				}
+				chosenX = x /(Board.SQ_WIDTH + 3);
+				chosenY = 24 -(y - gui.canvas.getY())/(Board.SQ_HEIGHT + 3)-1;
 
 				switch(board.getBoard()[chosenY][chosenX]){
 				case 1:				// if the selected square is traversable --> loop
@@ -609,17 +620,17 @@ public class Game{
 							continue;	//prevents null pointer exception
 						if (c.equals(roomCard)) {
 							refutingPlayerName = otherPlayer.PLAYER_NAME;
-							refute = otherPlayer.PLAYER_NAME + "who has the "+c.toString()+" card";
+							refute = " who has the "+c.toString()+" card";
 							p.learn(c);
 							break outside;
 						} else if (c.equals(characterCard)) {
 							refutingPlayerName = otherPlayer.PLAYER_NAME;
-							refute = otherPlayer.PLAYER_NAME + "who has the "+c.toString()+" card";
+							refute = " who has the "+c.toString()+" card";
 							p.learn(c);
 							break outside;
 						} else if (c.equals(weaponCard)){
 							refutingPlayerName = otherPlayer.PLAYER_NAME;
-							refute = otherPlayer.PLAYER_NAME + "who has the "+c.toString()+" card";
+							refute = " who has the "+c.toString()+" card";
 							p.learn(c);
 							break outside;
 						}
@@ -833,13 +844,24 @@ public class Game{
 	/**
 	 * Returns a random number between 1 and 6 for use as a dice roll. Requires
 	 * user input.
-	 *
 	 * @return An random integer between 1 and 6.
 	 */
-	private int diceRoll() {
-		awaitResponse("click");
-		this.mouseClickMessage = null; // resets the event message.
-		return (int) (Math.random() * 6 + 1);
+	private int diceRoll(){
+		int chosenX = 0;
+		int chosenY = 0;
+		while(this.event == null){
+			this.event = null;	//resets the event in case of stray mouse click.
+			awaitResponse("eventObject");
+			chosenX = event.getX();
+			chosenY = event.getY();
+			if(chosenX > DIE_X && chosenX < DIE_X + DIE_WIDTH
+					&& chosenY > DIE_Y && chosenY < DIE_Y + DIE_HEIGHT){
+				this.event = null; // resets the event message.
+				return (int) (Math.random() * 6 + 1);
+			}
+			this.event = null; // resets the event message.
+		}
+		return 999;
 	}
 
 	/**
@@ -906,11 +928,50 @@ public class Game{
 		}
 		// draws the die
 		g.drawImage(this.board.getDieImage(this.diceroll), this.DIE_X, this.DIE_Y, this.DIE_WIDTH, this.DIE_HEIGHT, null);
+
+		g.setColor(Color.yellow);
+		// draws each traversable square in yellow
+		if(this.traversableSquares != null){
+			for(Point p : this.traversableSquares){
+				g.drawRect(p.x, p.y, this.board.SQ_WIDTH, this.board.SQ_HEIGHT);
+			}
+		}
+	}
+
+	/**
+	 * Finds all squares adjacent to the player's character which are traversable in one step.
+	 * The squares are added to traversableSquares as Points.
+	 * Assumes the current player is not equal to null.
+	 */
+	public void findTraversableSquares(){
+		this.traversableSquares = new ArrayList<>();
+		int x = currentPlayer.getCharacter().getX();
+		int y = currentPlayer.getCharacter().getY();
+
+		//left square
+		if(board.freeSquare(x-1, y))
+			this.traversableSquares.add(createPoint(x-1, y));
+		//right square
+		if(board.freeSquare(x+1, y))
+			this.traversableSquares.add(createPoint(x+1, y));
+		//top square
+		if(board.freeSquare(x, y+1))
+			this.traversableSquares.add(createPoint(x, y+1));
+		//bottom square
+		if(board.freeSquare(x, y-1))
+			this.traversableSquares.add(createPoint(x, y-1));
 	}
 
 
-	public void showTraversableSquares(){
-
+	/**
+	 * Creates a point based on the position of a square on the board.
+	 * @param X index of square
+	 * @param Y index of square
+	 * @return The point.
+	 */
+	private Point createPoint(int x, int y){
+		return new Point(x * (Board.PIECE_OFFSET + Board.SQ_WIDTH) + Board.PIECE_OFFSET,
+				(24 - y) * (Board.PIECE_OFFSET + Board.SQ_HEIGHT) + Board.PIECE_OFFSET);
 	}
 
 	/**

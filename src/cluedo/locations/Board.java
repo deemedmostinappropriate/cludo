@@ -545,4 +545,38 @@ public class Board {
 		return b;
 	}
 
+	/**
+	 * Checks whether a piece is blocked by another when moving to a particular position.
+	 * @param The Board.
+	 * @param The new x position
+	 * @param The new y position
+	 * @param x TODO
+	 * @param y TODO
+	 * @return True if the intended position has already been taken.
+	 */
+	public boolean blockedByCharacter(int x, int y){
+		//Checks whether another character is at the destination. If so, return false.
+		for(Character c : getCharacters()){
+			if(c.getY() == y && c.getX() == x)		// if player is moving
+				return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Finds whether a square is both valid to move to and is free
+	 * @param x position.
+	 * @param y position.
+	 * @return True if the square is both valid to move to and free.
+	 */
+	public boolean freeSquare(int x, int y){
+		//works out which squares are traversable
+		if(inRange(x, y)
+				&&  board[y][x] == 1
+				&& !blockedByCharacter(x,y)){	//left square
+			return true;
+		}
+		return false;
+	}
+
 }

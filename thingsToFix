@@ -22,8 +22,6 @@ change die image to index 0 upon room entry
 
 
 goals:
-message to choose accusation or suggestion not coming up
-finish turns
 jmenu
 next turn button: much better than a dialog
 tool tips
