@@ -11,6 +11,11 @@ import cluedo.locations.Room;
 import cluedo.pieces.Character;
 import cluedo.pieces.Weapon;
 
+/**
+ * Tests the Board of the cluedo game.
+ * @author aidandoak
+ *
+ */
 public class BoardTests {
 	Board board = new Board();
 	Character character = board.getCharacters().get(0);

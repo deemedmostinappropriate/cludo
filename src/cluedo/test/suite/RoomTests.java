@@ -11,6 +11,11 @@ import cluedo.locations.Room;
 import cluedo.pieces.Character;
 import cluedo.pieces.Weapon;
 
+/**
+ * Runs unit tests based on the Room class of the cluedo game.
+ * @author aidandoak
+ *
+ */
 public class RoomTests {
 	/*	Movement into room:
 		Player is on door square:

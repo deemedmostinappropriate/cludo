@@ -11,6 +11,11 @@ import cluedo.locations.Room;
 import cluedo.pieces.Character;
 import cluedo.pieces.Weapon;
 
+/**
+ * The Tests for Characters on the cluedo Board.
+ * @author aidandoak
+ *
+ */
 public class CharacterTests {
 
 	Board board = new Board();

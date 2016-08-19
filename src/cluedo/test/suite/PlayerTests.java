@@ -9,8 +9,12 @@ import cluedo.Player;
 import cluedo.locations.Board;
 import cluedo.locations.Room;
 import cluedo.pieces.Character;
-import cluedo.pieces.Weapon;
 
+/**
+ * Tests for the PLayer Class of the cluedo Game and associated .
+ * @author aidandoak
+ *
+ */
 public class PlayerTests {
 	Board board = new Board();
 	Character character = board.getCharacters().get(0);

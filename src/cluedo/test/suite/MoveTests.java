@@ -11,6 +11,12 @@ import cluedo.locations.Room;
 import cluedo.pieces.Character;
 import cluedo.pieces.Weapon;
 
+/**
+ * Test movement of the Player on the Board, and the character
+ * movement by extension.
+ * @author aidandoak
+ *
+ */
 public class MoveTests {
 	@Test
 	public void legalMoves() throws IOException{
