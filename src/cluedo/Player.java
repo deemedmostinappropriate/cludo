@@ -1,16 +1,10 @@
 package cluedo;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import cluedo.locations.Board;
 import cluedo.locations.Door;
 import cluedo.locations.Room;
 import cluedo.pieces.Card;
 import cluedo.pieces.Character;
-import cluedo.pieces.CharacterCard;
-import cluedo.pieces.RoomCard;
-import cluedo.pieces.Weapon;
-import cluedo.pieces.WeaponCard;
 
 /**
  * Stores all player data, including the cards they know about, their character, and their player number.
@@ -25,15 +19,6 @@ public class Player {
 	 * across all Player objects. */
 	private Card[] hand = null;
 
-	/** Room cards which the player has seen. **/
-	private List<RoomCard> knownRooms;
-
-	/** Character cards which the player has seen. **/
-	private List<CharacterCard> knownCharacters;
-
-	/** Weapon cards which the player has seen. **/
-	private List<WeaponCard> knownWeapons;
-
 	/** The player's name. */
 	public final String PLAYER_NAME;
 
@@ -44,35 +29,7 @@ public class Player {
 	 */
 	public Player(String name, Character character){
 		PLAYER_NAME = name;
-		this.knownRooms = new ArrayList<>();
-		this.knownCharacters = new ArrayList<>();
-		this.knownWeapons = new ArrayList<>();
 		this.character = character;
-	}
-
-
-	/**
-	 * Returns the list of known room cards
-	 * @return The list of room cardse
-	 */
-	public List<RoomCard> getKnownRooms() {
-		return knownRooms;
-	}
-
-	/**
-	 * Returns the list of known character cards
-	 * @return The list of character cards
-	 */
-	public List<CharacterCard> getKnownCharacters() {
-		return knownCharacters;
-	}
-
-	/**
-	 * Returns the list of known weapon cards
-	 * @return The list of weapon cards
-	 */
-	public List<WeaponCard> getKnownWeapons() {
-		return knownWeapons;
 	}
 
 	/**
@@ -111,31 +68,7 @@ public class Player {
 		if(hand == null)
 			throw new IllegalArgumentException("Null hand passed in");
 		this.hand = hand;
-		for(Card card: hand){
-			if(card != null)
-				learn(card);	//adds the card to the list of the player's known cards.
-		}
 	}
-
-	/**
-	 * Adds a new item to the sets of what the player knows regarding the murder.
-	 * @param An object that must be of type Room, Character, or Room.WEAPON.
-	 */
-	public void learn(Card card){
-		if(card instanceof RoomCard){
-			this.knownRooms.add((RoomCard)card);
-		}
-		else if(card instanceof CharacterCard){
-			this.knownCharacters.add((CharacterCard)card);
-		}
-		else if(card instanceof WeaponCard){
-			this.knownWeapons.add((WeaponCard)card);
-		}
-		else{
-			throw new IllegalArgumentException("Argument cannot be learnt by Player: Type incorrect");
-		}
-	}
-
 
 	/**
 	 * Moves the player's piece on the board.
@@ -205,24 +138,5 @@ public class Player {
 		character.setY(newY);
 		return true;
 	}
-
-	/**
-	 * Prints the cards that are known by the player.
-	 */
-	public void printKnownCards(){
-		System.out.printf("Character cards you have seen:\t");
-		for(Card c : this.knownCharacters)
-			System.out.printf("%s\t",c.toString());
-		System.out.println();
-		System.out.printf("Room cards you have seen:\t");
-		for(Card c : this.knownRooms)
-			System.out.printf("%s\t",c.toString());
-		System.out.println();
-		System.out.printf("Weapon cards you have seen:\t");
-		for(Card c : this.knownWeapons)
-			System.out.printf("%s\t", c.toString());
-		System.out.printf("\n\n");
-	}
-
 
 }

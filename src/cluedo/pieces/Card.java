@@ -22,10 +22,6 @@ public class Card{
 		this.name = name;
 	}
 
-	/**
-	 * Returns this card's image.
-	 * @return
-	 */
 	public BufferedImage getImage(){
 		return this.image;
 	}

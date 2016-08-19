@@ -4,20 +4,12 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
-
 import javax.swing.JOptionPane;
-
-import org.junit.experimental.theories.Theories;
-
 import cluedo.locations.Board;
 import cluedo.locations.Door;
 import cluedo.locations.Room;
@@ -44,7 +36,6 @@ public class Game{
 	/** A return from a mouse listener **/
 	private String mouseClickMessage = null;
 	/** A return from a mouse motion event listener **/
-	private String mousePosMessage = null;
 	/** A return from a key press event. **/
 	private char keyMessage = 'p';
 	/** Special messages only used in the case of an accusation or suggestion. **/
@@ -102,15 +93,15 @@ public class Game{
 
 
 		// Card drawing parameters defined.
-		CARD_HEIGHT = this.gui.WINDOW_HEIGHT - this.board.BOARD_HEIGHT - this.gui.BUTTON_PANEL_HEIGHT - this.gui.MENU_HEIGHT - 10; // 20> x <40
+		CARD_HEIGHT = this.gui.WINDOW_HEIGHT - Board.BOARD_HEIGHT - this.gui.BUTTON_PANEL_HEIGHT - this.gui.MENU_HEIGHT - 10; // 20> x <40
 		CARD_WIDTH = this.gui.WINDOW_WIDTH / 8; // 8 = 6 cards in a hand + room  for die
 		CARD_X_ORIGIN = this.gui.WINDOW_WIDTH - this.gui.BORDER_OFFSET;
-		CARD_Y = this.board.BOARD_HEIGHT;
+		CARD_Y = Board.BOARD_HEIGHT;
 		// Die drawing parameters defined.
 		DIE_WIDTH = this.gui.WINDOW_WIDTH / 5;
 		DIE_HEIGHT = this.gui.WINDOW_HEIGHT / 8;
 		DIE_X = 5;
-		DIE_Y = this.board.BOARD_HEIGHT + 5;
+		DIE_Y = Board.BOARD_HEIGHT + 5;
 
 		this.numPlayers = setNumPlayers(); // Determines the number of players in the game.
 		this.players = setupPlayers(); // Player enters their name
@@ -169,112 +160,54 @@ public class Game{
 		return players;
 	}
 
-	/**
-	 * Returns the game board
-	 *
-	 * @return
-	 */
 	public Board getBoard() {
 		return this.board;
 	}
 
-	/**
-	 * Returns the list of players.
-	 *
-	 * @return The list of players
-	 */
 	public List<Player> getPlayers() {
 		return this.players;
 	}
 
-	/**
-	 * Returns the player whose turn it is.
-	 *
-	 * @return The Player object.
-	 */
 	public Player getCurrentPlayer() {
 		return currentPlayer;
 	}
 
-	/**
-	 * Returns the character card from the solution.
-	 *
-	 * @return The character card.
-	 */
 	public Card getMurderer() {
 		return murderer;
 	}
 
-	/**
-	 * Returns the room card from the solution.
-	 *
-	 * @return The room card.
-	 */
 	public Card getMurderRoom() {
 		return murderRoom;
 	}
 
-	/**
-	 * Returns the weapon card from the solution.
-	 *
-	 * @return The weapon card.
-	 */
 	public Card getMurderWeapon() {
 		return murderWeapon;
 	}
 
-	/**
-	 * Sets the most recent message from an event listener
-	 * @param The  message
-	 */
 	public void setEventMessage(String message) {
 		this.eventMessage = message;
 	}
 
-	/**
-	 * Sets the value of teh mouse click event message, detailing where the mouse was clicked.
-	 * @param message
-	 */
 	public void setMouseClickMessage(String message){
 		this.mouseClickMessage = message;
 	}
 
-	/**
-	 * Sets the key message character to the given argument.
-	 * @param The character returned from a key press.
-	 */
 	public void setKeyMessage(char c) {
 		this.keyMessage = c;
 	}
 
-	/**
-	 * Sets the charSuggestionMessage field.
-	 * @param The new message value.
-	 */
 	public void setCharacterSuggestionMesssage(String s){
 		this.charSuggestionMessage = s;
 	}
 
-	/**
-	 * Sets the weaponSuggestionMessage field.
-	 * @param The new message value.
-	 */
 	public void setWeaponSuggestionMesssage(String s){
 		this.weaponSuggestionMessage = s;
 	}
 
-	/**
-	 * Sets the roomSuggestionMessage field.
-	 * @param The new message value.
-	 */
 	public void setRoomSuggestionMesssage(String s){
 		this.roomSuggestionMessage = s;
 	}
 
-	/**
-	 * Sets the event field.
-	 * @param A mouse event
-	 */
 	public void setEvent(MouseEvent e){
 		this.event = e;
 	}
@@ -300,9 +233,6 @@ public class Game{
 			this.diceroll = diceRoll(); 	// Roll dice and display result
 			this.gui.draw(); 				// draws the game so that dice is drawn
 
-			System.out.println("Player " + currentPlayer.PLAYER_NAME + "'s turn (" + currentPlayer.getCharacter().ABBREV + "): ");
-			currentPlayer.printKnownCards();// print out list of cards player knows about
-
 			// Display and process move options if on a traversable board square:
 			if (currentPlayer.getCharacterLocation() == null) {
 				roomEntered = doMovementTurn();	// process player character movement
@@ -317,7 +247,6 @@ public class Game{
 				//If moved out of room via stairs
 				if(currentPlayer.getCharacterLocation() != null){
 					doRoomEntry();
-
 				}
 				else{
 					roomEntered = doMovementTurn();
@@ -326,8 +255,6 @@ public class Game{
 			}
 			updateCurrentPlayer();
 		}
-		// Display the winner and close game elements
-		System.out.printf("Congratulations Player %s, you have won the game!\n", this.players.get(0).PLAYER_NAME);
 	}
 
 
@@ -496,84 +423,82 @@ public class Game{
 	private void doRoomTurn(Room currentRoom) {
 		Character character = currentPlayer.getCharacter();
 		int chosenX = 0, chosenY = 0;
-		int xDest = 0, yDest = 0;
 		boolean exitGood = false;	//true if the exit has been found valid
 		Door exit = null; // Pull coordinates from the door player is leaving from.
 
 		this.listener.changeLabel(currentPlayer.PLAYER_NAME +"("+character.ABBREV+"), exit the room via a door or staircase.");//tells player to click a door or staircase to exit
 		//Player attempts to exit room.
-		outer:
-			while(!exitGood){
+		while(!exitGood){
 
 
-				awaitResponse("eventObject");	// awaits a response from the player
-				int x = event.getX();
-				int y = event.getY();
-				// loops if click not in board limits
-				if(x < 0 || event.getX() >= Board.BOARD_WIDTH || y < 0 && y >= Board.BOARD_HEIGHT){
-					this.event = null;	//resets the event to await a new choice by the user.
-					continue;
-				}
-				// finds indexes of click
-				chosenX = findSquareXFromPoint(x);
-				chosenY = findSquareYFromPoint(y);
+			awaitResponse("eventObject");	// awaits a response from the player
+			int x = event.getX();
+			int y = event.getY();
+			// loops if click not in board limits
+			if(x < 0 || event.getX() >= Board.BOARD_WIDTH || y < 0 && y >= Board.BOARD_HEIGHT){
+				this.event = null;	//resets the event to await a new choice by the user.
+				continue;
+			}
+			// finds indexes of click
+			chosenX = findSquareXFromPoint(x);
+			chosenY = findSquareYFromPoint(y);
 
-				switch(board.getBoard()[chosenY][chosenX]){
-				case 1:				// if the selected square is traversable --> loop
-					this.event = null;
-					continue;
-				case 3:				// selected square is a staircase
-					//Does the room event have a staircase
-					if(currentRoom.getStairs() == null)
-						continue;							// no staircase found
+			switch(board.getBoard()[chosenY][chosenX]){
+			case 1:				// if the selected square is traversable --> loop
+				this.event = null;
+				continue;
+			case 3:				// selected square is a staircase
+				//Does the room event have a staircase
+				if(currentRoom.getStairs() == null)
+					continue;							// no staircase found
 
-					String roomName = currentRoom.NAME;
-					// Checks that staircase is in the room, based on the name of the current room, and the index of the stairs in that room.
-					if((roomName.equals("KITCHEN") && chosenX ==  5 && chosenY == 23)
-							||(roomName.equals("CONSERVATORY") && chosenX ==  23 && chosenY == 19)
-							||(roomName.equals("LOUNGE") && chosenX == 0 && chosenY == 5)
-							||(roomName.equals("STUDY") && chosenX == 23 && chosenY == 3)){
-						exitGood = true;
-					}
-
-					if(exitGood){
-						board.changeCharacterRoom(character, currentRoom.getStairs()); // Moves the character to the room at the other end of the stairs.
-						this.diceroll = 0;
-
-					}
-					else{
-						this.event = null;
-						continue;
-					}
-					break;
-				default:
-					//Gets the door adjacent to the square
-					if(board.getDoor(chosenX, chosenY +1) != null){
-						exit = board.getDoor(chosenX, chosenY +1);
-					}
-					else if(board.getDoor(chosenX, chosenY -1) != null){
-						exit = board.getDoor(chosenX, chosenY -1);
-					}
-					else if(board.getDoor(chosenX -1, chosenY) != null){
-						exit = board.getDoor(chosenX -1, chosenY);
-					}
-					else if(board.getDoor(chosenX +1, chosenY) != null){
-						exit = board.getDoor(chosenX +1, chosenY);
-					}
-
-					//check the door belongs to the current room.
-					if(!currentRoom.getDoors().contains(exit)){
-						exit = null;
-						continue;
-					}
-					// Move the player character to the coordinates of the chosen door:
-					board.changeCharacterRoom(character, null);
-					character.setX(exit.getX());
-					character.setY(exit.getY());
-					--this.diceroll;
+				String roomName = currentRoom.NAME;
+				// Checks that staircase is in the room, based on the name of the current room, and the index of the stairs in that room.
+				if((roomName.equals("KITCHEN") && chosenX ==  5 && chosenY == 23)
+						||(roomName.equals("CONSERVATORY") && chosenX ==  23 && chosenY == 19)
+						||(roomName.equals("LOUNGE") && chosenX == 0 && chosenY == 5)
+						||(roomName.equals("STUDY") && chosenX == 23 && chosenY == 3)){
 					exitGood = true;
 				}
+
+				if(exitGood){
+					board.changeCharacterRoom(character, currentRoom.getStairs()); // Moves the character to the room at the other end of the stairs.
+					this.diceroll = 0;
+
+				}
+				else{
+					this.event = null;
+					continue;
+				}
+				break;
+			default:
+				//Gets the door adjacent to the square
+				if(board.getDoor(chosenX, chosenY +1) != null){
+					exit = board.getDoor(chosenX, chosenY +1);
+				}
+				else if(board.getDoor(chosenX, chosenY -1) != null){
+					exit = board.getDoor(chosenX, chosenY -1);
+				}
+				else if(board.getDoor(chosenX -1, chosenY) != null){
+					exit = board.getDoor(chosenX -1, chosenY);
+				}
+				else if(board.getDoor(chosenX +1, chosenY) != null){
+					exit = board.getDoor(chosenX +1, chosenY);
+				}
+
+				//check the door belongs to the current room.
+				if(!currentRoom.getDoors().contains(exit)){
+					exit = null;
+					continue;
+				}
+				// Move the player character to the coordinates of the chosen door:
+				board.changeCharacterRoom(character, null);
+				character.setX(exit.getX());
+				character.setY(exit.getY());
+				--this.diceroll;
+				exitGood = true;
 			}
+		}
 		this.mouseClickMessage = null;	//resets the mouse click message
 		this.event = null;	//resets the event object.
 		this.gui.draw(); // draws the board
@@ -654,7 +579,6 @@ public class Game{
 		board.changeWeaponRoom(weapon, room);
 
 		this.gui.draw(); // draws the board to show character and weapon in new room
-		String s = null;
 		// Check for a player to refute this suggestion.
 		outside:
 			for (int i = 0; i < this.players.size(); i++) {
@@ -666,17 +590,14 @@ public class Game{
 						if (c.equals(roomCard)) {
 							refutingPlayerName = otherPlayer.PLAYER_NAME;
 							refute = " who has the "+c.toString()+" card";
-							p.learn(c);
 							break outside;
 						} else if (c.equals(characterCard)) {
 							refutingPlayerName = otherPlayer.PLAYER_NAME;
 							refute = " who has the "+c.toString()+" card";
-							p.learn(c);
 							break outside;
 						} else if (c.equals(weaponCard)){
 							refutingPlayerName = otherPlayer.PLAYER_NAME;
 							refute = " who has the "+c.toString()+" card";
-							p.learn(c);
 							break outside;
 						}
 					}
@@ -855,9 +776,6 @@ public class Game{
 
 			for (index = 0; index < hands.length && master.size() > 0; index++) {
 				mIndex = (int) (Math.random() * master.size());
-
-				System.out.println(master.get(mIndex));
-
 				hands[index][handIndex] = master.get(mIndex); // adds a random card to hand i.
 				master.remove(mIndex); // prevents the same card being dealt twice
 			}
@@ -978,7 +896,7 @@ public class Game{
 		// draws each traversable square in yellow
 		if(this.traversableSquares != null){
 			for(Point p : this.traversableSquares){
-				g.drawRect(p.x, p.y, this.board.SQ_WIDTH, this.board.SQ_HEIGHT);
+				g.drawRect(p.x, p.y, Board.SQ_WIDTH, Board.SQ_HEIGHT);
 			}
 		}
 	}
