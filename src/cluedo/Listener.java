@@ -132,7 +132,12 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		this.game.doToolTip(e.getX(),e.getY());
-
+		
+		if(e.getX() < game.CARD_X_ORIGIN && e.getY() < game.CARD_Y
+				&& e.getX() > gui.WINDOW_WIDTH && e.getY() > gui.WINDOW_HEIGHT){
+			System.err.println("here");
+			game.drawHiddenHand(gui.getGraphics());
+		}
 	}
 
 	@Override

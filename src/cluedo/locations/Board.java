@@ -95,7 +95,7 @@ public class Board {
 		this.rooms.add(new Room("DINING_ROOM", new int[]{0,1,2,3,4,5}, new int[]{10,10,10,10,10,10}, new int[]{0,1,2,3,4,0}, new int[]{14,14,14,14,14,14}));
 		Room kitchen = new Room("KITCHEN", new int[]{1,2,3,1,2,3}, new int[]{19,19,19,20,20,20}, new int[]{0,1,2,3,4,0}, new int[]{23,23,23,23,23,22});
 		this.rooms.add(kitchen);
-		this.rooms.add(new Room("BALL_ROOM", new int[]{13,14,15,16,13,14}, new int[]{20,20,20,20,21,21}, new int[]{13,14,15,16,13,14}, new int[]{18,18,18,19,19,19}));
+		this.rooms.add(new Room("BALL_ROOM", new int[]{13,14,15,16,13,14}, new int[]{21,21,21,21,20,20}, new int[]{11,12,13,14,11,12}, new int[]{18,18,18,18,17,17}));
 		Room conservatory = new Room("CONSERVATORY", new int[]{19,19,19,20,20,20}, new int[]{21,22,23,21,22,23}, new int[]{21,21,21,22,22,22}, new int[]{21,22,23,21,22,23});
 		this.rooms.add(conservatory);
 		this.rooms.add(new Room("BILLIARD_ROOM", new int[]{19,19,19,20,20,20}, new int[]{13,14,15,13,14,15}, new int[]{21,21,21,22,22,22}, new int[]{13,14,15,13,14,15}));

@@ -58,7 +58,7 @@ public class Game{
 	public final int CARD_HEIGHT, CARD_WIDTH;
 	/** Bottom right corner of the GUI canvas. **/
 	public final int CARD_X_ORIGIN;
-	/** Y coordinate forr drawing cards. **/
+	/** Y coordinate for drawing cards. **/
 	public final int CARD_Y;
 	/** The width and height of the game die. **/
 	public final int DIE_WIDTH, DIE_HEIGHT;
@@ -967,6 +967,7 @@ public class Game{
 	}
 
 
+
 	/**
 	 * Creates a point based on the position of a square on the board.
 	 * @param X index of square
@@ -976,6 +977,18 @@ public class Game{
 	private Point createPoint(int x, int y){
 		return new Point(x * (Board.PIECE_OFFSET + Board.SQ_WIDTH) + Board.PIECE_OFFSET,
 				(24 - y) * (Board.PIECE_OFFSET + Board.SQ_HEIGHT) + Board.PIECE_OFFSET);
+	}
+	
+	/**
+	 * Draws a rectangle over the players hand on the gui. This is meant
+	 * to not be drawn when the mouse is over the cards.
+	 * @param g
+	 */
+	public void drawHiddenHand(Graphics g){
+		this.draw(g);
+		
+		g.drawRect(CARD_X_ORIGIN, CARD_Y, CARD_WIDTH * currentPlayer.getHand().length, CARD_HEIGHT);
+
 	}
 
 	/**
