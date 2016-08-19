@@ -21,5 +21,5 @@ import org.junit.runners.Suite;
 	MoveTests.class
 })
 public class CluedoTestSuite {
-
+	
 }

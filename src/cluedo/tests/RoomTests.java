@@ -16,10 +16,13 @@ public class RoomTests {
 		Player is on door square:
 		if player direction is door's direction,
 		then room contains player. */
+	Board board = new Board();
+	Room room = board.getRooms().get(0);
+
 
 	@Test
 	public void legalRoomTests() throws IOException{
-		Board board = new Board();
+		board = new Board();
 		Character character = board.getCharacters().get(0);
 		Player player = new Player(null , character);
 
@@ -35,7 +38,7 @@ public class RoomTests {
 	
 	@Test
 	public void gameChangeCharacterRoomTests(){
-		Board board = new Board();
+		board = new Board();
 		Character character = board.getCharacters().get(0);
 
 		try{
@@ -49,32 +52,34 @@ public class RoomTests {
 	}
 	
 	@Test
-	public void roomTests(){
-		Board board = new Board();
-
-		Room room = board.getRooms().get(0);
-		//addWeapon
+	public void testAddNullWeapon(){
 		try{
 			room.addWeapon(null); 		// null weapon
 			fail();
 		}catch(IllegalArgumentException e){}
 
 		try{
-			room.addWeapon(null); 	//weapon already contained in room
+			room.addWeapon(null); 		//weapon already contained in room
 			fail();
 		}catch(IllegalArgumentException e){}
-
-		//addDoor
+	}
+	
+	
+	@Test
+	public void testAddNullDoor(){
 		try{
 			room.addDoor(null); 		// null door
 			fail();
 		}catch(IllegalArgumentException e){}
 
 		try{
-			room.addDoor(null); 	//door already contained in room
+			room.addDoor(null); 		// door already contained in room
 			fail();
 		}catch(IllegalArgumentException e){}
-
+	}
+	
+	@Test
+	public void addNullCharacter(){
 		//addCharacter
 		try{
 			room.addCharacter(null); 		// null character
@@ -85,13 +90,19 @@ public class RoomTests {
 			room.addCharacter(null); 	//character already contained in room
 			fail();
 		}catch(IllegalArgumentException e){} // should be ok.
-
+	}
+	
+	@Test
+	public void testRemoveNullWeaponFromRoom_1(){
 		// removeWeapon
 		try{
 			room.removeWeapon(null); 		// null weapon
 			fail();
 		}catch(IllegalArgumentException e){}
-
+	}
+	
+	@Test
+	public void testRemoveNullWeaponFromRoom_2(){
 		Weapon w = new Weapon(null, null);
 		try{
 			room.removeWeapon(w); 	// loop is prep for next one.
@@ -100,13 +111,18 @@ public class RoomTests {
 			room.removeWeapon(w);
 			fail();
 		}catch(IllegalArgumentException e){}	//should throw
-
-		// removeCharacter
+	}
+	
+	@Test
+	public void testRemoveNullCharacterFromRoom_1(){
 		try{
 			room.removeCharacter(null); 		// null character
 			fail();
 		}catch(IllegalArgumentException e){}
-
+	}
+	
+	@Test
+	public void testRemoveNullCharacterFromRoom_2(){
 		Character c = board.getCharacters().get(0);
 		try{
 			room.removeCharacter(c);// loop is prep for next one.
@@ -119,7 +135,7 @@ public class RoomTests {
 
 	@Test
 	public void illegalRoomTests()throws IOException {
-		Board board = new Board();
+		board = new Board();
 		Character character = board.getCharacters().get(0);
 		Player player = new Player(null , character);
 
