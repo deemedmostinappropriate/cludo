@@ -583,6 +583,8 @@ public class Game{
 	 * Processes the part of the turn where a player enters a room.
 	 */
 	private void doRoomEntry() {
+		this.diceroll = 0; // Forces the image of the die to display from index 0 of the array.
+		this.gui.draw(); //redraws the game
 		List<Object> list = new ArrayList<>();
 		list.add("Suggestion");
 		list.add("Accusation");
