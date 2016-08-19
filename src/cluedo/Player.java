@@ -190,6 +190,13 @@ public class Player {
 				return true;
 			}
 		}
+
+		//Checks whether another character is at the destination. If so, return false.
+			for(Character c : board.getCharacters()){
+				if(c.getY() == newY && c.getX() == newX)		// if player is moving
+					return false;
+			}
+
 		// False if the square is non-traversable:
 		if(!board.inRange(newX, newY)
 				|| traversable[newY][newX] != 1){

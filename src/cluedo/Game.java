@@ -341,6 +341,8 @@ public class Game{
 			Character character = currentPlayer.getCharacter(); // the character piece being moved.
 			this.listener.changeLabel("\t" + this.currentPlayer.PLAYER_NAME + "("+ character.ABBREV +"), move with WASD. You have "+this.diceroll+"moves left.");
 
+			showTraversableSquares();
+
 			// loops until the player has made a move or an accusation
 			while(!actionMade){
 				awaitResponse("movementOrAccusation");		//awaits a key press from the player. Can also result in an accusation
@@ -453,7 +455,7 @@ public class Game{
 		Door exit = null; // Pull coordinates from the door player is leaving from.
 
 		this.listener.changeLabel(currentPlayer.PLAYER_NAME +"("+character.ABBREV+"), exit the room via a door or staircase.");//tells player to click a door or staircase to exit
-
+		//Player attempts to exit room.
 		outer:
 			while(!exitGood){
 				awaitResponse("eventObject");	// awaits a response from the player
@@ -907,6 +909,9 @@ public class Game{
 	}
 
 
+	public void showTraversableSquares(){
+
+	}
 
 	/**
 	 * /** Displays a message over the selected square.
