@@ -343,7 +343,7 @@ public class Game{
 
 		while (this.diceroll > 0) {
 			Character character = currentPlayer.getCharacter(); // the character piece being moved.
-			this.listener.changeLabel("\t" + this.currentPlayer.PLAYER_NAME + "("+ character.ABBREV +"), move with WASD. You have "+this.diceroll+"moves left.");
+			this.listener.changeLabel(this.currentPlayer.PLAYER_NAME + "("+ character.ABBREV +"),click to move or use WASD keys.");
 
 			findTraversableSquares();	//finds squares which the player can move the character to.
 
@@ -355,7 +355,7 @@ public class Game{
 					actionMade = true;
 					keyMessage = 'p';		//resets key message for future steps
 				}
-				else if(this.mouseClickMessage.equals("Make Accusation")){
+				else if(this.mouseClickMessage != null && this.mouseClickMessage.equals("Make Accusation")){
 					// accusation path
 					this.mouseClickMessage = null;		// resets event message after accusation button selection.
 					// asks the player if they mean to make an accusation, and processes it if they do.
@@ -364,7 +364,13 @@ public class Game{
 					actionMade = true;
 				}else if(this.event != null){
 					//for mouse click on adjacent square
-
+					int x = findSquareXFromPoint(this.event.getX());
+					int y = findSquareYFromPoint(this.event.getY());
+					// If the square clicked on is free, moves the player
+					if(board.freeSquare(x,y)){
+						doStep(x,y);
+						actionMade = true;
+					}
 				}
 				this.event = null;			//resets the mouse event field.
 				this.mouseClickMessage = null;	// resets in case of "next turn" button pressed.
@@ -432,6 +438,37 @@ public class Game{
 	}
 
 	/**
+	 * Moves the player's character one step if able, after deciding direction of movement.
+	 * For use with event message.
+	 */
+	private void doStep(int x, int y){
+		Character character = currentPlayer.getCharacter();
+		char dir;
+		//Computes direction of movement.
+		if(x > character.getX()){
+			dir = 'd';
+		}
+		else if(x < character.getX()){
+			dir = 'a';
+		}
+		else if(y > character.getY()){
+			dir = 'w';
+		}
+		else {
+			dir = 's';
+		}
+
+
+		// Move this players character based on the input char:
+		if (currentPlayer.move(dir, board)){
+			--this.diceroll; // Take away from remaining moves:
+			this.gui.draw(); // draws the board with the character moved to new location.
+		}else{
+			this.listener.changeLabel("        You cannot walk in that direction");//notify player that they cannot walk in the specified direction
+		}
+	}
+
+	/**
 	 * Asks the player if they mean to make an accusation, and processes it if they do.
 	 * @return Returns true if the player made an accusation
 	 */
@@ -472,12 +509,14 @@ public class Game{
 				awaitResponse("eventObject");	// awaits a response from the player
 				int x = event.getX();
 				int y = event.getY();
+				// loops if click not in board limits
 				if(x < 0 || event.getX() >= Board.BOARD_WIDTH || y < 0 && y >= Board.BOARD_HEIGHT){
 					this.event = null;	//resets the event to await a new choice by the user.
 					continue;
 				}
-				chosenX = x /(Board.SQ_WIDTH + 3);
-				chosenY = 24 -(y - gui.canvas.getY())/(Board.SQ_HEIGHT + 3)-1;
+				// finds indexes of click
+				chosenX = findSquareXFromPoint(x);
+				chosenY = findSquareYFromPoint(y);
 
 				switch(board.getBoard()[chosenY][chosenX]){
 				case 1:				// if the selected square is traversable --> loop
@@ -853,8 +892,8 @@ public class Game{
 	private int diceRoll(){
 		int chosenX = 0;
 		int chosenY = 0;
+		this.event = null;	//resets the event in case of stray mouse click.
 		while(this.event == null){
-			this.event = null;	//resets the event in case of stray mouse click.
 			awaitResponse("eventObject");
 			chosenX = event.getX();
 			chosenY = event.getY();
@@ -964,6 +1003,24 @@ public class Game{
 		//bottom square
 		if(board.freeSquare(x, y-1))
 			this.traversableSquares.add(createPoint(x, y-1));
+	}
+
+	/**
+	 * Finds the x index on the board relative to the given x coordinate.
+	 * @param The x coordinate
+	 * @return The index
+	 */
+	public int findSquareXFromPoint(int x){
+		return x /(Board.SQ_WIDTH + 3);
+	}
+
+	/**
+	 * Finds the y index on the board relative to the given y coordinate.
+	 * @param The y coordinate
+	 * @return The index
+	 */
+	public int findSquareYFromPoint(int y){
+		return 24 -(y - this.gui.canvas.getY())/(Board.SQ_HEIGHT + 3)-1;
 	}
 
 
