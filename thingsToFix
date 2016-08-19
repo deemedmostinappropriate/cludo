@@ -4,13 +4,9 @@ TODO: test all doors: in and out
 	test accessing wrong doors
 
 
+movement turn ending in room -> accusation_> yes, ends turn
 
-watch out for
-on suggestion continue: weapon cards out of bound at index 5. size should be 6
-sometimes on door exit, player moves 2 spaces
-door exit from dining room(right) spawns char 1 square above door
-next player turn skipped after another player suggests(standard end turn or accuse message)
-char b has been moved to room by char a's suggestion: on char b's turn(which is next), they get " you may now  end your turn or make an accusation"
+
 
 
 helpful things to do:

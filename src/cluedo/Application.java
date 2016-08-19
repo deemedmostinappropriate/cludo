@@ -7,13 +7,7 @@ package cluedo;
 public class Application {
 
 	public static void main(String[] args){
-		newGame( new Application());
+		new Game();
 	}
 
-	/**
-	 * Creates a new game.
-	 */
-	public static void newGame(Application app){
-		new Game(app);
-	}
 }

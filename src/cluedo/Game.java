@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
+import javax.swing.JOptionPane;
+
 import org.junit.experimental.theories.Theories;
 
 import cluedo.locations.Board;
@@ -30,15 +32,11 @@ import cluedo.pieces.WeaponCard;
  * @author Daniel Anastasi
  *
  */
-public class Game extends Thread{
-	/** The greater application. **/
-	private Application app = null;
+public class Game{
 	/** The graphic user interface for this game. **/
 	private GUI gui;
 	/** A controller for event listening. **/
 	private Listener listener;
-	/** The game state. **/
-	private String gameState = null;
 	/** A return from an event listener **/
 	private String eventMessage = null;
 	/** A return from a mouse listener **/
@@ -53,8 +51,6 @@ public class Game extends Thread{
 	private boolean buttonRegistered = false;
 	/** For events where game requires more information. **/
 	private MouseEvent event;
-	/** A message exclusively for the termination of the application. Prevent logic mixup when sharing message variables.**/
-	private String terminationMessage = null;
 
 	/** Card height, width for drawing. **/
 	public final int CARD_HEIGHT, CARD_WIDTH;
@@ -88,9 +84,7 @@ public class Game extends Thread{
 
 
 
-	public <T> Game(Application app) {
-		this.app = app;
-		this.gameState = "PLAYING";
+	public <T> Game() {
 		this.players = new ArrayList<>(); // prevents null pointer exception, do not remove.
 		this.board = new Board();// Set up board
 		this.gui = new GUI("CLUEDO", this);
@@ -99,6 +93,9 @@ public class Game extends Thread{
 		// updates the gui's comboboxes with object lists and titles
 		this.gui.setComboBoxItems((List<T>)this.board.getCharacters(), (List<T>)this.board.getRooms(), (List<T>)this.board.getWeapons(),
 				"Characters", "Rooms", "Weapons");
+
+		//JOptionPane.showMessageDialog(gui, "A basic JOptionPane message dialog");
+
 
 		// Card drawing parameters defined.
 		CARD_HEIGHT = this.gui.WINDOW_HEIGHT - this.board.BOARD_HEIGHT - this.gui.BUTTON_PANEL_HEIGHT - this.gui.MENU_HEIGHT - 10; // 20> x <40
@@ -116,7 +113,7 @@ public class Game extends Thread{
 		assignCards(); // Assigns all cards in the game.
 
 
-		this.start();	//starts this thread.
+		run();	//starts this game
 	}
 
 	/**
@@ -279,14 +276,6 @@ public class Game extends Thread{
 	}
 
 	/**
-	 * Sets the terminationMessage field.
-	 * @param The event String.
-	 */
-	public void setTerminationMessage(String s){
-		this.terminationMessage = s;
-	}
-
-	/**
 	 * Runs the game loop.
 	 *
 	 * @param The
@@ -298,7 +287,7 @@ public class Game extends Thread{
 		currentPlayer = players.get(startingPlayer);
 
 		// The game loop.
-		while (players.size() > 1 && this.gameState.equals("PLAYING")) {
+		while (players.size() > 1) {
 			this.gui.draw(); 				// draws the board so that player's hand is displayed
 			boolean roomEntered = false; 	// Don't ask about leaving room if they have just entered:
 
@@ -333,9 +322,6 @@ public class Game extends Thread{
 			}
 			updateCurrentPlayer();
 		}
-		if (this.gameState.equals("NewGAME"))
-			Application.newGame(this.app); // starts a new game.
-
 		// Display the winner and close game elements
 		System.out.printf("Congratulations Player %s, you have won the game!\n", this.players.get(0).PLAYER_NAME);
 	}
@@ -350,7 +336,7 @@ public class Game extends Thread{
 	private <T> boolean doMovementTurn() {
 		boolean actionMade = false;
 		this.keyMessage = 'p';		// Resets the key press message.
-		
+
 		while (this.diceroll > 0) {
 			Character character = currentPlayer.getCharacter(); // the character piece being moved.
 			this.listener.changeLabel("\t" + this.currentPlayer.PLAYER_NAME + "("+ character.ABBREV +"), move with WASD. You have "+this.diceroll+"moves left.");
@@ -639,18 +625,12 @@ public class Game extends Thread{
 				}
 			}
 
-		this.gui.basicAlert("Suggestion Results!",
-				"",
-				this.currentPlayer.PLAYER_NAME + "suggests:",
-				"", "",
-				"It was "+ this.charSuggestionMessage,
-				"",
-				"in the "+ room.toString(),
-				"",
-				"with the "+this.weaponSuggestionMessage+".",
-				"",
-				"This has been refuted by "+ refutingPlayerName,
-				refute);
+		// Displays a message to the player detailing the content of the suggestion  and whether anyone refuted this.
+		JOptionPane.showMessageDialog(gui,
+				"\n"+this.currentPlayer.PLAYER_NAME + " suggests: \n\nIt was "+ this.charSuggestionMessage + "\nin the "+ room.toString() +
+				"\nwith the "+this.weaponSuggestionMessage+".\nThis has been refuted by "+ refutingPlayerName + refute,
+				"Suggestion Results!", JOptionPane.INFORMATION_MESSAGE);
+		this.eventMessage = null;
 	}
 
 	/**
@@ -668,33 +648,14 @@ public class Game extends Thread{
 
 		this.gui.accusationSelection("Make your accusation from the choices below.");		//requests choices from player
 		awaitResponse("event");
-
+		String result = null, playerName = this.currentPlayer.PLAYER_NAME;
 		if (!this.charSuggestionMessage.equals(this.murderer.toString())
 				|| !this.roomSuggestionMessage.equals(this.murderRoom.toString())
 				|| !this.weaponSuggestionMessage.equals(this.murderWeapon.toString())) {
 
 			this.players.remove(this.currentPlayer); // removes the current player from the game.
 
-
-			System.out.printf("Player %s has guessed incorrectly, and is out of the game!\n", this.currentPlayer.PLAYER_NAME);
-			awaitResponse("event");
-			// displays results to player
-			this.gui.basicAlert("Accusation Results!",
-					"",
-					this.currentPlayer.PLAYER_NAME +" has guessed:",
-					"",
-					"It was",
-					this.charSuggestionMessage,
-					"",
-					"in the",
-					this.roomSuggestionMessage,
-					"",
-					"with the ",
-					this.weaponSuggestionMessage + ".",
-					"","","",
-					this.currentPlayer.PLAYER_NAME,
-					"You have guessed incorrectly",
-					"and are out of the game.");	//display choices and result in jdialog
+			result = "You have guessed incorrectly and are out of the game.";
 			gameWon = false;
 			this.currentPlayer = null;				//sets the current player to null, to remove all reference to this losing player
 		} else{
@@ -703,25 +664,15 @@ public class Game extends Thread{
 				if(!other.equals(this.currentPlayer))
 					this.players.remove(this.currentPlayer);
 			}
-			//display choices and result in jdialog
-			this.gui.basicAlert("Accusation Results!",
-					"",
-					this.currentPlayer.PLAYER_NAME +" has guessed:",
-					"",
-					"It was",
-					this.charSuggestionMessage,
-					"",
-					"in the",
-					this.roomSuggestionMessage,
-					"",
-					"with the ",
-					this.weaponSuggestionMessage + ".",
-					"","","",
-					this.currentPlayer.PLAYER_NAME,
-					"You have guessed correctly!",
-					"Congratulations! You have won the game!");	//display choices and result in jdialog
+			result = "Congratulations! You have won the game!";
 			gameWon = true;
 		}
+
+		// Displays a message to the player describing the resuls of the accusation.
+		JOptionPane.showMessageDialog(gui,
+				"\n"+playerName + " has guessed: \n\nIt was "+ this.charSuggestionMessage + "\nin the "+ roomSuggestionMessage +
+				"\nwith the "+this.weaponSuggestionMessage+".\n"+ result,
+				"Accusation Results!", JOptionPane.INFORMATION_MESSAGE);
 		//resets variables for later date.
 		this.charSuggestionMessage = null;
 		this.weaponSuggestionMessage = null;
@@ -734,7 +685,6 @@ public class Game extends Thread{
 	 * Pauses gameplay while waiting for a player response.
 	 */
 	public void awaitResponse(String type) {
-		/*
 		if(type.equals("event")){
 			while (this.eventMessage == null) {
 				try {
@@ -742,46 +692,7 @@ public class Game extends Thread{
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				if(buttonRegistered)
-					return;
-			}
-		}
-		else if(type.equals("movementOrAccusation")){
-			while(this.keyMessage == 'p' && this.mouseClickMessage == null) {
-				try {
-					TimeUnit.MILLISECONDS.sleep(50);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		else if(type.equals("click")){
-			while (this.mouseClickMessage == null) {
-				try {
-					TimeUnit.MILLISECONDS.sleep(50);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		else if(type.equals("eventObject")){
-			while (this.event == null) {
-				try {
-					TimeUnit.MILLISECONDS.sleep(50);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		*/
 
-		if(type.equals("event")){
-			while (this.eventMessage == null) {
-				try {
-					this.sleep(50);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
 				if(buttonRegistered)
 					return;
 			}
@@ -789,7 +700,7 @@ public class Game extends Thread{
 		else if(type.equals("movementOrAccusation")){
 			while(this.keyMessage == 'p' && this.mouseClickMessage == null) {
 				try {
-					this.sleep(50);
+					TimeUnit.MILLISECONDS.sleep(50);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -798,21 +709,22 @@ public class Game extends Thread{
 		else if(type.equals("click")){
 			while (this.mouseClickMessage == null) {
 				try {
-					this.sleep(50);
+					TimeUnit.MILLISECONDS.sleep(50);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
 		}
 		else if(type.equals("eventObject")){
-			while (this.event == null) {
+			while(this.event == null) {
 				try {
-					this.sleep(50);
+					TimeUnit.MILLISECONDS.sleep(50);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
 		}
+
 
 	}
 
@@ -883,7 +795,7 @@ public class Game extends Thread{
 		// Iterates over each hand, dealing a card until all cards are dealt
 		while (master.size() > 0) {
 
-			for (index = 0; index < hands.length; index++) {
+			for (index = 0; index < hands.length && master.size() > 0; index++) {
 				mIndex = (int) (Math.random() * master.size());
 
 				System.out.println(master.get(mIndex));
@@ -994,26 +906,7 @@ public class Game extends Thread{
 		g.drawImage(this.board.getDieImage(this.diceroll), this.DIE_X, this.DIE_Y, this.DIE_WIDTH, this.DIE_HEIGHT, null);
 	}
 
-	/**
-	 * Closes the application.
-	 */
-	public void closeApplication(){
 
-		System.exit(0);
-
-		// the same with a player prompt: Requires thread management.
-		/*
-		this.gui.closeGuiDialog("Are you sure you want to exit?");
-		awaitResponse("event");
-		if(this.terminationMessage.equals("Yes")){
-			System.exit(0);	//exits application.
-
-		}
-		else{
-			this.terminationMessage = null;	//resets the message.
-		}*/
-
-	}
 
 	/**
 	 * /** Displays a message over the selected square.

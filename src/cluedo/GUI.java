@@ -58,7 +58,7 @@ public class GUI extends JFrame{
 	/** Game button for the menu**/
 	public final JMenu gameMenu;
 	/** Items for the game menu. **/
-	public final JMenuItem newGameItem, exitItem;
+	public final JMenuItem exitItem;
 	/** Button to roll dice.**/
 	public final JButton accusation;
 	/** Button to end a turn.**/
@@ -76,7 +76,7 @@ public class GUI extends JFrame{
 	public GUI(String appName, Game game){
 		super(appName);
 
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setLayout(new BorderLayout());
 		//Sets up menu
 		this.menuBar = new JMenuBar();
@@ -85,9 +85,7 @@ public class GUI extends JFrame{
 		this.gameMenu = new JMenu("Game");
 		this.gameMenu.setFocusable(false);
 		this.menuBar.add(this.gameMenu);
-		this.newGameItem = new JMenuItem("New Game");
 		this.exitItem = new JMenuItem("Exit");
-		this.gameMenu.add(newGameItem);		//adds new game item to the game menu
 		this.gameMenu.add(exitItem);		//adds exit item to the game menu
 		//Jbuttons
 		this.accusation = new JButton("Make Accusation");
@@ -145,13 +143,13 @@ public class GUI extends JFrame{
 		if(this.listener != null)
 			return;
 		this.listener = l;
+		this.addWindowListener(l);
 		this.canvas.addMouseListener(l);	//adds the listener to the canvas
 		this.addKeyListener(l);
 		this.accusation.addMouseListener(this.listener);
 		this.nextTurn.addMouseListener(this.listener);
 		this.continueButton.addActionListener(listener);
 		this.gameMenu.addMouseListener(this.listener);
-		this.newGameItem.addActionListener(this.listener);
 		this.exitItem.addActionListener(this.listener);
 	}
 
@@ -268,29 +266,6 @@ public class GUI extends JFrame{
 	}
 
 	/**
-	 * Displays a dialog with a title and two JButtons
-	 * @param The String title
-	 */
-	public void closeGuiDialog(String title){
-		this.dialog= basicDialog(title);
-		JPanel panel = new JPanel();
-		panel.setLayout(new FlowLayout());
-		JButton yesButton = new JButton("Yes");
-		JButton noButton = new JButton("No");
-		yesButton.addActionListener(listener);
-		noButton.addActionListener(listener);
-		panel.add(yesButton);
-		panel.add(noButton);
-		yesButton.setVisible(true);
-		noButton.setVisible(true);
-		this.dialog.add(panel);
-		fitDialogToTitle();	//fits the dialog width to fit its title.
-		this.dialog.pack();
-
-
-	}
-
-	/**
 	 * Creates a JDialog window with a text field.
 	 * @param string
 	 */
@@ -299,28 +274,6 @@ public class GUI extends JFrame{
 		JTextField tf = new JTextField();			// text field
 		this.dialog.add(tf, BorderLayout.NORTH);	//adds the text field to the window
 		this.dialog.add(this.continueButton, BorderLayout.SOUTH);	//adds the continue button to the window
-		fitDialogToTitle();	//fits the dialog width to fit its title.
-		this.dialog.pack();
-	}
-
-	/**
-	 * A basic dialog with n number of labels, where n is the number of vararg Strings
-	 * @param The String title
-	 * @param Any number of Strings
-	 */
-	public void basicAlert(String title, String...strings){
-		this.dialog = basicDialog(title);
-		this.dialog.setLayout(new BorderLayout());
-		JPanel panel = new JPanel();
-		panel.setLayout(new GridLayout( strings.length +1 ,1)); // one column
-		// adds strings as labels to the dialog
-		for(int i = 0; i < strings.length; i++){
-			panel.add(new JLabel(strings[i], SwingConstants.CENTER)); // alligns text to the center
-		}
-		this.dialog.add(panel, BorderLayout.NORTH);
-		//adds a continue button to the dialog.
-		this.dialog.add(this.continueButton, BorderLayout.SOUTH);
-
 		fitDialogToTitle();	//fits the dialog width to fit its title.
 		this.dialog.pack();
 	}

@@ -8,11 +8,14 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JTextField;
@@ -21,12 +24,12 @@ import javax.swing.JToolBar;
 import cluedo.locations.Board;
 
 /**
- * The interface between the game model and GUI
+ * The interface between the game model and GUI. Implements multiple listeners.
  * @author anastadani
  *
  */
 
-public class Listener implements ActionListener, MouseMotionListener, MouseListener, KeyListener{
+public class Listener implements ActionListener, MouseMotionListener, MouseListener, KeyListener, WindowListener {
 	/** The cluedo game**/
 	private Game game;
 	/** The application interface**/
@@ -106,14 +109,16 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 		}
 		else if(e.getSource().equals(gui.exitItem)){
 			//close application enquiry
-			this.game.closeApplication();
+			closeApplication();
 		}
 		else if(e.getActionCommand().equals("Make Accusation")){
 			this.game.setEventMessage(((JButton)e.getSource()).getText());
 			return;
 		}
 
+
 	}
+
 
 	/**
 	 * Dummy method for MouseMotionListener interface.
@@ -135,10 +140,6 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 		Component c = e.getComponent();
 		if(e.getSource() instanceof JButton){
 			this.game.setMouseClickMessage(((JButton)e.getSource()).getText());
-		}
-		else if(e.getSource() instanceof JMenuItem){
-			if(e.getSource().equals(this.gui.exitItem))
-				this.game.closeApplication();	//initiates closing of application.
 		}
 		else{
 				int x = e.getX(), y = e.getY();
@@ -220,6 +221,56 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 
 	@Override
 	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+	}
+
+	/**
+	 * Closes the application.
+	 */
+	public void closeApplication(){
+		int answer = JOptionPane.showConfirmDialog(null, "Are you sure you want to exit?", null, JOptionPane.YES_NO_OPTION);
+		if(answer == JOptionPane.YES_OPTION)
+			System.exit(0);
+	}
+
+	@Override
+	public void windowOpened(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void windowClosing(WindowEvent e) {
+		closeApplication();
+
+	}
+
+	@Override
+	public void windowClosed(WindowEvent e) {
+
+
+	}
+
+	@Override
+	public void windowIconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void windowActivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent e) {
 		// TODO Auto-generated method stub
 
 	}
