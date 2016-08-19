@@ -59,6 +59,6 @@ public class MoveTests {
 		try{
 			player.move('d', null);
 			fail();
-		}catch(IllegalArgumentException e){}
+		}catch(NullPointerException e){}
 	}
 }
