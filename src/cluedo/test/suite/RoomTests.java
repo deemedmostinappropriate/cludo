@@ -40,7 +40,7 @@ public class RoomTests {
 		assertTrue(board.getRooms().get(0).getCharacters().contains(character)); //room holds character
 
 	}
-	
+
 	@Test
 	public void gameChangeCharacterRoomTests(){
 		board = new Board();
@@ -55,12 +55,12 @@ public class RoomTests {
 			board.changeCharacterRoom(character, null);
 		}catch(Exception e){fail();}	//should not throw an exception.
 	}
-	
+
 	@Test
 	public void testAddNullWeapon(){
 		board = new Board();
 		room = board.getRooms().get(0);
-		
+
 		try{
 			room.addWeapon(null); 		// null weapon
 			fail();
@@ -71,13 +71,13 @@ public class RoomTests {
 			fail();
 		}catch(IllegalArgumentException e){}
 	}
-	
-	
+
+
 	@Test
 	public void testAddNullDoor(){
 		board = new Board();
 		room = board.getRooms().get(0);
-		
+
 		try{
 			room.addDoor(null); 		// null door
 			fail();
@@ -88,12 +88,12 @@ public class RoomTests {
 			fail();
 		}catch(IllegalArgumentException e){}
 	}
-	
+
 	@Test
 	public void addNullCharacter(){
 		board = new Board();
 		room = board.getRooms().get(0);
-		
+
 		//addCharacter
 		try{
 			room.addCharacter(null); 		// null character
@@ -105,50 +105,35 @@ public class RoomTests {
 			fail();
 		}catch(IllegalArgumentException e){} // should be ok.
 	}
-	
+
 	@Test
 	public void testRemoveNullWeaponFromRoom_1(){
 		board = new Board();
 		room = board.getRooms().get(0);
-		
+
 		// removeWeapon
 		try{
 			room.removeWeapon(null); 		// null weapon
 			fail();
 		}catch(IllegalArgumentException e){}
 	}
-	
-	@Test
-	public void testRemoveNullWeaponFromRoom_2(){
-		board = new Board();
-		room = board.getRooms().get(0);
-		
-		Weapon w = new Weapon(null, null);
-		try{
-			room.removeWeapon(w); 	// loop is prep for next one.
-		}catch(IllegalArgumentException e){}	//may throw
-		try{
-			room.removeWeapon(w);
-			fail();
-		}catch(IllegalArgumentException e){}	//should throw
-	}
-	
+
 	@Test
 	public void testRemoveNullCharacterFromRoom_1(){
 		board = new Board();
 		room = board.getRooms().get(0);
-		
+
 		try{
 			room.removeCharacter(null); 		// null character
 			fail();
 		}catch(IllegalArgumentException e){}
 	}
-	
+
 	@Test
 	public void testRemoveNullCharacterFromRoom_2(){
 		board = new Board();
 		room = board.getRooms().get(0);
-		
+
 		Character c = board.getCharacters().get(0);
 		try{
 			room.removeCharacter(c);// loop is prep for next one.
@@ -171,6 +156,6 @@ public class RoomTests {
 
 		assertTrue(character.getRoom() == null); //cannot move into lounge by walking left
 	}
-	
-	
+
+
 }

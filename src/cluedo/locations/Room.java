@@ -92,6 +92,8 @@ public class Room {
 	 * @param A door into this room.
 	 */
 	public void addDoor(Door door){
+		if(door == null)
+			  throw new IllegalArgumentException("Parameter null.");
 		this.doors.add(door);
 	}
 
@@ -100,8 +102,8 @@ public class Room {
 	 * @param The weapon to add to the room.
 	 */
 	public void addWeapon(Weapon weapon){
-		// needs some consideration
-
+		if(weapon == null)
+			  throw new IllegalArgumentException("Parameter null.");
 		this.weapons.add(weapon);
 	}
 
@@ -110,7 +112,8 @@ public class Room {
 	 * @param The character to add to the room.
 	 */
 	public void addCharacter(Character character){
-		// needs some consideration
+		if(character == null)
+			  throw new IllegalArgumentException("Parameter null.");
 
 
 		this.characters.add(character);
@@ -121,7 +124,8 @@ public class Room {
 	 * @param The weapon to remove from the room.
 	 */
 	public void removeWeapon(Weapon weapon){
-		// needs some consideration
+		if(weapon == null)
+			  throw new IllegalArgumentException("Parameter null.");
 
 		if(!this.weapons.contains(weapon)){
 			return;	//needs to be ok to not contain

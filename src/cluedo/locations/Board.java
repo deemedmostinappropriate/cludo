@@ -227,6 +227,8 @@ public class Board {
 	 * @return The room.
 	 */
 	public Room getRoomFromWeaponName(Weapon.Name weapon){
+		if(weapon == null)
+			  throw new IllegalArgumentException("Parameter null.");
 		return this.roomsFromWeapons.get(weapon);
 	}
 
@@ -236,6 +238,8 @@ public class Board {
 	 * @return The room.
 	 */
 	public Room getRoomFromCharacter(String characterName){
+		if(characterName == null)
+			  throw new IllegalArgumentException("Parameter null.");
 		return this.roomFromCharacter.get(characterName);
 	}
 
@@ -278,6 +282,8 @@ public class Board {
 	 * @param The room.
 	 */
 	public void setRoomFromCharacter(String characterName, Room room){
+		if(characterName == null)
+			  throw new IllegalArgumentException("Parameter null.");
 		this.roomFromCharacter.put(characterName, room);
 	}
 
@@ -287,6 +293,8 @@ public class Board {
 	 * @param The room
 	 */
 	public void setRoomFromWeapon(Weapon weapon, Room room){
+		if(weapon == null)
+			  throw new IllegalArgumentException("Parameter null.");
 		this.roomsFromWeapons.put(weapon, room);
 	}
 

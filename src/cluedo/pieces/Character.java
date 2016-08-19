@@ -23,6 +23,10 @@ public class Character implements Piece{
 	public final String ABBREV;
 
 	public Character(int x, int y, String name, String abbreviation, BufferedImage image){
+		if(name == null || image == null)
+			throw new IllegalArgumentException("Null parameter.");
+		if(!Board.inRange(x, y))
+			throw new IllegalArgumentException("Index parameter out of bounds.");
 		this.x = x;
 		this.y = y;
 		this.NAME = name;

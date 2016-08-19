@@ -19,37 +19,37 @@ import cluedo.pieces.Weapon;
 public class BoardTests {
 	Board board = new Board();
 	Character character = board.getCharacters().get(0);
-	
+
 	@Test
 	public void isInRange_1(){
 		assertTrue(board.inRange(0, 0));
 	}
-	
+
 	@Test
 	public void isInRange_2(){
 		assertTrue(board.inRange(24, 24));
 	}
-	
+
 	@Test
 	public void isOutOfRange_1(){
 		assertFalse(board.inRange(-1, 24));
 	}
-	
+
 	@Test
 	public void isOutOfRange_2(){
 		assertFalse(board.inRange(5, -1));
 	}
-	
+
 	@Test
 	public void isOutOfRange_3(){
 		assertFalse(board.inRange(99, 5));
 	}
-	
+
 	@Test
 	public void isOutOfRange_4(){
 		assertFalse(board.inRange(5, 99));
 	}
-	
+
 	@Test
 	public void testGetRoomFromWeapon(){
 		try{
@@ -57,7 +57,7 @@ public class BoardTests {
 			fail();
 		}catch(IllegalArgumentException e){}
 	}
-	
+
 	@Test
 	public void testGetRoomFromCharacter(){
 		try{
@@ -65,18 +65,10 @@ public class BoardTests {
 			fail();
 		}catch(IllegalArgumentException e){}
 	}
-	
-	@Test
-	public void testGetNonCharacterFromRoom(){
-		try{
-			board.getRoomFromCharacter("sdfs");		// no character found
-			fail();
-		}catch(IllegalArgumentException e){}
-	}
-	
+
 	@Test public void testSetRoomFromCharacter(){
 		Room room = board.getRooms().get(0);
-		
+
 		try{
 			board.setRoomFromCharacter(null, room);		// name null
 			fail();
@@ -87,8 +79,8 @@ public class BoardTests {
 		}catch(IllegalArgumentException e){fail();}  //should not throw exception
 
 	}
-	
-	@Test 
+
+	@Test
 	public void testSetRoomFromWeapon(){
 		Room room = board.getRooms().get(0);
 
@@ -103,6 +95,6 @@ public class BoardTests {
 		}catch(IllegalArgumentException e){fail();} //should not throw exception
 
 	}
-	
-	
+
+
 }
