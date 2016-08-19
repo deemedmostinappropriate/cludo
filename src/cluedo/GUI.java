@@ -90,10 +90,10 @@ public class GUI extends JFrame{
 		this.buttonPanel = new JPanel();			//holds our buttons
 		this.buttonPanel.setFocusable(false);
 		this.buttonPanel.setPreferredSize(new Dimension(WINDOW_WIDTH, BUTTON_PANEL_HEIGHT));
-		this.buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-		this.buttonPanel.add(this.accusation);
-		this.buttonPanel.add(this.nextTurn);
-		this.buttonPanel.add(this.instruction);
+		this.buttonPanel.setLayout(new BorderLayout());
+		this.buttonPanel.add(this.accusation, BorderLayout.EAST);
+		this.buttonPanel.add(this.nextTurn, BorderLayout.WEST);
+		this.buttonPanel.add(this.instruction, BorderLayout.SOUTH);
 
 		this.canvas = new Canvas(game);
 		this.canvas.setFocusable(false);

@@ -82,6 +82,9 @@ public class Listener implements ActionListener, MouseMotionListener, MouseListe
 				comps = ((JPanel)comps[0]).getComponents();
 				// for combo box dialog
 				if(comps[0] instanceof JComboBox){
+					//all 3 need an index != -1
+					if(gui.box1.getSelectedIndex() == -1 || gui.box2.getSelectedIndex() == -1 || gui.box3.getSelectedIndex() == -1)
+						return;
 					//sends messages to game.
 					this.game.setCharacterSuggestionMesssage(gui.box1.getSelectedItem().toString());
 					//not used in game.suggestion

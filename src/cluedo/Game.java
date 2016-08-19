@@ -229,14 +229,15 @@ public class Game{
 			boolean roomEntered = false; 	// Don't ask about leaving room if they have just entered:
 
 			this.mouseClickMessage = null; 	//resets the mouse click event message.
-			this.listener.changeLabel("\t\t" + this.currentPlayer.PLAYER_NAME + ", roll the die to start your turn!"); // requests  user roll the die.
+			this.listener.changeLabel("\t\t" + this.currentPlayer.PLAYER_NAME + ", roll the die to start!"); // requests  user roll the die.
 			this.diceroll = diceRoll(); 	// Roll dice and display result
 			this.gui.draw(); 				// draws the game so that dice is drawn
 
 			// Display and process move options if on a traversable board square:
 			if (currentPlayer.getCharacterLocation() == null) {
 				roomEntered = doMovementTurn();	// process player character movement
-				afterMovement(roomEntered);	// processes after effects of movement.
+				if(currentPlayer != null && this.players.size() > 1)
+					afterMovement(roomEntered);	// processes after effects of movement.
 			}
 			else{
 				//player started turn in a room
@@ -255,6 +256,7 @@ public class Game{
 			}
 			updateCurrentPlayer();
 		}
+		JOptionPane.showConfirmDialog(gui, "Congratulations "+ currentPlayer.PLAYER_NAME +"! You have won the game.");
 	}
 
 
@@ -616,14 +618,10 @@ public class Game{
 	 * Called when a player chooses to make an accusation about the murder.
 	 * If they guess correctly they win the game, otherwise they lose and the game
 	 * continues without them.
-	 *
-	 * @return True if the player's accusation was correct
 	 */
-	public boolean accusation() {
+	public void accusation() {
 		if (this.currentPlayer == null)
 			throw new IllegalArgumentException("Null argument received.");
-
-		boolean gameWon = false;
 
 		this.gui.accusationSelection("Make your accusation from the choices below.");		//requests choices from player
 		awaitResponse("event");
@@ -635,7 +633,6 @@ public class Game{
 			this.players.remove(this.currentPlayer); // removes the current player from the game.
 
 			result = "You have guessed incorrectly and are out of the game.";
-			gameWon = false;
 			this.currentPlayer = null;				//sets the current player to null, to remove all reference to this losing player
 		} else{
 			// removes all players except for the current player from the game.
@@ -644,7 +641,6 @@ public class Game{
 					this.players.remove(this.currentPlayer);
 			}
 			result = "Congratulations! You have won the game!";
-			gameWon = true;
 		}
 
 		// Displays a message to the player describing the resuls of the accusation.
@@ -657,7 +653,6 @@ public class Game{
 		this.weaponSuggestionMessage = null;
 		this.roomSuggestionMessage = null;
 		this.eventMessage = null;
-		return gameWon;
 	}
 
 	/**
@@ -955,7 +950,7 @@ public class Game{
 		return new Point(x * (Board.PIECE_OFFSET + Board.SQ_WIDTH) + Board.PIECE_OFFSET,
 				(24 - y) * (Board.PIECE_OFFSET + Board.SQ_HEIGHT) + Board.PIECE_OFFSET);
 	}
-	
+
 	/**
 	 * Draws a rectangle over the players hand on the gui. This is meant
 	 * to not be drawn when the mouse is over the cards.
@@ -963,7 +958,7 @@ public class Game{
 	 */
 	public void drawHiddenHand(Graphics g){
 		this.draw(g);
-		
+
 		g.drawRect(CARD_X_ORIGIN, CARD_Y, CARD_WIDTH * currentPlayer.getHand().length, CARD_HEIGHT);
 
 	}

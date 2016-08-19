@@ -229,7 +229,7 @@ public class Board {
 	public Room getRoomFromWeaponName(Weapon.Name weapon){
 		if(weapon == null)
 			  throw new IllegalArgumentException("Parameter null.");
-		return this.roomsFromWeapons.get(weapon);
+		return this.roomsFromWeapons.get(this.weapons.get(weapon.ordinal()));
 	}
 
 	/**
